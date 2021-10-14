@@ -178,7 +178,7 @@ export class CtorEnsureExceptionFilter implements ExceptionFilter {
 
 Quick and dirty, but it gets the job done. This is how the output looks like:
 
-```json
+```javascript
 {
   "statusCode": 400,
   "timestamp": "2021-10-13T23:06:22.527Z",
@@ -388,7 +388,7 @@ ENSURE_MINMAX(3, 5)
 
 It would yield a behavior of:
 
-```
+```javascript
 {
   pattern: /^.{3,5}$/,
   description: 'HelloHelloHello at least 3 characters and up to 5 characters'

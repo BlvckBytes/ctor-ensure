@@ -390,8 +390,8 @@ It would yield a behavior of:
 
 ```javascript
 {
-  pattern: /^.{3,5}$/,
-  description: 'HelloHelloHello at least 3 characters and up to 5 characters'
+  "pattern": /^.{3,5}$/,
+  "description": 'HelloHelloHello at least 3 characters and up to 5 characters'
 }
 ```
 

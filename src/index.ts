@@ -38,6 +38,6 @@ export { ValidationEnsure } from './validation-ensure.type';
 export { Constructable } from './constructable.type';
 
 // Misc
-export { META_KEY_VALIDATION, META_KEY_DISPLAYNAME, registerValidationStage } from './ctor-ensure.decorator';
+export { META_KEY_VALIDATION, META_KEY_DISPLAYNAME, registerValidationStage, getRegisteredValidationStages } from './ctor-ensure.decorator';
 export { registerTemplateFunction, template } from './description-template.factory';
 export { strOpt, pluralize } from './util';

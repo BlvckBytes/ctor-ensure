@@ -2,6 +2,7 @@
   "extends": "./tsconfig.json",
   "include": ["test"],
   "compilerOptions": {
-    "rootDir": "./test"
+    "rootDir": "test",
+    "noUnusedLocals": false,
   },
 }

@@ -29,6 +29,12 @@ export const registerValidationStage = (stage: ValidationStage): void => {
 };
 
 /**
+ * Fetch all validation stages
+ * @returns A copy of all currently registered validation stages
+ */
+export const getRegisteredValidationStages = (): ValidationStage[] => VALIDATION_STAGES.slice();
+
+/**
  * Decorator signalling that the following class' constructor will be validated
  * using {@link ValidatedArg} decorators on members in constructor.
  * All validation errors will be thrown using a single {@link CtorEnsureException}
@@ -43,7 +49,8 @@ export const CtorEnsure = (
     Reflect.defineMetadata(META_KEY_DISPLAYNAME, displayname, Clazz);
 
     // Intercept constructor call
-    const interceptor: any = (...ctorArgs: any[]) => {
+    // eslint-disable-next-line func-names
+    const interceptor: any = function (...ctorArgs: any[]) {
       // Get controls from class
       const controls: ValidationControl[] = Reflect.getOwnMetadata(
         META_KEY_VALIDATION,

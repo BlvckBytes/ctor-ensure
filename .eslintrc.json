@@ -31,5 +31,14 @@
         "@typescript-eslint/semi": ["error", "always"],
         "import/no-named-as-default": "off",
         "import/no-cycle": "off"
-    }
+    },
+    "overrides": [
+        {
+            "files": ["test/*.spec.ts"],
+            "rules": {
+                "@typescript-eslint/no-unused-vars": "off",
+                "no-new": "off"
+            }
+        }
+    ]
 }

@@ -15,7 +15,8 @@
     "test:watch": "jest --watch",
     "lint:check": "eslint --max-warnings 0 --ext .ts src/** test/**",
     "size": "size-limit",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "install:ci": "rm -rf node_modules && yarn install --frozen-lockfile"
   },
   "husky": {
     "hooks": {

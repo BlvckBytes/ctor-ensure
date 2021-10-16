@@ -1,0 +1,25 @@
+name: NodeJS CI
+on: [push, pull_request]
+jobs:
+  linting:
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-node@v1
+    - run: npm ci --ignore-scripts
+    - run: npm run lint:check
+  testing:
+    name: Testing
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['10.x', '12.x', '14.x']
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci --ignore-scripts
+      - run: npm run test:ci

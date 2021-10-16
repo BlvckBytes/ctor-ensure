@@ -11,8 +11,9 @@
   },
   "scripts": {
     "test": "jest --verbose --coverage",
+    "test:ci": "jest --runInBand --no-cache --coverage --verbose",
     "test:watch": "jest --watch",
-    "lint": "eslint src/** test/**",
+    "lint:check": "eslint --max-warnings 0 --ext .ts src/** test/**",
     "size": "size-limit",
     "prepare": "husky install"
   },

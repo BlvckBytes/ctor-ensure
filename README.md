@@ -397,24 +397,7 @@ It would yield a behavior of:
 
 ### Default .ENV
 
-To save time and effort, I created pretty solid templates beforehand. If you're okay with them, copy and paste to your .env file:
-
-```
-CTOR_ENSURE_ENSURE_ALPHANUM_DESC=only alphanumeric characters
-CTOR_ENSURE_ENSURE_EMAIL_DESC=valid email address
-CTOR_ENSURE_ENSURE_EQUALS_DESC=needs to equal to the plur:"field":{numFields}\: {fieldNames}
-CTOR_ENSURE_ENSURE_EXISTING_DESC=mandatory field
-CTOR_ENSURE_ENSURE_FLOAT_DESC=floating point number
-CTOR_ENSURE_ENSURE_INT_DESC=integer number
-CTOR_ENSURE_ENSURE_MINMAX_DESC=opt:"at least {min} plur:"character":{min}":{hasMin}opt:" and ":{hasBoth}opt:"up to {max} plur:"character":{max}":{hasMax}
-CTOR_ENSURE_ENSURE_NONEMPTY_DESC=no empty value
-CTOR_ENSURE_ENSURE_NONNULL_DESC=no null value
-CTOR_ENSURE_ENSURE_STRDATE_DESC=valid full ISO-8601 datetime string
-CTOR_ENSURE_ENSURE_STRFLOAT_DESC=floating point number as string
-CTOR_ENSURE_ENSURE_STRINT_DESC=integer number as string
-CTOR_ENSURE_ENSURE_STRUUID_DESC=uuid as string
-CTOR_ENSURE_STAGE_ISARRAY_DESC=needs to be an array of values
-```
+To save time and effort, I created pretty solid templates beforehand. If you're okay with them, copy the file contents of .env-presets to your default .env file.
 
 ## Contribution
 

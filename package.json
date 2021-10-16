@@ -16,7 +16,7 @@
     "lint:check": "eslint --max-warnings 0 --ext .ts src/** test/**",
     "size": "size-limit",
     "prepare": "husky install",
-    "install:ci": "rm -rf node_modules && yarn install --frozen-lockfile"
+    "install:ci": "rm -rf node_modules && yarn install --frozen-lockfile && cp .env-presets .env"
   },
   "husky": {
     "hooks": {

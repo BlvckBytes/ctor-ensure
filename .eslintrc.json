@@ -25,6 +25,21 @@
         "comma-dangle": "off",
         "no-continue": "off",
 
+        "quotes": ["error", "single", { 
+            "allowTemplateLiterals": true
+        }],
+        "space-before-blocks": ["error", "always"],
+        "arrow-spacing": ["error", {
+            "before": true,
+            "after": true
+        }],
+        "space-before-function-paren": ["error", "always"],
+        "func-call-spacing": ["error", "never"],
+        "keyword-spacing": ["error", {
+            "before": true,
+            "after": true
+        }],
+
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/comma-dangle": ["error", "always-multiline"],
@@ -37,6 +52,7 @@
             "files": ["test/*.spec.ts"],
             "rules": {
                 "@typescript-eslint/no-unused-vars": "off",
+                "@typescript-eslint/no-unused-expressions": "off",
                 "no-new": "off"
             }
         }

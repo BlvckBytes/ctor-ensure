@@ -39,5 +39,5 @@ export { Constructable } from './constructable.type';
 
 // Misc
 export { META_KEY_VALIDATION, META_KEY_DISPLAYNAME, registerValidationStage, getRegisteredValidationStages } from './ctor-ensure.decorator';
-export { registerTemplateFunction, template } from './description-template.factory';
+export { registerTemplateFunction, getRegisteredTemplateFunctions, template } from './description-template.factory';
 export { strOpt, pluralize } from './util';

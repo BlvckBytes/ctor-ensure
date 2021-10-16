@@ -87,7 +87,7 @@ describe('@CtorEnsure', () => {
     // Create a model that only accepts non-empty names
     @CtorEnsure('test-model')
     class TestClass {
-      constructor(
+      constructor (
         @ValidatedArg('name', ENSURE_NONEMPTY())
         public name: string,
       ) {}

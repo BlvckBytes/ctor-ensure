@@ -9,7 +9,7 @@ class CtorEnsureException extends Error {
   // Name of source class
   readonly displayName: string;
 
-  constructor(
+  constructor (
     // Source class
     public readonly clazz: Constructable,
 

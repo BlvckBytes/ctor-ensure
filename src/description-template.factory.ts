@@ -1,7 +1,7 @@
 import { pluralize, strOpt } from './util';
 
 // Helper formatter to get the full env key from a template name
-const key = (name: string): string => `CTOR_ENSURE_${name.toUpperCase()}_DESC`;
+export const key = (name: string): string => `CTOR_ENSURE_${name.toUpperCase()}_DESC`;
 
 // A template function is a function that takes any
 // number of arguments and returns a string
@@ -29,12 +29,18 @@ export const registerTemplateFunction = (name: string, func: TemplateFunction) =
 };
 
 /**
+ * Fetch all currently registered template functions
+ * @returns A copy of the current function map
+ */
+export const getRegisteredTemplateFunctions = (): FunctionMap => ({ ...PREDEFINED_FUNCTIONS });
+
+/**
  * Find function invocations within the template, only search for known functions
  * @param template Template to query
  * @param funcs Known functions to check for
  * @returns List of indices where function calls begin
  */
-const findFunctionCalls = (template: string, funcs: FunctionMap): number[] => {
+export const findFunctionCalls = (template: string, funcs: FunctionMap): number[] => {
   const calls: number[] = [];
 
   // Function names sorted by length ascending to have shortest name as first element
@@ -70,29 +76,66 @@ const findFunctionCalls = (template: string, funcs: FunctionMap): number[] => {
  * @param vars Known variables to apply
  * @returns Output string with changed placeholders
  */
-const replaceVariables = (template: string, vars: VariableMap) => {
+export const replaceVariables = (template: string, vars: VariableMap) => {
   let result = template.slice();
   Object.keys(vars).forEach(varName => {
     // Replace all known variables
-    // Search: <no-backslash or linestart><{varname<no-backslash>}
-    // Replace: <before><val><after>
-    result = result.replace(new RegExp(`([^\\\\]+|^)\\{${varName}([^\\\\]*)\\}`), `$1${vars[varName]}$2`);
-
-    // Remove all known variable escapes
-    // Search: <backslash?>{varname<backslash?>}
-    // Replace: {varname}
-    result = result.replace(new RegExp(`\\\\*\\{${varName}\\\\*\\}`), `{${varName}}`);
+    result = result.slice();
+    result = result.replace(new RegExp(`(?<!\\\\)\\{${varName}\\}`, 'g'), vars[varName]);
   });
-
   return result;
 };
 
 /**
  * Strip known escape sequences away
  * @param template Template string to substitute in
- * @returns Output string with no more known escapes
+ * @param funcs Known functions to check for colon escape
+ * @param vars Known variables to un-escape
+ * @returns Output string with stripped escapes for colons or curly brackets
  */
-const stripEscapes = (template: string) => template.replace('\\:', ':');
+export const stripEscapes = (template: string, funcs: FunctionMap, vars: VariableMap) => {
+  let result = template.slice();
+
+  // Strip all colon (arg-separator) escapes right after a function invocation
+  Object.keys(funcs).forEach(func => {
+    result = result.replace(new RegExp(`(?<=${func})\\\\:`, 'g'), ':');
+  });
+
+  // Strip all known variable escapes
+  Object.keys(vars).forEach(varName => {
+    // Remove all known variable escapes (also partial ones)
+    result = result.replace(new RegExp(`\\\\\\{${varName}\\\\\\}`, 'g'), `{${varName}}`);
+    result = result.replace(new RegExp(`\\{${varName}\\\\\\}`, 'g'), `{${varName}}`);
+    result = result.replace(new RegExp(`\\\\\\{${varName}\\}`, 'g'), `{${varName}}`);
+  });
+
+  return result;
+};
+
+/**
+ * Escape a string's critical symbols so that it can be used
+ * within another function
+ * @param input Input string to be escaped
+ * @returns String safe to be used within another function
+ */
+export const escapeFunctionResult = (input: string, funcs: FunctionMap, vars: VariableMap) => {
+  let result = input.slice();
+
+  // Escape colon (arg-separator) right after a function invocation
+  Object.keys(funcs).forEach(func => {
+    result = result.replace(new RegExp(`(?<=${func}):`, 'g'), '\\:');
+  });
+
+  // Escape unescaped quotes
+  result = result.replace(new RegExp('(?<!\\\\)"', 'g'), '\\"');
+
+  // Escape curly brackets from variables
+  Object.keys(vars).forEach(varName => {
+    result = result.replace(new RegExp(`(?<!\\\\)\\{${varName}(?!\\\\)\\}`, 'g'), `\\{${varName}\\}`);
+  });
+
+  return result;
+};
 
 /**
  * Process a function on the template string and return the result
@@ -102,7 +145,7 @@ const stripEscapes = (template: string) => template.replace('\\:', ':');
  * @param funcs Functions that are available for this template
  * @returns New template, after evaluating this function
  */
-const processFunction = (defInd: number, template: string, vars: VariableMap, funcs: FunctionMap): string => {
+export const processFunction = (defInd: number, template: string, vars: VariableMap, funcs: FunctionMap): string => {
   let result = template.slice();
 
   // Beginning of arguments is after first :, relative to definition
@@ -115,8 +158,8 @@ const processFunction = (defInd: number, template: string, vars: VariableMap, fu
   const args = []; // List of arguments, filled by argBuf
   let inStr = false; // Whether or not currently within a string
   let varBegin = null; // Current variable begin, null means not within one
-  let wasVar = false; // Whether or not previous iteration has ended a variable
   let endInd = defInd; // Index of function completion, start=end for now
+  let wasArgVar = false; // Flag if last substitution was a argument variable
 
   // Iterate till furthest possible point: EOL
   for (let i = argsBegin; i < result.length; i += 1) {
@@ -125,117 +168,109 @@ const processFunction = (defInd: number, template: string, vars: VariableMap, fu
     const isEscaped = i !== 0 && result[i - 1] === '\\'; // Has current char been escaped? (prev was \)
     const isStrDelim = curr === '"' && !isEscaped; // Is current char a non-escaped string delimiter?
     const isVarBegin = curr === '{' && !isEscaped; // Is current char a non-escaped variable begin?
-    const isVarEnd = curr === '}' && !isEscaped; // Is current char a non-escaped variable end?
 
     // Set variable begin to current index
     if (isVarBegin)
       varBegin = i;
 
-    // Escaped known delimiter, remove escape character from buffer
-    if (isEscaped && (curr === '"' || curr === '{' || curr === '}' || curr === ':'))
-      argBuf = argBuf.substring(0, argBuf.length - 1);
-
     // Filter out no longer needed string delimiters from arguments
-    // If previous iteration was a variable end, don't append, since
-    // the loop now has been set back to the last character of the substitution
-    // and the substitution has already been pushed separately
-    if (!isStrDelim && !wasVar)
+    if (!isStrDelim)
       argBuf += curr;
 
+    // Unescape symbols
+    if (!inStr && (curr === ':' || curr === '"') && isEscaped)
+      argBuf = argBuf.substring(0, argBuf.length - 2) + argBuf.substring(argBuf.length - 1, argBuf.length);
+
     if (
-      // About to exit a string or variable
-      (inStr && isStrDelim || wasVar ) &&
-      // AND not at EOL
-      i !== result.length - 1 && 
-      // AND next char is not an argument separator
-      result[i + 1] !== ':' ||
-      // OR the EOL has been reached, which wasn't a variable (because that's already pushed)
-      (i === result.length - 1 && !isVarEnd)
-    ) { 
-      // Push last value from buffer
-      if (argBuf !== '') args.push(argBuf);
+      // Ignore if within variable processing
+      !varBegin &&
 
-      // Add one to function end for current known delimiter ("{}) if not EOL
-      endInd = i + (i === result.length - 1 ? 0 : 1);
+      // Argument separator reached that is not inside string or variable
+      ((curr === ':' && !inStr && !isEscaped) ||
 
-      // If EOL has been reched, add one to avoid substring leakage
-      if (endInd === result.length - 1) endInd += 1;
+      // OR EOL and not in variable
+      (i === result.length - 1))
+    ) {
+      // Remove separator from buffer if not EOL
+      if (i !== result.length - 1)
+        argBuf = argBuf.substring(0, argBuf.length - 1);
 
-      // Function is done
-      break;
-    }
+      // Set new possible end
+      endInd = i;
 
-    // Argument separator reached that is not inside string or variable and
-    if (!inStr && !varBegin && curr === ':' && !isEscaped) {
-      // Push only if not empty
-      if (argBuf.length > 1)
-        // Remove separator from buffer
-        args.push(argBuf.substring(0, argBuf.length - 1));
-
-      // Reset buffer
-      argBuf = '';
+      // Push and reset, if argument wasn't a variable
+      if (!wasArgVar) {
+        args.push(argBuf);
+        argBuf = '';
+      }
     }
 
     // A variable that has been started ends now
-    if (varBegin !== null && isVarEnd) {
+    if (varBegin !== null && curr === '}') {
       // Variable name is from begin + 1 to current - 1
       const varName = (result.substring(varBegin + 1, i));
 
       // Find the variable by it's name
-      const val = vars[varName];
-      if (!val) throw Error(`Could not find variable ${varName}!`);
+      let val = vars[varName];
 
-      // Get string representation of it
+      // Unknown variable call, leave as is
+      if (val === undefined)
+        val = `{${varName}}`;
+
+      // Escaped variable call, print escaped
+      else if (isEscaped)
+        val = `\\{${varName}}`;
+
       const strVal = String(val);
 
       // Substitute variable in input string
       result = result.substring(0, varBegin) + strVal + result.substring(i + 1, result.length);
 
-      // Set the loop back to the variable begin, plus the substituted value length
-      // minus 2, 1 because the variable started at varBegin and 1 to make the next
-      // iteration occurr within no known delimiters (for all mechanisms to work)
-      i = varBegin + strVal.length - 2;
+      // Next iteration will pick up right after variable substitution
+      i = varBegin + strVal.length - 1;
 
       // Variable done
       varBegin = null;
 
       // Variable as function-argument has been substituted
       if (!inStr) {
-        // Clear argument buffer (placeholder)
+        // Clear argument buffer (holds placeholder)
         argBuf = '';
 
         // Push actual value
         args.push(val);
 
         // Set flag
-        wasVar = true;
+        wasArgVar = true;
       }
       
       // Variable as plain text has been substituted, just replace in argument buffer
       else {
-        argBuf = argBuf.substring(0, argBuf.length - (varName.length + 2)) + strVal.substring(0, strVal.length - 1);
+        argBuf = argBuf.substring(0, argBuf.length - (varName.length + 2)) + strVal;
       }
 
-      // Pick up at re-set i index
+      // Set new possible end
+      endInd = i;
       continue;
     }
 
     // Flip on string delim
     inStr = inStr !== isStrDelim;
 
-    // Clear flag, since it's just ment for one iteration
-    wasVar = false;
+    // Clear flags
+    wasArgVar = false;
   }
-
-  // Loop done - all variables have been substituted and all arguments
-  // as well as the end of function are known
 
   // Find the function by it's name
   const func = funcs[name];
-  if (!func) throw Error("Could not find target function!");
+
+  // This function is unknown, return untouched input
+  if (!func)
+    return template;
 
   // Return input, where function invocation is substituted for function result
-  return result.substring(0, defInd) + func(...args) + result.substring(endInd, result.length);
+  // Every function needs to escape it's own result, to avoid re-interpret
+  return result.substring(0, defInd) + escapeFunctionResult(func(...args), funcs, vars) + result.substring(endInd + 1, result.length);
 };
 
 /**
@@ -264,12 +299,12 @@ export const template = (
   const knownVariables = { ...vars };
 
   // Find all function calls and process them
-  findFunctionCalls(templateString, knownFunctions).forEach(defInd => {
+  findFunctionCalls(templateString, knownFunctions).forEach((defInd) => {
     templateString = processFunction(defInd, templateString, knownVariables, knownFunctions);
   });
 
   templateString = replaceVariables(templateString, knownVariables);
-  templateString = stripEscapes(templateString);
+  templateString = stripEscapes(templateString, knownFunctions, knownVariables);
 
   // Return final template after replacing all non-function variables too
   return templateString;

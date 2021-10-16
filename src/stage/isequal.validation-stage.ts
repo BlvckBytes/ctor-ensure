@@ -1,4 +1,5 @@
 import CtorEnsureArgError from '../ctor-ensure-arg-error.interface';
+import { evalStrThunk } from '../util';
 import { ValidationConfig } from '../validation-config.interface';
 import { ValidationControl } from '../validation-control.interface';
 import { ValidationStage } from '../validation-stage.type';
@@ -38,7 +39,7 @@ const STAGE_ISEQUAL: ValidationStage = (
     if (ctorArgs[currCtorInd] !== currValue || currValue === undefined) {
       return {
         field: currControl.displayName,
-        description: currConfig.description,
+        description: evalStrThunk(currConfig.description),
       };
     }
   }

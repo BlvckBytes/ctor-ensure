@@ -1,5 +1,6 @@
 import CtorEnsureArgError from '../ctor-ensure-arg-error.interface';
 import FieldType from '../field-type.enum';
+import { evalStrThunk } from '../util';
 import { ValidationConfig } from '../validation-config.interface';
 import { ValidationControl } from '../validation-control.interface';
 import { ValidationStage } from '../validation-stage.type';
@@ -59,7 +60,7 @@ export const STAGE_ISTYPE: ValidationStage = (
   if (!isValid !== (currConfig.negate || false))
     return {
       field: currControl.displayName,
-      description: currConfig.description,
+      description: evalStrThunk(currConfig.description),
     };
 
   // Passed

@@ -22,6 +22,12 @@ export { default as ENSURE_STRFLOAT } from './ensure/strfloat.validation-ensure'
 export { default as ENSURE_STRINT } from './ensure/strint.validation-ensure';
 export { ENSURE_STRUUID } from './ensure/struuid.validation-ensure';
 
+// Predefined stages
+export { default as STAGE_ISPATTERN } from './stage/ispattern.validation-stage';
+export { STAGE_ISTYPE } from './stage/istype.validation-stage';
+export { default as STAGE_ISEQUAL } from './stage/isequal.validation-stage';
+export { default as STAGE_ISARRAY } from './stage/isarray.validation-stage';
+
 // Decorators
 export { default as ValidatedArg } from './validated-arg.decorator';
 export { CtorEnsure } from './ctor-ensure.decorator';
@@ -40,4 +46,4 @@ export { Constructable } from './constructable.type';
 // Misc
 export { META_KEY_VALIDATION, META_KEY_DISPLAYNAME, registerValidationStage, getRegisteredValidationStages } from './ctor-ensure.decorator';
 export { registerTemplateFunction, getRegisteredTemplateFunctions, template } from './description-template.factory';
-export { strOpt, pluralize } from './util';
+export { strOpt, pluralize, evalStrThunk } from './util';

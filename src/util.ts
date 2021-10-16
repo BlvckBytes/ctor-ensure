@@ -16,3 +16,11 @@ export const strOpt = (str: string, state: boolean): string => state ? str : '';
  * @returns Pluralized word
  */
 export const pluralize = (word: string, num: number, suf = 's'): string => `${word.trimRight()}${strOpt(suf, num !== 1)}`;
+
+/**
+ * Evaluates a string thunk bei either calling it, if it's a
+ * function, or returning it's immediate value
+ * @param thunk Either a thunk returning a string or a string value
+ * @returns Evaluated string value
+ */
+export const evalStrThunk = (thunk: (() => string) | string): string => typeof thunk === 'function' ? thunk() : thunk;

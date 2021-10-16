@@ -11,7 +11,7 @@ export interface ValidationConfig {
   type?: FieldType;
 
   // Description of this validator
-  description: string;
+  description: (() => string) | string;
 
   // Negate validation result
   negate?: boolean;

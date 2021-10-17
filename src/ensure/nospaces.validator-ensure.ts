@@ -7,7 +7,7 @@ import { ValidationEnsure } from '../validation-ensure.type';
  * Ensure this field contains no spaces
  */
 const ENSURE_NOSPACES: ValidationEnsure = (): ValidationConfig => ({
-    pattern: /[^ ]*/,
+    pattern: /^[^ ]*$/,
     description: template('ENSURE_NOSPACES'),
   });
 

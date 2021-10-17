@@ -37,11 +37,13 @@ export const STAGE_ISTYPE: ValidationStage = (
   let isValid = false;
   switch (currConfig.type) {
     case FieldType.UNDEFINED:
+      // Cannot be undefined, but null (which is actively stated)
       isValid = currValue === undefined;
       break;
 
     case FieldType.NULL:
-      isValid = currValue === null;
+      // Cannot be undefined nor null (most intuitive)
+      isValid = currValue === null || currValue === undefined;
       break;
 
     case FieldType.INT:
@@ -52,11 +54,15 @@ export const STAGE_ISTYPE: ValidationStage = (
       isValid = isFloat(currValue) && typeof currValue === 'number';
       break;
 
+    case FieldType.STRING:
+      isValid = typeof currValue === 'string';
+      break;
+
     default:
       throw SyntaxError('Unknown fieldtype specified!');
   }
 
-  // Invalid field type
+  // Invalid field type, or valid and negated
   if (!isValid !== (currConfig.negate || false))
     return {
       field: currControl.displayName,

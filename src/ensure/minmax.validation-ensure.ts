@@ -11,7 +11,7 @@ import { ValidationEnsure } from '../validation-ensure.type';
 const ENSURE_MINMAX: ValidationEnsure = (min: number, max: number): ValidationConfig => {
   if (min < 0 && max < 0 || (min > max && max !== -1)) throw new SyntaxError('Invalid arguments');
   return {
-    pattern: new RegExp(`^.{${min > 0 ? min : ''},${max > 0 ? max : ''}}$`),
+    pattern: new RegExp(`^.{${min > 0 ? min : 0},${max > 0 ? max : ''}}$`),
     description: template('ENSURE_MINMAX', {
       min, max, hasMin: min > 0, hasMax: max > 0, hasBoth: min > 0 && max > 0,
     }),

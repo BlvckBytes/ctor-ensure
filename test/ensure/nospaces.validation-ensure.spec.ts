@@ -1,5 +1,6 @@
 import { expect } from 'chai';
-import { ENSURE_NOSPACES, evalStrThunk } from '../../src';
+import { ENSURE_NOSPACES, evalStrThunk, STAGE_ISPATTERN } from '../../src';
+import { runStageTesting } from '../test-util';
 
 describe('ENSURE_NOSPACES', () => {
   const ensure = ENSURE_NOSPACES();
@@ -9,15 +10,18 @@ describe('ENSURE_NOSPACES', () => {
     expect(desc).to.equal('can\'t contain spaces');
   });
 
-  it('should allow empty strings', () => {
-    expect(ensure.pattern?.test('')).to.equal(true);
+  it('should allow non-space string', () => {
+    const { result } = runStageTesting(STAGE_ISPATTERN, ensure, 'hello');
+    expect(result).to.equal(null);
   });
 
-  it('should allow non-space strings', () => {
-    expect(ensure.pattern?.test('helloworld')).to.equal(true);
+  it('should allow empty string', () => {
+    const { result } = runStageTesting(STAGE_ISPATTERN, ensure, '');
+    expect(result).to.equal(null);
   });
 
-  it('should disallow spaces in strings', () => {
-    expect(ensure.pattern?.test('hello world')).to.equal(true);
+  it('shouldn\'t allow space string', () => {
+    const { control, result } = runStageTesting(STAGE_ISPATTERN, ensure, 'hello world');
+    expect(result?.field).to.equal(control.displayName);
   });
 });

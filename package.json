@@ -10,7 +10,6 @@
     "node": ">=12"
   },
   "scripts": {
-    "test": "jest --verbose --coverage",
     "test:ci": "jest --runInBand --no-cache --coverage --verbose",
     "test:watch": "jest --watch",
     "lint:check": "eslint --max-warnings 0 --ext .ts src/** test/**",

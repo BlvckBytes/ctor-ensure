@@ -6,6 +6,7 @@ export enum FieldType {
   UNDEFINED,
   INT,
   FLOAT,
+  STRING,
 }
 
 export default FieldType;

@@ -49,12 +49,13 @@
     },
     "overrides": [
         {
-            "files": ["test/*.spec.ts"],
+            "files": ["test/*.ts"],
             "rules": {
                 "@typescript-eslint/no-unused-vars": "off",
                 "@typescript-eslint/no-unused-expressions": "off",
                 "no-new": "off",
-                "max-classes-per-file": "off"
+                "max-classes-per-file": "off",
+                "import/prefer-default-export": "off"
             }
         }
     ]

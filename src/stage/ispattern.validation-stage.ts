@@ -22,7 +22,7 @@ const STAGE_ISPATTERN: ValidationStage = (
   if (
     currValue === null ||
     currValue === undefined ||
-    !currConfig.pattern.test(String(currValue))
+    !currConfig.pattern.test(currValue)
   )
     return {
       field: currControl.displayName,

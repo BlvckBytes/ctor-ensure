@@ -10,7 +10,7 @@ import { ValidationControl } from './validation-control.interface';
  */
 const ValidatedArg = (
   displayName: string,
-  config: ValidationConfig | ValidationConfig[] = [],
+  config: ValidationConfig | ValidationConfig[],
   isArray = false,
 ): ParameterDecorator => (clazz: any, _: string | symbol, index: number) => {
     // Ensure existence of array
@@ -22,8 +22,10 @@ const ValidatedArg = (
       META_KEY_VALIDATION,
       clazz,
     );
+
+    // Find control by ctor parameter index
     let control = meta.find(
-      it => it.displayName === displayName && it.ctorInd === index,
+      it => it.ctorInd === index,
     );
 
     // Ensure existence of control for field

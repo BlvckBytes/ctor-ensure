@@ -2,14 +2,14 @@ import { expect } from 'chai';
 import { Constructable, META_KEY_VALIDATION, ValidatedArg, ValidationConfig, ValidationControl } from '../src';
 
 describe('@ValidatedArg', () => {
-  const callWith = (clazz: Constructable, index: number, confs = 1, isArray = false) => {
+  const callWith = (clazz: Constructable, index: number, confs = 1, confsOff = 0, isArray = false) => {
     // Create single or multiple configs, based on confs
     const mkConfs: () => ValidationConfig | ValidationConfig[] = () => {
       if (confs === 1)
         return { description: `description${index}` };
 
       return [...Array(confs).keys()].map((_, ind) => ({
-        description: `description${index}-${ind}`,
+        description: `description${index}-${confsOff + ind}`,
       }));
     };
 
@@ -64,6 +64,17 @@ describe('@ValidatedArg', () => {
     // Should have one matching metadata entry with 5 configs
     const metadata: ValidationControl[] = Reflect.getMetadata(META_KEY_VALIDATION, TestClass);
     expectMetadata(metadata[0], 0, 5);
+  });
+
+  it('should be applicable multiple times to the same field', () => {
+    // Call once with 5 configs
+    class TestClass {}
+    callWith(TestClass, 0, 5);
+    callWith(TestClass, 0, 5, 5);
+
+    // Should have one matching metadata entry with 5 configs
+    const metadata: ValidationControl[] = Reflect.getMetadata(META_KEY_VALIDATION, TestClass);
+    expectMetadata(metadata[0], 0, 10);
   });
 
   it('should work without configs', () => {

@@ -219,6 +219,30 @@ describe('processFunction()', () => {
     const result = processFunction(0, expr, vars, funcs);
     expect(result).to.equal(`${vars.a}${vars.b}\\" after quote`);
   });
+
+  it('should be able to add quote at the end of function call', () => {
+    const expr = 'concat:{a}:{b}" after quote';
+    const result = processFunction(0, expr, vars, funcs);
+    expect(result).to.equal(`${vars.a}${vars.b}" after quote`);
+  });
+
+  it('should ignore unknown functions', () => {
+    const expr = 'unknown:{a}:{b}';
+    const result = processFunction(0, expr, vars, funcs);
+    expect(result).to.equal(`unknown:{a}:{b}`);
+  });
+
+  it('should be able to deal with trailing colon after var', () => {
+    const expr = 'concat:{a}:{b}: after colon';
+    const result = processFunction(0, expr, vars, funcs);
+    expect(result).to.equal(`${vars.a}${vars.b} after colon`);
+  });
+
+  it('should be able to deal with trailing colon after string', () => {
+    const expr = 'concat:{a}:{b}:"hi": after colon';
+    const result = processFunction(0, expr, vars, funcs);
+    expect(result).to.equal(`${vars.a}${vars.b}hi after colon`);
+  });
 });
 
 describe('key()', () => {

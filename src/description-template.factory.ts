@@ -194,8 +194,7 @@ export const processFunction = (defInd: number, template: string, vars: Variable
     // Skip this check on first character of args
     if (!inStr && !varBegin && curr !== ':' && i !== argsBegin) {
       // End index is -1, since current is not part of the function anymore
-      // Subtract one more if escaped, to account for the backslash
-      endInd = i - 1 - (isEscaped ? 1 : 0);
+      endInd = i - 1;
       break;
     }
 
@@ -204,14 +203,10 @@ export const processFunction = (defInd: number, template: string, vars: Variable
       !varBegin &&
 
       // Argument separator reached that is not inside string or variable
-      ((curr === ':' && !inStr && !isEscaped) ||
-
-      // OR EOL and not in variable
-      (i === result.length - 1))
+      (curr === ':' && !inStr && !isEscaped)
     ) {
-      // Remove separator from buffer if not EOL
-      if (i !== result.length - 1)
-        argBuf = argBuf.substring(0, argBuf.length - 1);
+      // Remove separator from buffer
+      argBuf = argBuf.substring(0, argBuf.length - 1);
 
       // Push and reset, if argument wasn't a variable
       if (!wasArgVar) {
@@ -224,18 +219,15 @@ export const processFunction = (defInd: number, template: string, vars: Variable
     if (varBegin !== null && curr === '}') {
       // Variable name is from begin + 1 to current - 1
       const varName = (result.substring(varBegin + 1, i));
-
+      
       // Find the variable by it's name
       let val = vars[varName];
 
       // Unknown variable call, leave as is
+      // Escaped variables have a trailing backslash varname\
+      // and thus automatically become the desired value
       if (val === undefined)
         val = `{${varName}}`;
-
-      // Escaped variable call, print escaped
-      // Already has ending escape attached to it's name
-      else if (isEscaped)
-        val = `\\{${varName}}`;
 
       // String representation of value
       const strVal = String(val);
@@ -277,7 +269,6 @@ export const processFunction = (defInd: number, template: string, vars: Variable
   // Find the function by it's name
   const func = funcs[name];
 
-  // This function is unknown, return untouched input
   if (!func)
     return template;
 

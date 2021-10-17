@@ -20,4 +20,13 @@ describe('STAGE_ISARRAY', () => {
 
     expect(result?.field).to.equal(control.displayName);
   });
+
+  it('shouldn\'t allow array value', () => {
+    // Invoke with scalar type
+    const { control, result } = runStageTesting(STAGE_ISARRAY, {
+      description: '',
+    }, [5], false);
+
+    expect(result?.field).to.equal(control.displayName);
+  });
 });

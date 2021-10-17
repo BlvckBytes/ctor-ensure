@@ -9,7 +9,11 @@ import { ValidationEnsure } from '../validation-ensure.type';
  * @param max Maximum length
  */
 const ENSURE_MINMAX: ValidationEnsure = (min: number, max: number): ValidationConfig => {
-  if (min < 0 && max < 0 || (min > max && max !== -1)) throw new SyntaxError('Invalid arguments');
+  if (min < 0 && max < 0)
+    throw new SyntaxError('Define at least min or max!');
+  if (min > max && max !== -1)
+    throw new SyntaxError('Max cannot be less than min!');
+
   return {
     pattern: new RegExp(`^.{${min > 0 ? min : 0},${max > 0 ? max : ''}}$`),
     description: template('ENSURE_MINMAX', {

@@ -55,4 +55,14 @@ describe('ENSURE_MINMAX', () => {
     const { control, result } = runStageTesting(STAGE_ISPATTERN, ensure, 'X'.repeat(max + 1));
     expect(result?.field).to.equal(control.displayName);
   });
+
+  it('shouldn\'t accept smaller max than min', () => {
+    const call = () => runStageTesting(STAGE_ISPATTERN, ENSURE_MINMAX(10, 5), '');
+    expect(call).to.throw('Max cannot be less than min!');
+  });
+
+  it('shouldn\'t accept both bounds at -1', () => {
+    const call = () => runStageTesting(STAGE_ISPATTERN, ENSURE_MINMAX(-1, -1), '');
+    expect(call).to.throw('Define at least min or max!');
+  });
 });

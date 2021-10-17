@@ -1,4 +1,4 @@
-import { CtorEnsureArgError, ValidationConfig, ValidationControl, ValidationStage } from '../src';
+import { ValidationConfig, ValidationControl, ValidationStage } from '../src';
 
 /**
  * Helper routine to run a stage with a passed config for

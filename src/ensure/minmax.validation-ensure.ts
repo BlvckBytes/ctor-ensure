@@ -3,7 +3,7 @@ import { ValidationConfig } from '../validation-config.interface';
 import { ValidationEnsure } from '../validation-ensure.type';
 
 /**
- * Pattern to be used within config of {@link ValidatedArg}
+ * Ensure to be used within config of {@link ValidatedArg}
  * Constrain the length of a string
  * @param min Minimum length
  * @param max Maximum length

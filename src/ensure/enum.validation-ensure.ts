@@ -11,8 +11,9 @@ import { ValidationEnsure } from '../validation-ensure.type';
 export const enumValues = (values: { [key: string]: any }) => Object.keys(values).filter(it => Number.isNaN(Number(it))).map(it => escapeRegExp(it));
 
 /**
- * Pattern to be used within config of {@link ValidatedArg}
- * Ensure this field is a number of type integer
+ * Ensure to be used within config of {@link ValidatedArg}
+ * Ensure this field is a member of an enum
+ * @param values Enum to be checked against
  */
 export const ENSURE_ENUM: ValidationEnsure = (values: { [key: string]: any }): ValidationConfig => {
   const vals = enumValues(values);

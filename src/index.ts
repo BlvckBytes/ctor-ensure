@@ -23,6 +23,7 @@ export { default as ENSURE_STRINT } from './ensure/strint.validation-ensure';
 export { ENSURE_STRUUID } from './ensure/struuid.validation-ensure';
 export { ENSURE_ENUM } from './ensure/enum.validation-ensure';
 export { default as ENSURE_CONTAINS } from './ensure/contains.validation-ensure';
+export { default as ENSURE_NOSPACES } from './ensure/nospaces.validator-ensure';
 
 // Predefined stages
 export { default as STAGE_ISPATTERN } from './stage/ispattern.validation-stage';

@@ -3,7 +3,7 @@ import { ValidationConfig } from '../validation-config.interface';
 import { ValidationEnsure } from '../validation-ensure.type';
 
 /**
- * Pattern to be used within config of {@link ValidatedArg}
+ * Ensure to be used within config of {@link ValidatedArg}
  * Ensure this field is not empty
  */
 const ENSURE_NONEMPTY: ValidationEnsure = (): ValidationConfig => ({

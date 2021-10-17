@@ -4,11 +4,11 @@ import { ValidationEnsure } from '../validation-ensure.type';
 
 /**
  * Ensure to be used within config of {@link ValidatedArg}
- * Ensure this field is alphanumeric
+ * Ensure this field contains no spaces
  */
-const ENSURE_ALPHANUM: ValidationEnsure = (): ValidationConfig => ({
-    pattern: /[A-Za-z0-9 ]+/,
-    description: template('ENSURE_ALPHANUM'),
+const ENSURE_NOSPACES: ValidationEnsure = (): ValidationConfig => ({
+    pattern: /[^ ]*/,
+    description: template('ENSURE_NOSPACES'),
   });
 
-export default ENSURE_ALPHANUM;
+export default ENSURE_NOSPACES;

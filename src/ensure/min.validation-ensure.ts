@@ -3,7 +3,7 @@ import { ValidationEnsure } from '../validation-ensure.type';
 import ENSURE_MINMAX from './minmax.validation-ensure';
 
 /**
- * Pattern to be used within config of {@link ValidatedArg}
+ * Ensure to be used within config of {@link ValidatedArg}
  * Constrain the minimum length of a string
  * @param min Minimum length
  */

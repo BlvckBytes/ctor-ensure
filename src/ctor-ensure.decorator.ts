@@ -55,15 +55,11 @@ export const CtorEnsure = (
       const controls: ValidationControl[] = Reflect.getOwnMetadata(
         META_KEY_VALIDATION,
         Clazz,
-      );
+      ) || [];
 
       // List of errors that occurred
       const errors: CtorEnsureArgError[] = [];
       controls
-        // Sort by constructor arg ascending (as defined in class)
-        .sort(
-          (a: ValidationControl, b: ValidationControl) => a.ctorInd - b.ctorInd,
-        )
         // Iterate every control
         .forEach(currControl => {
           // Get target value from constructor args

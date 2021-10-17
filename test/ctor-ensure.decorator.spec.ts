@@ -160,4 +160,25 @@ describe('@CtorEnsure', () => {
       }
     }
   });
+
+  it('should work on empty ctors', () => {
+    @CtorEnsure('test-model')
+    class TestClass {}
+
+    // Should create no worries
+    expect(() => new TestClass()).not.to.throw;
+  });
+
+  it('should re-throw non-validation errors in ctor', () => {
+    const errMsg = 'We don\'t do that here!';
+    @CtorEnsure('test-model')
+    class TestClass {
+      constructor () {
+        throw new Error(errMsg);
+      }
+    }
+
+    // Should re-throw exception
+    expect(() => new TestClass()).to.throw(errMsg);
+  });
 });

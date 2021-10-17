@@ -1,7 +1,5 @@
-/* eslint-disable max-classes-per-file */
-
 import { expect } from 'chai'; 
-import { ValidationStage, getRegisteredValidationStages, registerValidationStage, CtorEnsure, META_KEY_DISPLAYNAME, Constructable, ValidatedArg, ENSURE_NONEMPTY } from '../src';
+import { ValidationStage, getRegisteredValidationStages, registerValidationStage, CtorEnsure, META_KEY_DISPLAYNAME, Constructable, ValidatedArg, ENSURE_NONEMPTY, CtorEnsureException } from '../src';
 
 describe('registerValidationStage()', () => {
   it('added stage should be registered', () => {
@@ -102,5 +100,64 @@ describe('@CtorEnsure', () => {
     expect(() => {
       new TestClass('max');
     }).not.to.throw();
+  });
+
+  it('should only keep the latest name on inheritance', () => {
+    @CtorEnsure('test-model-a')
+    class TestClassA {}
+
+    @CtorEnsure('test-model-b')
+    class TestClassB extends TestClassA {}
+
+    // The metadata defined secondly should be there too
+    const displayname = Reflect.getMetadata(META_KEY_DISPLAYNAME, TestClassB);
+    expect(displayname).to.equal('test-model-b');
+  });
+
+  it('should throw errors properly with inheritance', () => {
+    // Create model A with one validated field
+    @CtorEnsure('test-model-a')
+    class TestClassA {
+      constructor (
+        @ValidatedArg('fieldA', ENSURE_NONEMPTY())
+        public fieldA: string,
+      ) {}
+    }
+
+    // Create model B with one validated field
+    @CtorEnsure('test-model-b')
+    class TestClassB extends TestClassA {
+      constructor (
+        // Just passed through to the super-call
+        fieldA: string,
+
+        @ValidatedArg('fieldB', ENSURE_NONEMPTY())
+        public fieldB: string,
+      ) {
+        // This is calling the A-constructor, and thus throwing
+        // before the own constructor can complete it's call
+        super(fieldA);
+      }
+    }
+
+    // Constructor A failing
+    try {
+      new TestClassB('', 'content');
+    } catch (e) {
+      if (e instanceof CtorEnsureException) {
+        expect(e.displayName).to.equal('test-model-b');
+        expect(e.errors[0]?.field).to.equal('fieldA');
+      }
+    }
+
+    // Constructor B failing
+    try {
+      new TestClassB('content', '');
+    } catch (e) {
+      if (e instanceof CtorEnsureException) {
+        expect(e.displayName).to.equal('test-model-b');
+        expect(e.errors[0]?.field).to.equal('fieldB');
+      }
+    }
   });
 });

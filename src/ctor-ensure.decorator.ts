@@ -113,8 +113,21 @@ export const CtorEnsure = (
       // Errors occurred
       if (errors.length > 0) throw new CtorEnsureException(interceptor, errors);
 
-      // Call constructor
-      return new Clazz(ctorArgs);
+      // Try calling the constructor
+      try {
+        return new Clazz(ctorArgs);
+      } 
+      
+      // An error occurred!
+      catch (e) {
+        // Change the displayname to current context (re-construct)
+        // if the error occurred in a superclass (super() call)
+        if (e instanceof CtorEnsureException && e.clazz !== Clazz)
+          throw new CtorEnsureException(Clazz, e.errors);
+       
+        // Rethrow other errors
+        throw e;
+      }
     };
 
     // Copy prototype and existing metadata

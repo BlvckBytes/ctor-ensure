@@ -21,6 +21,8 @@ export { default as ENSURE_STRDATE } from './ensure/strdate.validation-ensure';
 export { default as ENSURE_STRFLOAT } from './ensure/strfloat.validation-ensure';
 export { default as ENSURE_STRINT } from './ensure/strint.validation-ensure';
 export { ENSURE_STRUUID } from './ensure/struuid.validation-ensure';
+export { ENSURE_ENUM } from './ensure/enum.validation-ensure';
+export { default as ENSURE_CONTAINS } from './ensure/contains.validation-ensure';
 
 // Predefined stages
 export { default as STAGE_ISPATTERN } from './stage/ispattern.validation-stage';

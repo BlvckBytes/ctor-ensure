@@ -24,3 +24,10 @@ export const pluralize = (word: string, num: number, suf = 's'): string => `${wo
  * @returns Evaluated string value
  */
 export const evalStrThunk = (thunk: (() => string) | string): string => typeof thunk === 'function' ? thunk() : thunk;
+
+/**
+ * Escape a string to be used within a regular expression safely
+ * @param val String to escape
+ * @returns Regex-safe string
+ */
+export const escapeRegExp = (val: string) => val.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

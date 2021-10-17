@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { pluralize, strOpt } from '../src';
-import { evalStrThunk } from '../src/util';
+import { escapeRegExp, evalStrThunk } from '../src/util';
 
 describe('strOpt()', () => {
   it('string should be rendered if condition is true', () => {
@@ -45,5 +45,11 @@ describe('evalStrThunk()', () => {
   it('should evaluate string thunks correctly', () => {
     // Provide function that returns string
     expect(evalStrThunk(() => 'thunk')).to.equal('thunk');
+  });
+});
+
+describe('escapeRegExp()', () => {
+  it('should properly escape regex-symbols', () => {
+    expect(escapeRegExp('[]{}^$')).to.equal('\\[\\]\\{\\}\\^\\$');
   });
 });

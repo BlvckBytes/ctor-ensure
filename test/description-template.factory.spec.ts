@@ -302,4 +302,15 @@ describe('template()', () => {
     process.env[key('TEST')] = 'plur:"field":{c}\\: test {c}';
     expect(template('TEST', vars, funcs)).to.equal(`fields: test ${vars.c}`);
   });
+
+  it('should call same-level and nested functions', () => {
+     // Plural
+    process.env[key('TEST')] = 'plur:"field":{c}\\: {c} opt:"hello plur:"word":{d}":{d}';
+    expect(template('TEST', vars, funcs)).to.equal(`fields: ${vars.c} hello word`);
+  });
+
+  it('should keep escaped escapes', () => {
+    process.env[key('TEST')] = '\\\\{c\\\\}';
+    expect(template('TEST', vars, funcs)).to.equal(`\\{c\\}`);
+  });
 });

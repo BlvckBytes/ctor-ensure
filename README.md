@@ -213,6 +213,41 @@ Quick and dirty, but it gets the job done. This is how the output looks like:
 
 Wow! Now that's what I call a descriptive error message, providing a nice user experience to your API-invoker, especially when you keep the little effort to set this up in mind.
 
+### Inheritance
+
+What if you abstracted some fields into a super-class that you want to validate and use multiple times? Easy.
+
+```typescript
+// Create model A with one validated field
+@CtorEnsure('model-a')
+class ClassA {
+
+  constructor (
+    @ValidatedArg('fieldA', ENSURE_NONEMPTY())
+    public fieldA: string,
+  ) {}
+}
+
+// Create model B with one validated field
+@CtorEnsure('model-b')
+class ClassB extends ClassA {
+
+  constructor (
+    // Just passed through to the super-call
+    fieldA: string,
+
+    @ValidatedArg('fieldB', ENSURE_NONEMPTY())
+    public fieldB: string,
+  ) {
+    // This is calling the A-constructor, and thus throwing
+    // before the own constructor can complete it's call
+    super(fieldA);
+  }
+}
+```
+
+The simplicity of this is beautiful: Once you call new on ClassB, it internally will invoke a super-call, which will invoke the constructor of ClassA. If anything regarding the validation of ClassA fails, it's constructor will throw an error. That error will bubble up to the super-call! ClassB is going to fork the exception, and only change the display-name to it's own (model-b). This way, the exception provides the impression that it's a single class, when in reality, there are two separate classes, that organize and keep the code clean. Of course - you can add as many levels to this as you'd like to, the latest class in the call-chain will always apply it's name.
+
 ## Custom Ensures
 
 Please try to avoid defining ensures inline with the constructor parameter decorator, this causes nothing but confusion and inconsistencies. Just define your own ensure, based on the provided type.

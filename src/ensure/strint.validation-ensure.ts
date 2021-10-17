@@ -1,3 +1,4 @@
+import { template } from '..';
 import { ValidationConfig } from '../validation-config.interface';
 import { ValidationEnsure } from '../validation-ensure.type';
 
@@ -7,7 +8,7 @@ import { ValidationEnsure } from '../validation-ensure.type';
  */
 const ENSURE_STRINT: ValidationEnsure = (): ValidationConfig => ({
     pattern: /^[0-9]+$/,
-    description: 'only integer as string',
+    description: template('ENSURE_STRINT'),
   });
 
 export default ENSURE_STRINT;

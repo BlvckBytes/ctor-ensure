@@ -1,3 +1,4 @@
+import { template } from '..';
 import FieldType from '../field-type.enum';
 import { ValidationConfig } from '../validation-config.interface';
 import { ValidationEnsure } from '../validation-ensure.type';
@@ -8,7 +9,7 @@ import { ValidationEnsure } from '../validation-ensure.type';
  */
 const ENSURE_INT: ValidationEnsure = (): ValidationConfig => ({
     type: FieldType.INT,
-    description: 'valid integer',
+    description: template('ENSURE_INT'),
   });
 
 export default ENSURE_INT;

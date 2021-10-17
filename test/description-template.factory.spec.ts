@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import { Func } from 'mocha';
 import { getRegisteredTemplateFunctions, registerTemplateFunction, template, FunctionMap, VariableMap } from '../src';
 import { findFunctionCalls, processFunction, replaceVariables, stripEscapes, key, escapeFunctionResult } from '../src/description-template.factory';
 
@@ -86,23 +85,14 @@ describe('replaceVariables()', () => {
 });
 
 describe('stripEscapes()', () => {
-  it('should remove only variable escape-sequences of known variables', () => {
-    const vars: VariableMap = {
-      x: 'irrelevant',
-    };
-
-    // Should remove partial escapes and full escapes, but no non-variable escapes
-    const result = stripEscapes('\\{x} {x\\} \\{x\\} \\{unknown} {unknown\\} \\{unknown\\} \\no-var \\\\no-var', {}, vars);
-    expect(result).to.equal('{x} {x} {x} \\{unknown} {unknown\\} \\{unknown\\} \\no-var \\\\no-var');
+  it('should remove only variable escape-sequences of known symbols', () => {
+    const result = stripEscapes('\\{x} {x\\} \\{x\\} \\: \\no-var \\\\no-var');
+    expect(result).to.equal('{x} {x} {x} : \\no-var \\\\no-var');
   });
 
-  it('should remove colon escapes', () => {
-    const funcs: FunctionMap = {
-      test: () => '',
-    };
-
-    const result = stripEscapes('this \\: should persist, this test\\: should be replaced', funcs, {});
-    expect(result).to.equal('this \\: should persist, this test: should be replaced');
+  it('shouldn\'t remove doubly-escaped escapes', () => {
+    const result = stripEscapes('this \\\\: \\\\{ \\\\} should persist, this \\: \\{ \\} should be replaced');
+    expect(result).to.equal('this \\: \\{ \\} should persist, this : { } should be replaced');
   });
 });
 
@@ -215,7 +205,7 @@ describe('processFunction()', () => {
   it('should be able to escape colon at the end of function call', () => {
     const expr = 'concat:{a}:{b}\\: after colon';
     const result = processFunction(0, expr, vars, funcs);
-    expect(result).to.equal(`${vars.a}${vars.b}: after colon`);
+    expect(result).to.equal(`${vars.a}${vars.b}\\: after colon`);
   });
 
   it('should not unescape colon if looks like invocation', () => {
@@ -231,6 +221,14 @@ describe('processFunction()', () => {
   });
 });
 
+describe('key()', () => {
+  it('should return a fully uppercase valid env-key', () => {
+    const name = 'eXaMpLe';
+    const result = key(name);
+    expect(result).to.equal('CTOR_ENSURE_EXAMPLE_DESC');
+  });
+});
+
 describe('template()', () => {
   // The concat functions just concats all it's parameter without spaces
   const funcs: FunctionMap = {
@@ -241,6 +239,8 @@ describe('template()', () => {
   const vars: VariableMap = {
     a: 'Hello',
     b: 'World',
+    c: 0,
+    d: 1,
     varvar: '{a}',
   };
 
@@ -277,5 +277,29 @@ describe('template()', () => {
     // Set template to environment for the function to access it
     process.env[key('TEST')] = 'concat:"{a}{b} concat:{varvar}:{a}"';
     expect(template('TEST', vars, funcs)).to.equal(`${vars.a}${vars.b} {a}${vars.a}`);
+  });
+
+  it('should properly unescape colon after call with vars', () => {
+     // Set template to environment for the function to access it
+    process.env[key('TEST')] = 'concat:{a}:{b}\\: test';
+    expect(template('TEST', vars, funcs)).to.equal(`${vars.a}${vars.b}: test`);
+  });
+
+  it('should properly unescape colon after call with str and vars', () => {
+    // Set template to environment for the function to access it
+    process.env[key('TEST')] = 'concat:"str":{b}\\: test';
+    expect(template('TEST', vars, funcs)).to.equal(`str${vars.b}: test`);
+  });
+
+  it('should properly process std-plur singular', () => {
+    // Singular
+    process.env[key('TEST')] = 'plur:"field":{d}\\: test {d}';
+    expect(template('TEST', vars, funcs)).to.equal(`field: test ${vars.d}`);
+  });
+
+  it('should properly process std-plur plural', () => {
+    // Plural
+    process.env[key('TEST')] = 'plur:"field":{c}\\: test {c}';
+    expect(template('TEST', vars, funcs)).to.equal(`fields: test ${vars.c}`);
   });
 });

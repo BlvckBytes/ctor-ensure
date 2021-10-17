@@ -87,27 +87,27 @@ export const replaceVariables = (template: string, vars: VariableMap) => {
 };
 
 /**
- * Strip known escape sequences away
+ * Strip known escape sequences away, if they're not escaped twice
  * @param template Template string to substitute in
- * @param funcs Known functions to check for colon escape
- * @param vars Known variables to un-escape
  * @returns Output string with stripped escapes for colons or curly brackets
  */
-export const stripEscapes = (template: string, funcs: FunctionMap, vars: VariableMap) => {
+export const stripEscapes = (template: string) => {
   let result = template.slice();
 
-  // Strip all colon (arg-separator) escapes right after a function invocation
-  Object.keys(funcs).forEach(func => {
-    result = result.replace(new RegExp(`(?<=${func})\\\\:`, 'g'), ':');
-  });
+  // Strip all colon (arg-separator) escapes that are not escaped twice
+  result = result.replace(/(?<!\\)\\:/g, ':');
 
-  // Strip all known variable escapes
-  Object.keys(vars).forEach(varName => {
-    // Remove all known variable escapes (also partial ones)
-    result = result.replace(new RegExp(`\\\\\\{${varName}\\\\\\}`, 'g'), `{${varName}}`);
-    result = result.replace(new RegExp(`\\{${varName}\\\\\\}`, 'g'), `{${varName}}`);
-    result = result.replace(new RegExp(`\\\\\\{${varName}\\}`, 'g'), `{${varName}}`);
-  });
+  // Strip all quote escapes that are not escaped twice
+  result = result.replace(/(?<!\\)\\"/g, '"');
+
+  // Strip all opening curly bracket escapes that are not escaped twice
+  result = result.replace(/(?<!\\)\\{/g, '{');
+
+  // Strip all closing curly bracket escapes that are not escaped twice
+  result = result.replace(/(?<!\\)\\}/g, '}');
+
+  // Strip down multi-escapes to a single escape
+  result = result.replace(/(\\+)(\\[:"{}]{1})/g, '$2');
 
   return result;
 };
@@ -167,19 +167,37 @@ export const processFunction = (defInd: number, template: string, vars: Variable
     
     const isEscaped = i !== 0 && result[i - 1] === '\\'; // Has current char been escaped? (prev was \)
     const isStrDelim = curr === '"' && !isEscaped; // Is current char a non-escaped string delimiter?
-    const isVarBegin = curr === '{' && !isEscaped; // Is current char a non-escaped variable begin?
 
-    // Set variable begin to current index
-    if (isVarBegin)
+    // Set end at i, it will be last reached char, if
+    // not otherwise overriden
+    endInd = i;
+
+    // Flip inStr state, if not next iteration after arg var substitution
+    if (isStrDelim && !wasArgVar) {
+      inStr = !inStr;
+
+      // Last char ended string, push
+      if (i === result.length - 1)
+        args.push(argBuf);
+
+      continue;
+    }
+
+    // Add current to arg buffer
+    argBuf += curr;
+
+    // Begin of variable
+    if (curr === '{' && !isEscaped)
       varBegin = i;
 
-    // Filter out no longer needed string delimiters from arguments
-    if (!isStrDelim)
-      argBuf += curr;
-
-    // Unescape symbols
-    if (!inStr && (curr === ':' || curr === '"') && isEscaped)
-      argBuf = argBuf.substring(0, argBuf.length - 2) + argBuf.substring(argBuf.length - 1, argBuf.length);
+    // Not inside a string or a variable, colon delimiter expected
+    // Skip this check on first character of args
+    if (!inStr && !varBegin && curr !== ':' && i !== argsBegin) {
+      // End index is -1, since current is not part of the function anymore
+      // Subtract one more if escaped, to account for the backslash
+      endInd = i - 1 - (isEscaped ? 1 : 0);
+      break;
+    }
 
     if (
       // Ignore if within variable processing
@@ -194,9 +212,6 @@ export const processFunction = (defInd: number, template: string, vars: Variable
       // Remove separator from buffer if not EOL
       if (i !== result.length - 1)
         argBuf = argBuf.substring(0, argBuf.length - 1);
-
-      // Set new possible end
-      endInd = i;
 
       // Push and reset, if argument wasn't a variable
       if (!wasArgVar) {
@@ -218,16 +233,19 @@ export const processFunction = (defInd: number, template: string, vars: Variable
         val = `{${varName}}`;
 
       // Escaped variable call, print escaped
+      // Already has ending escape attached to it's name
       else if (isEscaped)
         val = `\\{${varName}}`;
 
+      // String representation of value
       const strVal = String(val);
 
-      // Substitute variable in input string
+      // Substitute variable in result
       result = result.substring(0, varBegin) + strVal + result.substring(i + 1, result.length);
 
       // Next iteration will pick up right after variable substitution
       i = varBegin + strVal.length - 1;
+      endInd = i + 1;
 
       // Variable done
       varBegin = null;
@@ -249,13 +267,8 @@ export const processFunction = (defInd: number, template: string, vars: Variable
         argBuf = argBuf.substring(0, argBuf.length - (varName.length + 2)) + strVal;
       }
 
-      // Set new possible end
-      endInd = i;
       continue;
     }
-
-    // Flip on string delim
-    inStr = inStr !== isStrDelim;
 
     // Clear flags
     wasArgVar = false;
@@ -304,7 +317,7 @@ export const template = (
   });
 
   templateString = replaceVariables(templateString, knownVariables);
-  templateString = stripEscapes(templateString, knownFunctions, knownVariables);
+  templateString = stripEscapes(templateString);
 
   // Return final template after replacing all non-function variables too
   return templateString;

@@ -9,7 +9,7 @@ describe('STAGE_ISTYPE', () => {
     const call = () => runStageTesting(STAGE_ISTYPE, {
       type: 8192,
       description: 'invalid type',
-    }, '', false);
+    }, '');
 
     // Should throw an error
     expect(call).to.throw('Unknown fieldtype specified!');

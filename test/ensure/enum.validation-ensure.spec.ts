@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_ENUM, evalStrThunk } from '../../src';
+import { enumKeys, enumValues } from '../../src/ensure/enum.validation-ensure';
 
 describe('ENSURE_ENUM', () => {
   enum SINGULAR {
@@ -36,5 +37,17 @@ describe('ENSURE_ENUM', () => {
     // Singular
     const ensure = ENSURE_ENUM(PLURAL);
     expect(ensure.pattern?.source).to.equal(`^${PLURAL[0]}|${PLURAL[1]}|${PLURAL[2]}$`);
+  });
+
+  enum TestEnum {
+    ONE, TWO, THREE,
+  }
+
+  it('should get the right enum keys', () => {
+    expect(enumKeys(TestEnum)).to.deep.equal([TestEnum.ONE, TestEnum.TWO, TestEnum.THREE]);
+  });
+
+  it('should get the right enum values', () => {
+    expect(enumValues(TestEnum)).to.deep.equal([TestEnum[TestEnum.ONE], TestEnum[TestEnum.TWO], TestEnum[TestEnum.THREE]]);
   });
 });

@@ -2,12 +2,11 @@ import CtorEnsureArgError from '../ctor-ensure-arg-error.interface';
 import { evalStrThunk } from '../util';
 import { ValidationConfig } from '../validation-config.interface';
 import { ValidationControl } from '../validation-control.interface';
-import { ValidationStage } from '../validation-stage.type';
 
 /**
  * Validates that the field's value equals to all provided other fields
  */
-const STAGE_ISEQUAL: ValidationStage = (
+const STAGE_ISEQUAL = (
   controls: ValidationControl[],
   ctorArgs: any[],
   currConfig: ValidationConfig,

@@ -1,17 +1,18 @@
 import { META_KEY_VALIDATION } from './ctor-ensure.decorator';
 import { ValidationConfig } from './validation-config.interface';
 import { ValidationControl } from './validation-control.interface';
+import { ValidationFlags } from './validation-flags.interface';
 
 /**
  * Apply one or more validations to a constructor property
  * @param displayName Name of the field to validate
  * @param config Validation config
- * @param isArray Whether ot not the field is an array
+ * @param flags Flags for this control
  */
 const ValidatedArg = (
   displayName: string,
   config: ValidationConfig | ValidationConfig[],
-  isArray = false,
+  flags: Partial<ValidationFlags> | null = null,
 ): ParameterDecorator => (clazz: any, _: string | symbol, index: number) => {
     // Ensure existence of array
     if (!Reflect.hasOwnMetadata(META_KEY_VALIDATION, clazz))
@@ -32,9 +33,13 @@ const ValidatedArg = (
     if (!control) {
       control = {
         displayName,
-        isArray,
         ctorInd: index,
         configs: [],
+        flags: {
+          isArray: false,
+          isUnique: false,
+          ...flags,
+        },
       } as ValidationControl;
       meta.push(control);
     }

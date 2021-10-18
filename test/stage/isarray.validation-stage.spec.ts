@@ -7,7 +7,7 @@ describe('STAGE_ISARRAY', () => {
     // Invoke with array type
     const { result } = runStageTesting(STAGE_ISARRAY, {
       description: '',
-    }, [5], true);
+    }, [5], { isArray: true });
 
     expect(result).to.equal(null);
   });
@@ -16,7 +16,7 @@ describe('STAGE_ISARRAY', () => {
     // Invoke with scalar type
     const { control, result } = runStageTesting(STAGE_ISARRAY, {
       description: '',
-    }, 5, true);
+    }, 5, { isArray: true });
 
     expect(result?.field).to.equal(control.displayName);
   });
@@ -25,7 +25,7 @@ describe('STAGE_ISARRAY', () => {
     // Invoke with scalar type
     const { control, result } = runStageTesting(STAGE_ISARRAY, {
       description: '',
-    }, [5], false);
+    }, [5], { isArray: false });
 
     expect(result?.field).to.equal(control.displayName);
   });

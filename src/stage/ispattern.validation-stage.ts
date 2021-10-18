@@ -2,12 +2,11 @@ import CtorEnsureArgError from '../ctor-ensure-arg-error.interface';
 import { evalStrThunk } from '../util';
 import { ValidationConfig } from '../validation-config.interface';
 import { ValidationControl } from '../validation-control.interface';
-import { ValidationStage } from '../validation-stage.type';
 
 /**
  * Validates that the value matches a certain pattern
  */
-const STAGE_ISPATTERN: ValidationStage = (
+const STAGE_ISPATTERN = (
   _controls: ValidationControl[],
   _ctorArgs: any[],
   currConfig: ValidationConfig,

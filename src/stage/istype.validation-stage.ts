@@ -3,14 +3,13 @@ import FieldType from '../field-type.enum';
 import { evalStrThunk } from '../util';
 import { ValidationConfig } from '../validation-config.interface';
 import { ValidationControl } from '../validation-control.interface';
-import { ValidationStage } from '../validation-stage.type';
 
 /**
  * Check if the provided value is a valid integer
  * @param value Value to check
  * @returns True if is an integer, false otherwise
  */
-export const isInt = (value: any): boolean => !Number.isNaN(value) && !Number.isNaN(parseInt(value, 10));
+export const isInt = (value: any): boolean => !Number.isNaN(value) && !Number.isNaN(Number.parseInt(value, 10));
 
 /**
  * Check if the provided value is a valid float
@@ -22,7 +21,7 @@ export const isFloat = (value: any): boolean => !Number.isNaN(value) && !Number.
 /**
  * Validates that the field has a certain data-type
  */
-export const STAGE_ISTYPE: ValidationStage = (
+export const STAGE_ISTYPE = (
   _controls: ValidationControl[],
   _ctorArgs: any[],
   currConfig: ValidationConfig,

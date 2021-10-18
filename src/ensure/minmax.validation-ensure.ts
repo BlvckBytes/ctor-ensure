@@ -1,6 +1,5 @@
 import { template } from '../description-template.factory';
 import { ValidationConfig } from '../validation-config.interface';
-import { ValidationEnsure } from '../validation-ensure.type';
 
 /**
  * Ensure to be used within config of {@link ValidatedArg}
@@ -8,7 +7,7 @@ import { ValidationEnsure } from '../validation-ensure.type';
  * @param min Minimum length
  * @param max Maximum length
  */
-const ENSURE_MINMAX: ValidationEnsure = (min: number, max: number): ValidationConfig => {
+const ENSURE_MINMAX = (min: number, max: number): ValidationConfig => {
   if (min < 0 && max < 0)
     throw new SyntaxError('Define at least min or max!');
   if (min > max && max !== -1)

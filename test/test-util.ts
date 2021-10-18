@@ -1,4 +1,6 @@
+/* eslint-disable import/prefer-default-export */
 import { ValidationConfig, ValidationControl, ValidationStage } from '../src';
+import { ValidationFlags } from '../src/validation-flags.interface';
 
 /**
  * Helper routine to run a stage with a passed config for
@@ -13,13 +15,17 @@ export const runStageTesting = (
   stages: ValidationStage | ValidationStage[],
   config: ValidationConfig,
   value: any,
-  isArray = false,
+  flags: Partial<ValidationFlags> | null = null,
 ) => {
   const control: ValidationControl = {
-    isArray,
     displayName: 'test',
     ctorInd: 0,
     configs: [config],
+    flags: {
+      isArray: false,
+      isUnique: false,
+      ...flags,
+    },
   };
 
   const items = Array.isArray(stages) ? stages : [stages];

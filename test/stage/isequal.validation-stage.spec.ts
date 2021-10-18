@@ -12,7 +12,10 @@ describe('STAGE_ISEQUAL', () => {
 
   // Create control with name and index for every member
   const controls = Object.keys(fields).map((it, ind) => ({
-      isArray: false,
+      flags: {
+        isArray: false,
+        isUnique: false,
+      },
       displayName: it,
       ctorInd: ind,
       configs: [],

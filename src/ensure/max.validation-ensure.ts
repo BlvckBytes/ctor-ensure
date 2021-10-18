@@ -1,5 +1,4 @@
 import { ValidationConfig } from '../validation-config.interface';
-import { ValidationEnsure } from '../validation-ensure.type';
 import ENSURE_MINMAX from './minmax.validation-ensure';
 
 /**
@@ -7,6 +6,6 @@ import ENSURE_MINMAX from './minmax.validation-ensure';
  * Constrain the maximum length of a string
  * @param max Maximum length
  */
-const ENSURE_MAX: ValidationEnsure = (max: number): ValidationConfig => ENSURE_MINMAX(-1, max);
+const ENSURE_MAX = (max: number): ValidationConfig => ENSURE_MINMAX(-1, max);
 
 export default ENSURE_MAX;

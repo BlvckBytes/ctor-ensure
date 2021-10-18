@@ -1,8 +1,9 @@
 import { expect } from 'chai';
 import { Constructable, META_KEY_VALIDATION, ValidatedArg, ValidationConfig, ValidationControl } from '../src';
+import { ValidationFlags } from '../src/validation-flags.interface';
 
 describe('@ValidatedArg', () => {
-  const callWith = (clazz: Constructable, index: number, confs = 1, confsOff = 0, isArray = false) => {
+  const callWith = (clazz: Constructable, index: number, confs = 1, confsOff = 0, flags: ValidationFlags | null = null) => {
     // Create single or multiple configs, based on confs
     const mkConfs: () => ValidationConfig | ValidationConfig[] = () => {
       if (confs === 1)
@@ -14,14 +15,14 @@ describe('@ValidatedArg', () => {
     };
 
     // Call decorator as function on clazz
-    ValidatedArg(`field${index}`, mkConfs(), isArray)(clazz, `field${index}`, index);
+    ValidatedArg(`field${index}`, mkConfs(), flags)(clazz, `field${index}`, index);
   };
 
   const expectMetadata = (control: ValidationControl, index: number, subs = 1, isArray = false) => {
     // Validate control
     expect(control?.ctorInd).to.equal(index);
     expect(control?.displayName).to.equal(`field${index}`);
-    expect(control?.isArray).to.equal(isArray);
+    expect(control?.flags.isArray).to.equal(isArray);
   
     // Only one sub-config, validate without suffix
     if (subs === 1) {

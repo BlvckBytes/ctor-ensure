@@ -8,7 +8,7 @@ describe('STAGE_ISPATTERN', () => {
     const { result } = runStageTesting(STAGE_ISPATTERN, {
       pattern: undefined, // "Verbose", would be implicitly undefined
       description: 'null-pattern',
-    }, '', false);
+    }, '');
 
     // Shouldn't provide errors
     expect(result).to.equal(null);

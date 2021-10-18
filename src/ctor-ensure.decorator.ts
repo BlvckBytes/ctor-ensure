@@ -70,7 +70,7 @@ export const CtorEnsure = (
             const currConfig = currControl.configs[i];
 
             // Validate all values individually (to support arrays)
-            const values: any[] = currControl.isArray ? currArg : [currArg];
+            const values: any[] = currControl.flags.isArray ? currArg : [currArg];
 
             for (let j = 0; j < values.length; j += 1) {
               const currValue = values[j];

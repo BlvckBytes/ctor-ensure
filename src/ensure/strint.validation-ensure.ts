@@ -1,12 +1,11 @@
 import { FieldType, template } from '..';
 import { ValidationConfig } from '../validation-config.interface';
-import { ValidationEnsure } from '../validation-ensure.type';
 
 /**
  * Ensure to be used within config of {@link ValidatedArg}
  * Ensure this field is a string representing an integer
  */
-const ENSURE_STRINT: ValidationEnsure = (): ValidationConfig => ({
+const ENSURE_STRINT = (): ValidationConfig => ({
     type: FieldType.STRING,
     pattern: /^[0-9]+$/,
     description: template('ENSURE_STRINT'),

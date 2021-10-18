@@ -1,5 +1,5 @@
 import { expect } from 'chai'; 
-import { ValidationStage, getRegisteredValidationStages, registerValidationStage, CtorEnsure, META_KEY_DISPLAYNAME, Constructable, ValidatedArg, ENSURE_NONEMPTY, CtorEnsureException } from '../src';
+import { ValidationStage, getRegisteredValidationStages, registerValidationStage, CtorEnsure, META_KEY_DISPLAYNAME, Constructable, ValidatedArg, ENSURE_NONEMPTY, CtorEnsureException, CtorEnsureArgError } from '../src';
 
 describe('registerValidationStage()', () => {
   it('added stage should be registered', () => {
@@ -94,7 +94,7 @@ describe('@CtorEnsure', () => {
     // Empty value - error
     expect(() => {
       new TestClass('');
-    }).to.throw('Could not validate constructor call!');
+    }).to.throw(CtorEnsureException.message);
 
     // Valid name - should not throw
     expect(() => {
@@ -141,24 +141,20 @@ describe('@CtorEnsure', () => {
     }
 
     // Constructor A failing
-    try {
-      new TestClassB('', 'content');
-    } catch (e) {
-      if (e instanceof CtorEnsureException) {
-        expect(e.displayName).to.equal('test-model-b');
-        expect(e.errors[0]?.field).to.equal('fieldA');
-      }
-    }
+    expect(() => new TestClassB('', 'content'))
+    .to.throw(CtorEnsureException.message)
+    .and.to.satisfy((e: CtorEnsureException) => (
+      e.displayName === 'test-model-b' &&
+      e.errors[0]?.field === 'fieldA'
+    ));
 
-    // Constructor B failing
-    try {
-      new TestClassB('content', '');
-    } catch (e) {
-      if (e instanceof CtorEnsureException) {
-        expect(e.displayName).to.equal('test-model-b');
-        expect(e.errors[0]?.field).to.equal('fieldB');
-      }
-    }
+    // Constructor A failing
+    expect(() => new TestClassB('content', ''))
+    .to.throw(CtorEnsureException.message)
+    .and.to.satisfy((e: CtorEnsureException) => (
+      e.displayName === 'test-model-b' &&
+      e.errors[0]?.field === 'fieldB'
+    ));
   });
 
   it('should work on empty ctors', () => {

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { STAGE_ISDUPLICATE } from '../../src/stage/isduplicate.validation-stage';
+import { findArrayDuplicate, STAGE_ISDUPLICATE } from '../../src/stage/isduplicate.validation-stage';
 import { runStageTesting } from '../test-util';
 
 describe('STAGE_ISDUPLICATE', () => {
@@ -51,5 +51,15 @@ describe('STAGE_ISDUPLICATE', () => {
       description: '',
     }, 'i am different DiFfErEnT', { isArray: false, isUnique: true, ignoreCasing: true });
     expect(result?.field).to.equal(control.displayName);
+  });
+});
+
+describe('findArrayDuplicate()', () => {
+  it('should find first duplicate case-insensitive', () => {
+    expect(findArrayDuplicate(['test1', 'Test1', 'test2', 'test3', 'test3'], true)).to.equal('Test1');
+  });
+
+  it('should find first duplicate case-sensitive', () => {
+    expect(findArrayDuplicate(['test1', 'Test1', 'test1', 'test2', 'test3', 'test3'], false)).to.equal('test1');
   });
 });

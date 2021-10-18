@@ -40,10 +40,10 @@ describe('ENSURE_MINMAX', () => {
   const ensure = ENSURE_MINMAX(min, max);
   it('should allow value with length of range', () => {
     let { result } = runStageTesting(STAGE_ISPATTERN, ensure, 'X'.repeat(min));
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
 
     result = runStageTesting(STAGE_ISPATTERN, ensure, 'X'.repeat(max)).result;
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
   });
 
   it('shouldn\'t allow less than min characters', () => {

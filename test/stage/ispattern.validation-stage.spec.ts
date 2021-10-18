@@ -11,6 +11,6 @@ describe('STAGE_ISPATTERN', () => {
     }, '');
 
     // Shouldn't provide errors
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
   });
 });

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { CtorEnsure, CtorEnsureException, ENSURE_ALPHANUM, ENSURE_ENUM, ENSURE_MINMAX, ENSURE_NONEMPTY, STAGE_ISARRAY, ValidatedArg } from '../../src';
+import { CtorEnsure, CtorEnsureException, ENSURE_ENUM, ValidatedArg } from '../../src';
 
 describe('post-arrays E2E', () => {
   enum Tags {
@@ -27,7 +27,7 @@ describe('post-arrays E2E', () => {
     expect(() => new Post(Tags[0])).to.throw(CtorEnsureException.message).and.satisfy(satisfyField());
   });
 
-  // it('shouldn\'t accept duplicates', () => {
-  //   expect(() => new Post([Tags[0], Tags[0]])).to.throw(CtorEnsureException.message).and.satisfy(satisfyField());
-  // });
+  it('shouldn\'t accept duplicates', () => {
+    expect(() => new Post([Tags[0], Tags[0]])).to.throw(CtorEnsureException.message).and.satisfy(satisfyField());
+  });
 });

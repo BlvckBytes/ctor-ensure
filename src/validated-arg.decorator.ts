@@ -38,6 +38,7 @@ const ValidatedArg = (
         flags: {
           isArray: false,
           isUnique: false,
+          ignoreCasing: false,
           ...flags,
         },
       } as ValidationControl;

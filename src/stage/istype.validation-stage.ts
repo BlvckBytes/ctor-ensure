@@ -9,14 +9,30 @@ import { ValidationControl } from '../validation-control.interface';
  * @param value Value to check
  * @returns True if is an integer, false otherwise
  */
-export const isInt = (value: any): boolean => !Number.isNaN(value) && !Number.isNaN(Number.parseInt(value, 10));
+export const isInt = (value: any): boolean => {
+  // No number
+  if (typeof value !== 'number' || Number.isNaN(value))
+    return false;
+
+  // Make sure it's an int and no float
+  const parsed = Number.parseInt(String(value), 10);
+  return !Number.isNaN(parsed) && parsed === value;
+};
 
 /**
  * Check if the provided value is a valid float
  * @param value Value to check
  * @returns True if is a float, false otherwise
  */
-export const isFloat = (value: any): boolean => !Number.isNaN(value) && !Number.isNaN(parseFloat(value));
+export const isFloat = (value: any): boolean => {
+  // No number
+  if (typeof value !== 'number' || Number.isNaN(value))
+    return false;
+  const parsed = Number.parseFloat(String(value));
+
+  // Make sure it's a float and no int
+  return !Number.isNaN(parsed) && parsed === value;
+};
 
 /**
  * Validates that the field has a certain data-type
@@ -46,11 +62,11 @@ export const STAGE_ISTYPE = (
       break;
 
     case FieldType.INT:
-      isValid = isInt(currValue) && typeof currValue === 'number';
+      isValid = isInt(currValue);
       break;
 
     case FieldType.FLOAT:
-      isValid = isFloat(currValue) && typeof currValue === 'number';
+      isValid = isFloat(currValue);
       break;
 
     case FieldType.STRING:

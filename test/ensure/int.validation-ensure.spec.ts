@@ -18,7 +18,7 @@ describe('ENSURE_INT', () => {
     );
 
     // No errors expected
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
   });
 
   it('shouldn\'t allow string integer value', () => {

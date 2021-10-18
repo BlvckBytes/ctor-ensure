@@ -24,6 +24,7 @@ export const runStageTesting = (
     flags: {
       isArray: false,
       isUnique: false,
+      ignoreCasing: false,
       ...flags,
     },
   };

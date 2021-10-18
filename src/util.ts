@@ -18,6 +18,15 @@ export const strOpt = (str: string, state: boolean): string => state ? str : '';
 export const pluralize = (word: string, num: number, suf = 's'): string => `${word.trimRight()}${strOpt(suf, num !== 1)}`;
 
 /**
+ * Shorthand to use a ternary operator on two string parameters
+ * @param state Boolean representing state
+ * @param ifTrue String for true state
+ * @param ifFalse String for false state
+ * @returns Either one of the strings
+ */
+export const ternaryString = (state: boolean, ifTrue: string, ifFalse: string): string => state ? ifTrue : ifFalse;
+
+/**
  * Evaluates a string thunk bei either calling it, if it's a
  * function, or returning it's immediate value
  * @param thunk Either a thunk returning a string or a string value

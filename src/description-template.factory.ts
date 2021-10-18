@@ -1,4 +1,4 @@
-import { pluralize, strOpt } from './util';
+import { pluralize, strOpt, ternaryString } from './util';
 
 // Helper formatter to get the full env key from a template name
 export const key = (name: string): string => `CTOR_ENSURE_${name.toUpperCase()}_DESC`;
@@ -17,6 +17,7 @@ export type VariableMap = { [key: string]: any };
 const PREDEFINED_FUNCTIONS: FunctionMap = {
   opt: strOpt,
   plur: pluralize,
+  trn: ternaryString,
 };
 
 /**
@@ -195,6 +196,12 @@ export const processFunction = (defInd: number, template: string, vars: Variable
     if (!inStr && !varBegin && curr !== ':' && i !== argsBegin) {
       // End index is -1, since current is not part of the function anymore
       endInd = i - 1;
+
+      // Wasn't a variable substitution (that is already in buffer)
+      // and is a escaped symbol, strip escape and push, end function
+      if (!wasArgVar && curr === '\\')
+        args.push(argBuf.substring(0, argBuf.length - 1));
+
       break;
     }
 

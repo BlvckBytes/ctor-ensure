@@ -15,6 +15,7 @@ describe('STAGE_ISEQUAL', () => {
       flags: {
         isArray: false,
         isUnique: false,
+        ignoreCasing: false,
       },
       displayName: it,
       ctorInd: ind,
@@ -33,7 +34,7 @@ describe('STAGE_ISEQUAL', () => {
     }, controls[currField], values[currField], values[currField]);
 
     // No errors
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
   });
 
   it('shouldn\'t allow different values', () => {

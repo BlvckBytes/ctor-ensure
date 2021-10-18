@@ -18,7 +18,7 @@ describe('ENSURE_EXISTING', () => {
     );
 
     // No errors expected
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
   });
 
   it('shouldn\'t allow undefined fields', () => {

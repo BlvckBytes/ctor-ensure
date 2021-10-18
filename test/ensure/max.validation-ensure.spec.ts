@@ -19,10 +19,10 @@ describe('ENSURE_MAX', () => {
   const ensure = ENSURE_MAX(max);
   it('should allow 0 to max characters', () => {
     let { result } = runStageTesting(STAGE_ISPATTERN, ensure, 'X'.repeat(max));
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
 
     result = runStageTesting(STAGE_ISPATTERN, ensure, '').result;
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
   });
 
   it('shouldn\'t allow more than max characters', () => {

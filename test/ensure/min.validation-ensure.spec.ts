@@ -19,10 +19,10 @@ describe('ENSURE_MIN', () => {
   const ensure = ENSURE_MIN(min);
   it('should allow more down to min characters', () => {
     let { result } = runStageTesting(STAGE_ISPATTERN, ensure, 'X'.repeat(min));
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
 
     result = runStageTesting(STAGE_ISPATTERN, ensure, 'X'.repeat(min * 5)).result;
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
   });
 
   it('shouldn\'t allow less than min characters', () => {

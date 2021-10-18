@@ -13,7 +13,7 @@ describe('ENSURE_STRUUID', () => {
 
   it('should allow string uuid', () => {
     const { result } = runStageTesting(stages, ensure, 'A5D8A2A2-C3BD-46AD-AFCC-9223B0078209');
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
   });
 
   it('shouldn\'t allow invalid uuid', () => {

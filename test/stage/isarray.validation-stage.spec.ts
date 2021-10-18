@@ -9,7 +9,7 @@ describe('STAGE_ISARRAY', () => {
       description: '',
     }, [5], { isArray: true });
 
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
   });
 
   it('shouldn\'t allow scalar value', () => {

@@ -12,7 +12,7 @@ describe('ENSURE_NONEMPTY', () => {
   const ensure = ENSURE_NONEMPTY();
   it('should allow non-empty string', () => {
     const { result } = runStageTesting(STAGE_ISPATTERN, ensure, 'hello world');
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
   });
 
   it('shouldn\'t allow empty string', () => {

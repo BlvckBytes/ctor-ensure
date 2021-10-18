@@ -13,7 +13,7 @@ describe('ENSURE_STRFLOAT', () => {
 
   it('should allow string float', () => {
     const { result } = runStageTesting(stages, ensure, '45.43');
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
   });
 
   it('shouldn\'t allow string int', () => {

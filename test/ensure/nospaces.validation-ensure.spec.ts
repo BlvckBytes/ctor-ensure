@@ -12,12 +12,12 @@ describe('ENSURE_NOSPACES', () => {
 
   it('should allow non-space string', () => {
     const { result } = runStageTesting(STAGE_ISPATTERN, ensure, 'hello');
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
   });
 
   it('should allow empty string', () => {
     const { result } = runStageTesting(STAGE_ISPATTERN, ensure, '');
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
   });
 
   it('shouldn\'t allow space string', () => {

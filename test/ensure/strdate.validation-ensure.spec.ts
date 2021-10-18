@@ -12,7 +12,7 @@ describe('ENSURE_STRDATE', () => {
 
   it('should allow valid date', () => {
     const { result } = runStageTesting(STAGE_ISPATTERN, ensure, '2021-10-17T17:38:50+00:00');
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
   });
 
   it('shouldn\'t allow invalid date', () => {

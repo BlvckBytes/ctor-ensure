@@ -18,7 +18,7 @@ describe('ENSURE_FLOAT', () => {
     );
 
     // No errors expected
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
   });
 
   it('should allow integer number', () => {
@@ -29,7 +29,7 @@ describe('ENSURE_FLOAT', () => {
     );
 
     // No errors expected
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
   });
 
   it('shouldn\'t allow string float', () => {

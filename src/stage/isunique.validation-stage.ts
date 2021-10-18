@@ -25,7 +25,7 @@ export const findArrayDuplicate = (input: string[], ignoreCase: boolean) => {
 /**
  * Validates that there are no duplicate values
  */
-export const STAGE_ISDUPLICATE = (
+export const STAGE_ISUNIQUE = (
   _controls: ValidationControl[],
   _ctorArgs: any[],
   _currConfig: ValidationConfig,
@@ -43,7 +43,7 @@ export const STAGE_ISDUPLICATE = (
   if (arrDup || strDup) {
     return {
       field: currControl.displayName,
-      description: template('STAGE_ISDUPLICATE', {
+      description: template('STAGE_ISUNIQUE', {
         isArr: currControl.flags.isArray,
         dup: arrDup || strDup,
       }),

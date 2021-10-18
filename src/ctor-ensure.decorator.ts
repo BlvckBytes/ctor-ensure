@@ -2,7 +2,7 @@ import { Constructable } from './constructable.type';
 import CtorEnsureArgError from './ctor-ensure-arg-error.interface';
 import CtorEnsureException from './ctor-ensure.exception';
 import STAGE_ISARRAY from './stage/isarray.validation-stage';
-import { STAGE_ISDUPLICATE } from './stage/isduplicate.validation-stage';
+import { STAGE_ISUNIQUE } from './stage/isunique.validation-stage';
 import STAGE_ISEQUAL from './stage/isequal.validation-stage';
 import STAGE_ISPATTERN from './stage/ispattern.validation-stage';
 import { STAGE_ISTYPE } from './stage/istype.validation-stage';
@@ -16,7 +16,7 @@ export const META_KEY_DISPLAYNAME = 'CTOR_ENSURE:DISPLAYNAME';
 // Register all known validation stages here
 const VALIDATION_STAGES = [
   STAGE_ISARRAY,
-  STAGE_ISDUPLICATE,
+  STAGE_ISUNIQUE,
   STAGE_ISEQUAL,
   STAGE_ISPATTERN,
   STAGE_ISTYPE,

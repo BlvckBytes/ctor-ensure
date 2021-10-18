@@ -63,7 +63,7 @@ export class UserRegistrationModel {
 }
 ```
 
-Now it's time to decide on which and how arguments need to be validated. This decorator has three parameters: The field's displayname, either a single or an array of configs, and last but not least the flag whether or not it's an array.
+Now it's time to decide on which and how arguments need to be validated. This decorator has three parameters: The field's displayname, either a single or an array of configs, and last but not least the flags object.
 
 ```typescript
 @CtorEnsure('UserRegistration', true)
@@ -100,7 +100,7 @@ export class UserRegistrationModel {
     // Every array element: between 5 and 20 characters
     @ValidatedArg('hobbies', [
       ENSURE_MINMAX(5, 20),
-    ], true)
+    ], { isArray: true })
     public hobbies: string[],
 
     // Valid full ISO-8601 datetime
@@ -369,6 +369,15 @@ export const strOpt = (str: string, state: boolean): string => state ? str : '';
  * @returns Pluralized word
  */
 export const pluralize = (word: string, num: number, suf = 's'): string => `${word.trimRight()}${strOpt(suf, num !== 1)}`;
+
+/**
+ * Shorthand to use a ternary operator on two string parameters
+ * @param state Boolean representing state
+ * @param ifTrue String for true state
+ * @param ifFalse String for false state
+ * @returns Either one of the strings
+ */
+export const ternaryString = (state: boolean, ifTrue: string, ifFalse: string): string => state ? ifTrue : ifFalse;
 ```
 
 They have quite long names, which is why they're registered with a short alias:
@@ -377,7 +386,8 @@ They have quite long names, which is why they're registered with a short alias:
 // Default functions that are always available
 const PREDEFINED_FUNCTIONS: FunctionMap = {
   opt: strOpt,
-  plur: pluralize
+  plur: pluralize,
+  trn: ternaryString,
 }
 ```
 

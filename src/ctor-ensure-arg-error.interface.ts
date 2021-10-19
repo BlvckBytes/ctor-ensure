@@ -4,6 +4,7 @@
 interface CtorEnsureArgError {
   field: string;
   description: string;
+  value: any;
 }
 
 export default CtorEnsureArgError;

@@ -47,6 +47,7 @@ export const STAGE_ISUNIQUE = (
         isArr: currControl.flags.isArray,
         dup: arrDup || strDup,
       }),
+      value: currArg,
     };
   }
 

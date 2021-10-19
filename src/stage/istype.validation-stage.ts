@@ -82,6 +82,7 @@ export const STAGE_ISTYPE = (
     return {
       field: currControl.displayName,
       description: evalStrThunk(currConfig.description),
+      value: currValue,
     };
 
   // Passed

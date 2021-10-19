@@ -39,6 +39,7 @@ const STAGE_ISEQUAL = (
       return {
         field: currControl.displayName,
         description: evalStrThunk(currConfig.description),
+        value: currValue,
       };
     }
   }

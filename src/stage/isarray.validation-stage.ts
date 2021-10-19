@@ -18,6 +18,7 @@ const STAGE_ISARRAY = (
     return {
       field: currControl.displayName,
       description: template('STAGE_ISARRAY'),
+      value: currArg,
     };
   }
 

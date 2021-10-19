@@ -26,6 +26,7 @@ const STAGE_ISPATTERN = (
     return {
       field: currControl.displayName,
       description: evalStrThunk(currConfig.description),
+      value: currValue,
     };
 
   // Passed

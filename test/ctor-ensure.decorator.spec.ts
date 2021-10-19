@@ -1,5 +1,5 @@
 import { expect } from 'chai'; 
-import { ValidationStage, getRegisteredValidationStages, registerValidationStage, CtorEnsure, META_KEY_DISPLAYNAME, Constructable, ValidatedArg, ENSURE_NONEMPTY, CtorEnsureException, CtorEnsureArgError } from '../src';
+import { ValidationStage, getRegisteredValidationStages, registerValidationStage, CtorEnsure, META_KEY_DISPLAYNAME, Constructable, ValidatedArg, ENSURE_NONEMPTY, CtorEnsureException, CtorEnsureArgError, ENSURE_MIN } from '../src';
 
 describe('registerValidationStage()', () => {
   it('added stage should be registered', () => {
@@ -100,6 +100,34 @@ describe('@CtorEnsure', () => {
     expect(() => {
       new TestClass('max');
     }).not.to.throw();
+  });
+
+  it('should add a k-v map of all validated fields to the exception', () => {
+    @CtorEnsure('test-model', true)
+    class TestClass {
+      constructor (
+        @ValidatedArg('name', ENSURE_MIN(5))
+        public name: string,
+        @ValidatedArg('name1', ENSURE_MIN(5))
+        public name1: string,
+        @ValidatedArg('name2', ENSURE_MIN(5))
+        public name2: string,
+        @ValidatedArg('name3', ENSURE_MIN(5))
+        public name3: string,
+      ) {}
+    }
+
+    const anyError = (errFn: (err: CtorEnsureArgError) => boolean) => (ex: CtorEnsureException) => ex.errors.some(errIt => errFn(errIt));
+
+    expect(() => {
+      new TestClass('0', '1', '2', '3');
+    })
+    .to.throw(CtorEnsureException.message)
+    .satisfies(anyError(err => err.field === 'name' && err.value === '0'))
+    .satisfies(anyError(err => err.field === 'name1' && err.value === '1'))
+    .satisfies(anyError(err => err.field === 'name2' && err.value === '2'))
+    .satisfies(anyError(err => err.field === 'name3' && err.value === '3'))
+    .has.property('displayName', 'test-model');
   });
 
   it('should only keep the latest name on inheritance', () => {

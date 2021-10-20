@@ -268,7 +268,7 @@ There are a lot of standard ensures shipped with this module that you can combin
 | ENSURE_MAXLEN | max: number | Maximum string length | yes |
 | ENSURE_MINLEN | min: number | Minimum string length | / |
 | ENSURE_MINMAXLEN | min: number, max: number | Minimum and maximum string length | / |
-| ENSURE_NONEMPTY | / | No empty strings | no |
+| ENSURE_NONEMPTY | / | No empty strings | no |
 | ENSURE_NONNULL | / | No null values | yes |
 | ENSURE_NOSPACES | / | No spaces in string | yes |
 | ENSURE_PATTERN | pattern: RegExp, description: string | Custom pattern validation | / |

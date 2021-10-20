@@ -318,5 +318,6 @@ export const template = (
   templateString = stripEscapes(templateString);
 
   // Return final template after replacing all non-function variables too
-  return templateString;
+  // Trim template string to allow for easier notation within template
+  return templateString.trim();
 };

@@ -14,16 +14,12 @@ describe('ENSURE_ENUM', () => {
   }
 
   it('should have it\'s default description singular', () => {
-    // Singular
-    const ensure = ENSURE_ENUM(SINGULAR);
-    const desc = evalStrThunk(ensure.description);
+    const desc = evalStrThunk(ENSURE_ENUM(SINGULAR).description);
     expect(desc).to.equal(`needs to equal to the value: ${SINGULAR[0]}`);
   });
 
   it('should have it\'s default description plural', () => {
-    // Singular
-    const ensure = ENSURE_ENUM(PLURAL);
-    const desc = evalStrThunk(ensure.description);
+    const desc = evalStrThunk(ENSURE_ENUM(PLURAL).description);
     expect(desc).to.equal(`needs to equal to one of the values: ${PLURAL[0]}, ${PLURAL[1]}, ${PLURAL[2]}`);
   });
 

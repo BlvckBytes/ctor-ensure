@@ -1,7 +1,12 @@
 import { expect } from 'chai';
-import { ENSURE_ASCII } from '../../src';
+import { ENSURE_ASCII, evalStrThunk } from '../../src';
 
 describe('ENSURE_ASCII', () => {
+
+  it('should have it\'s default description', () => {
+    expect(evalStrThunk(ENSURE_ASCII().description)).to.equal('only ascii characters');
+    expect(evalStrThunk(ENSURE_ASCII(true).description)).to.equal('only printable ascii characters');
+  });
 
   let asciiFull = '';
   let asciiPrintable = '';

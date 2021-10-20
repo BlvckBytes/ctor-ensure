@@ -4,14 +4,10 @@ import { runStageTesting } from '../test-util';
 
 describe('ENSURE_MIN', () => {
   it('should have it\'s default description', () => {
-    // Singular
-    let ensure = ENSURE_MIN(5);
-    let desc = evalStrThunk(ensure.description);
+    let desc = evalStrThunk(ENSURE_MIN(5).description);
     expect(desc).to.equal('at least 5 characters');
 
-    // Singular
-    ensure = ENSURE_MIN(1);
-    desc = evalStrThunk(ensure.description);
+    desc = evalStrThunk(ENSURE_MIN(1).description);
     expect(desc).to.equal('at least 1 character');
   });
 

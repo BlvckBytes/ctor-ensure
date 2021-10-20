@@ -1,7 +1,7 @@
 import { FieldType, template } from '..';
 import { ValidationConfig } from '../validation-config.interface';
 
-export const REGEX_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export const REGEX_UUID = /(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$)|^$/i;
 
 /**
  * Ensure to be used within config of {@link ValidatedArg}

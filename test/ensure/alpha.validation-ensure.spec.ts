@@ -21,6 +21,11 @@ describe('ENSURE_ALPHA', () => {
     expect(ENSURE_ALPHA().pattern?.test(alpha)).to.equal(true);
   });
 
+  it('should allow empty strings', () => {
+    expect(ENSURE_ALPHA().pattern?.test('')).to.equal(true);
+    expect(ENSURE_ALPHA(false).pattern?.test('')).to.equal(true);
+  });
+
   it('should disallow spaces', () => {
     expect(ENSURE_ALPHA(false).pattern?.test(alpha));
     expect(ENSURE_ALPHA(false).pattern?.test(alpha.substring(1))).to.equal(true);

@@ -7,7 +7,7 @@ import { ValidationConfig } from '../validation-config.interface';
  * @param min Minimum length
  * @param max Maximum length
  */
-const ENSURE_MINMAX = (min: number, max: number): ValidationConfig => {
+const ENSURE_MINMAXLEN = (min: number, max: number): ValidationConfig => {
   if (min < 0 && max < 0)
     throw new SyntaxError('Define at least min or max!');
   if (min > max && max !== -1)
@@ -21,4 +21,4 @@ const ENSURE_MINMAX = (min: number, max: number): ValidationConfig => {
   };
 };
 
-export default ENSURE_MINMAX;
+export default ENSURE_MINMAXLEN;

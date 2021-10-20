@@ -30,6 +30,13 @@ describe('ENSURE_ASCII', () => {
     expect(ensure.pattern?.test(asciiFull)).to.equal(false);
   });
 
+  it('should allow empty strings', () => {
+    expect(ENSURE_ASCII().pattern?.test('')).equal(true);
+    expect(ENSURE_ASCII(false, false).pattern?.test('')).equal(true);
+    expect(ENSURE_ASCII(true, false).pattern?.test('')).equal(true);
+    expect(ENSURE_ASCII(true, true).pattern?.test('')).equal(true);
+  });
+
   it('should allow all ascii characters without space', () => {
     const ensure = ENSURE_ASCII(false, false);
     expect(ensure.pattern?.test(asciiFull.replace(' ', ''))).to.equal(true);

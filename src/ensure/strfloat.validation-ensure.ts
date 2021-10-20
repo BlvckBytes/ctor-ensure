@@ -8,7 +8,7 @@ import { ValidationConfig } from '../validation-config.interface';
  */
 const ENSURE_STRFLOAT = (): ValidationConfig => ({
     type: FieldType.STRING,
-    pattern: /^[0-9]+\.[0-9]+$/,
+    pattern: /(^[0-9]+\.[0-9]+$)|^$/,
     description: template('ENSURE_STRFLOAT'),
   });
 

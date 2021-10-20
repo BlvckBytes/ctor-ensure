@@ -26,6 +26,11 @@ describe('ENSURE_ALPHANUM', () => {
     expect(ensure.pattern?.test(alphanum)).to.equal(true);
   });
 
+  it('should allow empty strings', () => {
+    expect(ENSURE_ALPHANUM().pattern?.test('')).to.equal(true);
+    expect(ENSURE_ALPHANUM(false).pattern?.test('')).to.equal(true);
+  });
+
   it('should disallow spaces', () => {
     expect(ENSURE_ALPHANUM(false).pattern?.test(alphanum));
     expect(ENSURE_ALPHANUM(false).pattern?.test(alphanum.substring(1))).to.equal(true);

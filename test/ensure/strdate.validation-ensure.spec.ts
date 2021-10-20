@@ -15,6 +15,11 @@ describe('ENSURE_STRDATE', () => {
     expect(result).to.be.null;
   });
 
+  it('should allow empty string', () => {
+    const { result } = runStageTesting(STAGE_ISPATTERN, ensure, '');
+    expect(result).to.be.null;
+  });
+
   it('shouldn\'t allow invalid date', () => {
     const { control, result } = runStageTesting(STAGE_ISPATTERN, ensure, '2021-10-17');
     expect(result?.field).to.equal(control.displayName);

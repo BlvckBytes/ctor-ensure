@@ -7,7 +7,7 @@ import { ValidationConfig } from '../validation-config.interface';
  */
 const ENSURE_STRINT = (): ValidationConfig => ({
     type: FieldType.STRING,
-    pattern: /^[0-9]+$/,
+    pattern: /(^[0-9]+$)|^$/,
     description: template('ENSURE_STRINT'),
   });
 

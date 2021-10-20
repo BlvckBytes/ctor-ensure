@@ -15,4 +15,8 @@ describe('ENSURE_EMAIL', () => {
   it('should disallow invalid e-mail address', () => {
     expect(ensure.pattern?.test('blvckbytes@gmail.')).to.equal(false);
   });
+
+  it('should allow empty values', () => {
+    expect(ensure.pattern?.test('')).to.equal(true);
+  });
 });

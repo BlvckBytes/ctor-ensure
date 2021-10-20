@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { CtorEnsure, CtorEnsureException, ENSURE_ALPHANUM, ENSURE_EMAIL, ENSURE_ENUM, ENSURE_EQUALS, ENSURE_MIN, ENSURE_MINMAX, ENSURE_NOSPACES, ENSURE_STRDATE, META_KEY_DISPLAYNAME, ValidatedArg } from '../../src';
+import { CtorEnsure, CtorEnsureException, ENSURE_ALPHANUM, ENSURE_EMAIL, ENSURE_ENUM, ENSURE_EQUALS, ENSURE_MINLEN, ENSURE_MINMAXLEN, ENSURE_NOSPACES, ENSURE_STRDATE, META_KEY_DISPLAYNAME, ValidatedArg } from '../../src';
 
 describe('user-creation E2E', () => {
   enum Role {
@@ -14,12 +14,12 @@ describe('user-creation E2E', () => {
       @ValidatedArg('username', [
         ENSURE_ALPHANUM(),
         ENSURE_NOSPACES(),
-        ENSURE_MINMAX(10, 15),
+        ENSURE_MINMAXLEN(10, 15),
       ])
       public username: string,
 
       @ValidatedArg('password', [
-        ENSURE_MIN(10),
+        ENSURE_MINLEN(10),
       ])
       public password: string,
 

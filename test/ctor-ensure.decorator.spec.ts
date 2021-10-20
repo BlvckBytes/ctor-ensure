@@ -1,5 +1,5 @@
 import { expect } from 'chai'; 
-import { ValidationStage, getRegisteredValidationStages, registerValidationStage, CtorEnsure, META_KEY_DISPLAYNAME, Constructable, ValidatedArg, ENSURE_NONEMPTY, CtorEnsureException, CtorEnsureArgError, ENSURE_MIN } from '../src';
+import { ValidationStage, getRegisteredValidationStages, registerValidationStage, CtorEnsure, META_KEY_DISPLAYNAME, Constructable, ValidatedArg, ENSURE_NONEMPTY, CtorEnsureException, CtorEnsureArgError, ENSURE_MINLEN } from '../src';
 
 describe('registerValidationStage()', () => {
   it('added stage should be registered', () => {
@@ -106,13 +106,13 @@ describe('@CtorEnsure', () => {
     @CtorEnsure('test-model', true)
     class TestClass {
       constructor (
-        @ValidatedArg('name', ENSURE_MIN(5))
+        @ValidatedArg('name', ENSURE_MINLEN(5))
         public name: string,
-        @ValidatedArg('name1', ENSURE_MIN(5))
+        @ValidatedArg('name1', ENSURE_MINLEN(5))
         public name1: string,
-        @ValidatedArg('name2', ENSURE_MIN(5))
+        @ValidatedArg('name2', ENSURE_MINLEN(5))
         public name2: string,
-        @ValidatedArg('name3', ENSURE_MIN(5))
+        @ValidatedArg('name3', ENSURE_MINLEN(5))
         public name3: string,
       ) {}
     }

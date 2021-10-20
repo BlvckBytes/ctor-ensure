@@ -7,7 +7,7 @@ import { ValidationConfig } from '../validation-config.interface';
  * @param allowSpaces Whether or not to allow spaces
  */
 const ENSURE_ALPHA = (allowSpaces = true): ValidationConfig => ({
-    pattern: allowSpaces ? /[A-Za-z ]+/ : /[A-Za-z]+/,
+    pattern: allowSpaces ? /^[A-Za-z ]*$/ : /^[A-Za-z]*$/,
     description: template('ENSURE_ALPHA', {
       nospaces: !allowSpaces,
     }),

@@ -7,7 +7,7 @@ import { ValidationConfig } from '../validation-config.interface';
  * @param allowSpaces Whether or not to allow spaces
  */
 const ENSURE_ALPHANUM = (allowSpaces = true): ValidationConfig => ({
-    pattern: allowSpaces ? /[A-Za-z0-9 ]+/ : /[A-Za-z0-9]+/,
+    pattern: allowSpaces ? /^[A-Za-z0-9 ]*$/ : /^[A-Za-z0-9]*$/,
     description: template('ENSURE_ALPHANUM', {
       nospaces: !allowSpaces,
     }),

@@ -11,9 +11,9 @@ export { default as ENSURE_EQUALS } from './ensure/equals.validation-ensure';
 export { default as ENSURE_EXISTING } from './ensure/existing.validation-ensure';
 export { default as ENSURE_FLOAT } from './ensure/float.validation-ensure';
 export { default as ENSURE_INT } from './ensure/int.validation-ensure';
-export { default as ENSURE_MAX } from './ensure/max.validation-ensure';
-export { default as ENSURE_MIN } from './ensure/min.validation-ensure';
-export { default as ENSURE_MINMAX } from './ensure/minmax.validation-ensure';
+export { default as ENSURE_MAXLEN } from './ensure/maxlen.validation-ensure';
+export { default as ENSURE_MINLEN } from './ensure/minlen.validation-ensure';
+export { default as ENSURE_MINMAXLEN } from './ensure/minmaxlen.validation-ensure';
 export { default as ENSURE_NONEMPTY } from './ensure/nonempty.validation-ensure';
 export { default as ENSURE_NONNULL } from './ensure/nonnull.validation-ensure';
 export { default as ENSURE_PATTERN } from './ensure/pattern.validation-ensure';
@@ -47,7 +47,6 @@ export { FieldType } from './field-type.enum';
 export { ValidationConfig } from './validation-config.interface';
 export { ValidationControl } from './validation-control.interface';
 export { ValidationStage } from './validation-stage.type';
-export { ValidationEnsure } from './validation-ensure.type';
 export { Constructable } from './constructable.type';
 
 // Misc

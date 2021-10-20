@@ -1,5 +1,6 @@
 import { expect } from 'chai';
-import { ENSURE_CONTAINS, evalStrThunk } from '../../src';
+import { ENSURE_CONTAINS, evalStrThunk, STAGE_ISPATTERN } from '../../src';
+import { runStageTesting } from '../test-util';
 
 describe('ENSURE_CONTAINS', () => {
   const ensure = ENSURE_CONTAINS('this is a test');
@@ -9,10 +10,20 @@ describe('ENSURE_CONTAINS', () => {
   });
 
   it('should allow containing string', () => {
-    expect(ensure.pattern?.test('contains this is a test')).to.equal(true);
+    const { result } = runStageTesting(STAGE_ISPATTERN, ensure, 'this is a test');
+    expect(result).to.be.null;
   });
 
   it('should disallow containing string', () => {
-    expect(ensure.pattern?.test('doesn\'t contain it')).to.equal(false);
+    const { result, control } = runStageTesting(STAGE_ISPATTERN, ENSURE_CONTAINS('this is a test', false), 'this is a test');
+    expect(result?.field).to.equal(control.displayName);
+
+    const { result: result2 } = runStageTesting(STAGE_ISPATTERN, ENSURE_CONTAINS('this is a test', false), 'this is a trial');
+    expect(result2).to.be.null;
+  });
+
+  it('should disallow non-containing string', () => {
+    const { result, control } = runStageTesting(STAGE_ISPATTERN, ensure, 'doesn\'t contain it');
+    expect(result?.field).to.equal(control.displayName);
   });
 });

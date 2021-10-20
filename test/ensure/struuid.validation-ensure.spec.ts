@@ -16,6 +16,11 @@ describe('ENSURE_STRUUID', () => {
     expect(result).to.be.null;
   });
 
+  it('should allow empty string', () => {
+    const { result } = runStageTesting(stages, ensure, '');
+    expect(result).to.be.null;
+  });
+
   it('shouldn\'t allow invalid uuid', () => {
     const { control, result } = runStageTesting(stages, ensure, 'A5D8A2A2-C3BD-9223B0078209');
     expect(result?.field).to.equal(control.displayName);

@@ -1,7 +1,7 @@
 import { template } from '../description-template.factory';
 import { ValidationConfig } from '../validation-config.interface';
 
-const REGEX_ISODATE = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|Z)?$/i;
+const REGEX_ISODATE = /(^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|Z)?$)|^$/i;
 
 /**
  * Ensure to be used within config of {@link ValidatedArg}

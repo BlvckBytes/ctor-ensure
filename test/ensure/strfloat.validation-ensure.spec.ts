@@ -16,6 +16,11 @@ describe('ENSURE_STRFLOAT', () => {
     expect(result).to.be.null;
   });
 
+  it('should allow empty values', () => {
+    const { result } = runStageTesting(stages, ensure, '');
+    expect(result).to.be.null;
+  });
+
   it('shouldn\'t allow string int', () => {
     const { control, result } = runStageTesting(stages, ensure, '122');
     expect(result?.field).to.equal(control.displayName);

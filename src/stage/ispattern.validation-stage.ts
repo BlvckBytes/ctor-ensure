@@ -21,7 +21,7 @@ const STAGE_ISPATTERN = (
   if (
     currValue === null ||
     currValue === undefined ||
-    !currConfig.pattern.test(currValue)
+    !currConfig.pattern.test(currValue) !== (currConfig.negate || false)
   )
     return {
       field: currControl.displayName,

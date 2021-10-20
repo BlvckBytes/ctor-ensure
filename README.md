@@ -6,8 +6,6 @@
 
 Ensure that the arguments of your constructor meet constraints defined through decorators.
 
-🧨 [WARNING] 🧨 This module is in early alpha and has not yet been tested thoroughly! Use at your own risk.
-
 ## Aims
 
 I developed this from scratch, since I couldn't find any other module that was able to directly validate constructor arguments (to make use of typescript's shorthand notation) and which wasn't bloatware. Simple things like these should be kept as small and concise as possible, without trying to cover every possible usecase, even if it's completely irrational and only occurs once in a blue moon.
@@ -36,20 +34,20 @@ Using yarn:
 yarn add ctor-ensure
 ```
 
-Last but not least, make sure you have your .ENV set up properly, feel free to use the default provided in this document.
+Last but not least, make sure you have your .ENV set up properly, feel free to use the default provided by `.env-presets`.
 
 ## How to use
 
 Mark the target class for validation. This decorator accepts two parameters, the first one being the class' displayname, the second one being a flag whether or not to allow multiple errors per field (default false). For demonstration purposes, we'll switch that flag on.
 ```typescript
 @CtorEnsure('UserRegistration', true)
-export class UserRegistrationModel {}
+class UserRegistrationModel {}
 ```
 
 Create a constructor using shorthand properties
 ```typescript
 @CtorEnsure('UserRegistration', true)
-export class UserRegistrationModel {
+class UserRegistrationModel {
 
   constructor(
     public id: string,
@@ -67,7 +65,7 @@ Now it's time to decide on which and how arguments need to be validated. This de
 
 ```typescript
 @CtorEnsure('UserRegistration', true)
-export class UserRegistrationModel {
+class UserRegistrationModel {
 
   constructor(
     public id: string,
@@ -118,7 +116,7 @@ That's it! Couldn't be much easier, right? Let's have a quick look at the struct
 /**
  * Thrown when a constructor didn't pass validation
  */
-export class CtorEnsureException {
+class CtorEnsureException {
   // Name of source class
   readonly displayName: string;
 
@@ -143,9 +141,10 @@ You get provided with the class' displayname and the occurred errors, based on t
 /**
  * Describes an occurred validation error for a constructor's field
  */
-export interface CtorEnsureArgError {
+interface CtorEnsureArgError {
   field: string;
   description: string;
+  value: any;
 }
 ```
 
@@ -155,7 +154,7 @@ Now, that we're all wired up, it's time to give it a shot! I will be using NestJ
 
 ```typescript
 @Catch(CtorEnsureException)
-export class CtorEnsureExceptionFilter implements ExceptionFilter {
+class CtorEnsureExceptionFilter implements ExceptionFilter {
   catch(ex: CtorEnsureException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
 
@@ -248,14 +247,60 @@ class ClassB extends ClassA {
 
 The simplicity of this is beautiful: Once you call new on ClassB, it internally will invoke a super-call, which will invoke the constructor of ClassA. If anything regarding the validation of ClassA fails, it's constructor will throw an error. That error will bubble up to the super-call! ClassB is going to fork the exception, and only change the display-name to it's own (model-b). This way, the exception provides the impression that it's a single class, when in reality, there are two separate classes, that organize and keep the code clean. Of course - you can add as many levels to this as you'd like to, the latest class in the call-chain will always apply it's name.
 
+## Standard Ensures
+
+There are a lot of standard ensures shipped with this module that you can combine with your decorators to build great validation.
+
+| Ensure | Parameters | Checks | Allows Empty Values |
+|--------|------------|--------|---------------------|
+| ENSURE_ALPHA | allowSpaces: boolean | Alphabetical characters | yes |
+| ENSURE_ALPHANUM | allowSpaces: boolean | Alphanumerical characters | yes |
+| ENSURE_ASCII | justPrintable: boolean, allowSpaces: boolean | ASCII characters | yes |
+| ENSURE_BASEENCODED | encoding: Encoding | BaseX encoded data | yes |
+| ENSURE_BOOLEAN | / | Boolean value (true/false) | no |
+| ENSURE_CONTAINS | string: string, allow: boolean | String contains or not contains | / |
+| ENSURE_EMAIL | / | Valid E-Mail format | yes |
+| ENSURE_ENUM | values: { [key: string]: string | number }, useKey: boolean | Only enum keys/values | yes |
+| ENSURE_EQUALS | ...fieldNames: string[] | Content equals to content of provided fields | / |
+| ENSURE_EXISTING | / | Has to be defined | yes |
+| ENSURE_FLOAT | / | Floating point number | no |
+| ENSURE_INT | / | Integer number | no |
+| ENSURE_MAXLEN | max: number | Maximum string length | yes |
+| ENSURE_MINLEN | min: number | Minimum string length | / |
+| ENSURE_MINMAXLEN | min: number, max: number | Minimum and maximum string length | / |
+| ENSURE_NONEMPTY | / | No empty strings | no |
+| ENSURE_NONNULL | / | No null values | yes |
+| ENSURE_NOSPACES | / | No spaces in string | yes |
+| ENSURE_PATTERN | pattern: RegExp, description: string | Custom pattern validation | / |
+| ENSURE_STRDATE | / | Full ISO-8601 datetime string | yes |
+| ENSURE_STRFLOAT | / | Floating point number as string | yes |
+| ENSURE_STRINT | / | Integer number as string | yes |
+| ENSURE_STRUUID | / | UUID as string | yes |
+
 ## Custom Ensures
 
-Please try to avoid defining ensures inline with the constructor parameter decorator, this causes nothing but confusion and inconsistencies. Just define your own ensure, based on the provided type.
+Please try to avoid defining ensures inline with the constructor parameter decorator, this causes nothing but confusion and inconsistencies. Just define your own ensure, which does nothing but create `ValidationConfig` based on your arguments.
 
 ```typescript
-// A validation ensure is a function that may take arguments
-// and returns a validation config
-export type ValidationEnsure = (...args: any[]) => ValidationConfig;
+/**
+ * Configuration of a validation chain element
+ */
+export interface ValidationConfig {
+  // Regex pattern to run against string representation
+  pattern?: RegExp;
+
+  // Type validation
+  type?: FieldType;
+
+  // Description of this validator
+  description: (() => string) | string;
+
+  // Negate validation result
+  negate?: boolean;
+
+  // Own value equals to every provided field's value
+  equalsToFields?: string[];
+}
 ```
 
 It will be called for every field, or every value of the array, if the field is an array. To get a feel for how the standard ensures have been implemented, have a look at one of it's sourcecodes.
@@ -270,7 +315,7 @@ Stages are something ensures partially make use of, for example with the pattern
  * config within a single control, gets executed for every
  * field or element of field if it's an array
  */
-export type ValidationStage = (
+type ValidationStage = (
   // All controls of model
   controls: ValidationControl[],
 
@@ -298,7 +343,7 @@ Register them like this, called before your application launches:
  * Register a new validation stage
  * @param stage Custom validation stage
  */
-export const registerValidationStage = (stage: ValidationStage) => {
+const registerValidationStage = (stage: ValidationStage) => {
   VALIDATION_STAGES.push(stage);
 }
 ```
@@ -319,7 +364,7 @@ There are two elements at your disposal:
 Here's a quick example of a template for the minmax-ensure:
 
 ```typescript
-export const ENSURE_MINMAX: ValidationEnsure = (min: number, max: number): ValidationConfig => {
+const ENSURE_MINMAX: ValidationEnsure = (min: number, max: number): ValidationConfig => {
   if (min < 0 && max < 0) throw new SyntaxError('Invalid arguments');
 
   return {
@@ -358,7 +403,7 @@ This notates a optional string, `"at least {min} plur:"character":{min}"`, which
  * @param state Condition
  * @returns Original string or empty string
  */
-export const strOpt = (str: string, state: boolean): string => state ? str : '';
+const strOpt = (str: string, state: boolean): string => state ? str : '';
 
 /**
  * Pluralize a word, based on the corresponding count. Also
@@ -368,7 +413,7 @@ export const strOpt = (str: string, state: boolean): string => state ? str : '';
  * @param suf Suffix for plural, defaults to s
  * @returns Pluralized word
  */
-export const pluralize = (word: string, num: number, suf = 's'): string => `${word.trimRight()}${strOpt(suf, num !== 1)}`;
+const pluralize = (word: string, num: number, suf = 's'): string => `${word.trimRight()}${strOpt(suf, num !== 1)}`;
 
 /**
  * Shorthand to use a ternary operator on two string parameters
@@ -377,7 +422,7 @@ export const pluralize = (word: string, num: number, suf = 's'): string => `${wo
  * @param ifFalse String for false state
  * @returns Either one of the strings
  */
-export const ternaryString = (state: boolean, ifTrue: string, ifFalse: string): string => state ? ifTrue : ifFalse;
+const ternaryString = (state: boolean, ifTrue: string, ifFalse: string): string => state ? ifTrue : ifFalse;
 ```
 
 They have quite long names, which is why they're registered with a short alias:
@@ -399,7 +444,7 @@ You can always add to this global registry, by calling this before your applicat
  * @param name Name of the function inside template
  * @param func Reference to function
  */
-export const registerTemplateFunction = (name: string, func: TemplateFunction) => {
+const registerTemplateFunction = (name: string, func: TemplateFunction) => {
   PREDEFINED_FUNCTIONS[name] = func;
 }
 ```
@@ -441,10 +486,6 @@ It would yield a behavior of:
   "description": 'HelloHelloHello at least 3 characters and up to 5 characters'
 }
 ```
-
-### Default .ENV
-
-To save time and effort, I created pretty solid templates beforehand. If you're okay with them, copy the file contents of .env-presets to your default .env file.
 
 ## Contribution
 

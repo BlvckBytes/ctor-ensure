@@ -73,6 +73,10 @@ export const STAGE_ISTYPE = (
       isValid = typeof currValue === 'string';
       break;
 
+    case FieldType.BOOLEAN:
+      isValid = typeof currValue === 'boolean';
+      break;
+
     default:
       throw SyntaxError('Unknown fieldtype specified!');
   }

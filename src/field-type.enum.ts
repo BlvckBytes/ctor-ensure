@@ -7,6 +7,7 @@ export enum FieldType {
   INT,
   FLOAT,
   STRING,
+  BOOLEAN,
 }
 
 export default FieldType;

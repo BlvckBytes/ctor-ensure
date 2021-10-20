@@ -70,7 +70,7 @@ export const STAGE_ISTYPE = (
       break;
 
     case FieldType.STRING:
-      isValid = typeof currValue === 'string';
+      isValid = typeof currValue === 'string' || currValue instanceof String;
       break;
 
     case FieldType.BOOLEAN:

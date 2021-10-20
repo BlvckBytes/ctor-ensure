@@ -27,6 +27,7 @@ export { default as ENSURE_NOSPACES } from './ensure/nospaces.validator-ensure';
 export { default as ENSURE_ASCII } from './ensure/ascii.validation-ensure';
 export { default as ENSURE_ALPHA } from './ensure/alpha.validation-ensure';
 export { default as ENSURE_BOOLEAN } from './ensure/boolean.validation-ensure';
+export { ENSURE_BASEENCODED, Encoding } from './ensure/baseencoded.validation-ensure';
 
 // Predefined stages
 export { default as STAGE_ISPATTERN } from './stage/ispattern.validation-stage';

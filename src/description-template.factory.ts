@@ -197,11 +197,13 @@ export const processFunction = (defInd: number, template: string, vars: Variable
       // End index is -1, since current is not part of the function anymore
       endInd = i - 1;
 
-      // Wasn't a variable substitution (that is already in buffer)
-      // and is a escaped symbol, strip escape and push, end function
-      if (!wasArgVar && curr === '\\')
+      // Push arg buffer if it wasn't a variable (is already in buffer)
+      // or if it was escaped or string ended
+      if (!wasArgVar && (curr === '\\' || result[i - 1] === '"'))
         args.push(argBuf.substring(0, argBuf.length - 1));
 
+      // Handy function visualizer
+      // console.log(`${result}\n${' '.repeat(defInd)}|${'-'.repeat(i - defInd - 2)}|`);
       break;
     }
 
@@ -278,6 +280,12 @@ export const processFunction = (defInd: number, template: string, vars: Variable
 
   if (!func)
     return template;
+
+  const res = func(...args);
+
+  // No function result
+  if (res === undefined)
+    throw new Error('Function returned undefined value!');
 
   // Return input, where function invocation is substituted for function result
   // Every function needs to escape it's own result, to avoid re-interpret

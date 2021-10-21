@@ -1,21 +1,19 @@
-import { FieldType } from './field-type.enum';
+import { ValidationControl } from '.';
 
 /**
  * Configuration of a validation chain element
  */
 export interface ValidationConfig {
-  // Regex pattern to run against string representation
-  pattern?: RegExp;
-
-  // Type validation
-  type?: FieldType;
-
   // Description of this validator
   description: (() => string) | string;
 
-  // Negate validation result
-  negate?: boolean;
-
-  // Own value equals to every provided field's value
-  equalsToFields?: string[];
+  // Callback to process this configuration
+  // Returns passing as true and failed as false
+  process: (
+    value: any, // Value to validate, always scalar
+    neighbors: ValidationControl[], // Neighbor validation controls
+    ctor: any[], // All constructor arguments
+    parent: ValidationControl, // Parent validation control
+    arg: any, // Current ctor argument, scalar or array
+  ) => boolean;
 }

@@ -1,7 +1,6 @@
 import { META_KEY_VALIDATION } from './ctor-ensure.decorator';
 import { ValidationConfig } from './validation-config.interface';
 import { ValidationControl } from './validation-control.interface';
-import { ValidationFlags } from './validation-flags.interface';
 
 /**
  * Apply one or more validations to a constructor property
@@ -12,7 +11,6 @@ import { ValidationFlags } from './validation-flags.interface';
 const ValidatedArg = (
   displayName: string,
   config: ValidationConfig | ValidationConfig[],
-  flags: Partial<ValidationFlags> | null = null,
 ): ParameterDecorator => (clazz: any, _: string | symbol, index: number) => {
     // Ensure existence of array
     if (!Reflect.hasOwnMetadata(META_KEY_VALIDATION, clazz))
@@ -35,12 +33,6 @@ const ValidatedArg = (
         displayName,
         ctorInd: index,
         configs: [],
-        flags: {
-          isArray: false,
-          isUnique: false,
-          ignoreCasing: false,
-          ...flags,
-        },
       } as ValidationControl;
       meta.push(control);
     }

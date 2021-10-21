@@ -1,40 +1,12 @@
+import { evalStrThunk } from '.';
 import { Constructable } from './constructable.type';
 import CtorEnsureArgError from './ctor-ensure-arg-error.interface';
 import CtorEnsureException from './ctor-ensure.exception';
-import STAGE_ISARRAY from './stage/isarray.validation-stage';
-import { STAGE_ISUNIQUE } from './stage/isunique.validation-stage';
-import STAGE_ISEQUAL from './stage/isequal.validation-stage';
-import STAGE_ISPATTERN from './stage/ispattern.validation-stage';
-import { STAGE_ISTYPE } from './stage/istype.validation-stage';
 import { ValidationControl } from './validation-control.interface';
-import { ValidationStage } from './validation-stage.type';
 
 // Key used for metadata regarding validation
 export const META_KEY_VALIDATION = 'CTOR_ENSURE:VALIDATION';
 export const META_KEY_DISPLAYNAME = 'CTOR_ENSURE:DISPLAYNAME';
-
-// Register all known validation stages here
-const VALIDATION_STAGES = [
-  STAGE_ISARRAY,
-  STAGE_ISUNIQUE,
-  STAGE_ISEQUAL,
-  STAGE_ISPATTERN,
-  STAGE_ISTYPE,
-];
-
-/**
- * Register a new validation stage
- * @param stage Custom validation stage
- */
-export const registerValidationStage = (stage: ValidationStage): void => {
-  VALIDATION_STAGES.push(stage);
-};
-
-/**
- * Fetch all validation stages
- * @returns A copy of all currently registered validation stages
- */
-export const getRegisteredValidationStages = (): ValidationStage[] => VALIDATION_STAGES.slice();
 
 /**
  * Decorator signalling that the following class' constructor will be validated
@@ -72,39 +44,26 @@ export const CtorEnsure = (
             const currConfig = currControl.configs[i];
 
             // Validate all values individually (to support arrays)
-            const values: any[] = currControl.flags.isArray ? currArg : [currArg];
+            const values: any[] = Array.isArray(currArg) ? currArg : [currArg];
 
+            let passed = true;
             for (let j = 0; j < values.length; j += 1) {
               const currValue = values[j];
 
-              // Iterate every stage
-              let passed = true;
-              for (let k = 0; k < VALIDATION_STAGES.length; k += 1) {
-                const stage = VALIDATION_STAGES[k];
+              const res = currConfig.process(currValue, controls, ctorArgs, currControl, currArg);
 
-                // Call stage with all dependencies
-                const res = stage(
-                  controls,
-                  ctorArgs,
-                  currConfig,
-                  currControl,
-                  currArg,
-                  currValue,
-                );
-
-                // An error occurred in a stage
-                if (res !== null) {
-                  errors.push(res);
-                  passed = false;
-
-                  // Skip all remaining stages if flag is not set
-                  if (!multipleErrorsPerField) break;
-                }
+              if (!res) {
+                errors.push({
+                  field: currControl.displayName,
+                  description: evalStrThunk(currConfig.description),
+                  value: currValue,
+                });
+                passed = false;
               }
-
-              // An element of the array didn't pass, skip all remaining elements
-              if (!passed) break;
             }
+
+            // Config didn't pass, and only max. one error per field is desired
+            if (!passed && !multipleErrorsPerField) break;
           }
         });
 

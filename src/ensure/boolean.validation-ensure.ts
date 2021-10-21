@@ -1,5 +1,4 @@
 import { template } from '..';
-import FieldType from '../field-type.enum';
 import { ValidationConfig } from '../validation-config.interface';
 
 /**
@@ -7,8 +6,8 @@ import { ValidationConfig } from '../validation-config.interface';
  * Ensure this field is a boolean value
  */
 const ENSURE_BOOLEAN = (): ValidationConfig => ({
-    type: FieldType.BOOLEAN,
     description: template('ENSURE_BOOLEAN'),
+    process: (value) => typeof value === 'boolean',
   });
 
 export default ENSURE_BOOLEAN;

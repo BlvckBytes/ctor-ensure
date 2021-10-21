@@ -1,33 +1,31 @@
 import { expect } from 'chai';
-import { ENSURE_STRFLOAT, evalStrThunk, STAGE_ISPATTERN, STAGE_ISTYPE } from '../../src';
-import { runStageTesting } from '../test-util';
+import { ENSURE_STRFLOAT, evalStrThunk } from '../../src';
+import { checkEnsureArgError, executeEnsure } from '../test-util';
 
 describe('ENSURE_STRFLOAT', () => {
-  const ensure = ENSURE_STRFLOAT();
-  const stages = [STAGE_ISPATTERN, STAGE_ISTYPE];
+  const desc = 'floating point number as string';
 
   it('should have it\'s default description', () => {
-    const desc = evalStrThunk(ensure.description);
-    expect(desc).to.equal('floating point number as string');
+    expect(evalStrThunk(ENSURE_STRFLOAT().description)).to.equal(desc);
   });
 
   it('should allow string float', () => {
-    const { result } = runStageTesting(stages, ensure, '45.43');
-    expect(result).to.be.null;
+    expect(executeEnsure(ENSURE_STRFLOAT(), '55.55')).to.have.lengthOf(0);
   });
 
   it('should allow empty values', () => {
-    const { result } = runStageTesting(stages, ensure, '');
-    expect(result).to.be.null;
+    expect(executeEnsure(ENSURE_STRFLOAT(), '')).to.have.lengthOf(0);
   });
 
   it('shouldn\'t allow string int', () => {
-    const { control, result } = runStageTesting(stages, ensure, '122');
-    expect(result?.field).to.equal(control.displayName);
+    expect(executeEnsure(ENSURE_STRFLOAT(), '5')).satisfy(checkEnsureArgError(desc, '5'));
+  });
+
+  it('shouldn\'t allow number int', () => {
+    expect(executeEnsure(ENSURE_STRFLOAT(), 5)).satisfy(checkEnsureArgError(desc, 5));
   });
 
   it('shouldn\'t allow number float', () => {
-    const { control, result } = runStageTesting(stages, ensure, 45.43);
-    expect(result?.field).to.equal(control.displayName);
+    expect(executeEnsure(ENSURE_STRFLOAT(), 5.5)).satisfy(checkEnsureArgError(desc, 5.5));
   });
 });

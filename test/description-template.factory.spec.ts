@@ -243,6 +243,14 @@ describe('processFunction()', () => {
     const result = processFunction(0, expr, vars, funcs);
     expect(result).to.equal(`${vars.a}${vars.b}hi after colon`);
   });
+
+  it('shouldn\'t accept undefined function returns', () => {
+    expect(() => processFunction(0, 'testfn:{a}:{b}', {
+      a: 5, b: 5,
+    }, {
+      testfn: () => (undefined as any) as string,
+    })).to.throw('Function returned undefined value!');
+  });
 });
 
 describe('key()', () => {

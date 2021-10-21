@@ -1,10 +1,9 @@
 import { expect } from 'chai';
 import { ENSURE_ALPHANUM, evalStrThunk } from '../../src';
+import { checkEnsureArgError, executeEnsure } from '../test-util';
 
 describe('ENSURE_ALPHANUM', () => {
-  const ensure = ENSURE_ALPHANUM();
-
-  let alphanum = ' '; // With space at start
+  let alphanum = ' '; // With space at 0
   for (let i = 0; i < 26; i += 1) {
     // Uppercase letters
     alphanum += String.fromCharCode(i + 65);
@@ -17,26 +16,31 @@ describe('ENSURE_ALPHANUM', () => {
       alphanum += String.fromCharCode(i + 48);
   }
 
+  const desc = 'only alphanumeric characters';
+  const descNoSpaces = 'only alphanumeric characters without spaces';
+
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_ALPHANUM().description)).to.equal('only alphanumeric characters');
-    expect(evalStrThunk(ENSURE_ALPHANUM(false).description)).to.equal('only alphanumeric characters without spaces');
+    expect(evalStrThunk(ENSURE_ALPHANUM().description)).to.equal(desc);
+    expect(evalStrThunk(ENSURE_ALPHANUM(false).description)).to.equal(descNoSpaces);
   });
 
   it('should allow all alphanumeric characters', () => {
-    expect(ensure.pattern?.test(alphanum)).to.equal(true);
+    expect(executeEnsure(ENSURE_ALPHANUM(), alphanum)).to.have.lengthOf(0);
   });
 
   it('should allow empty strings', () => {
-    expect(ENSURE_ALPHANUM().pattern?.test('')).to.equal(true);
-    expect(ENSURE_ALPHANUM(false).pattern?.test('')).to.equal(true);
+    expect(executeEnsure(ENSURE_ALPHANUM(), '')).to.have.lengthOf(0);
+    expect(executeEnsure(ENSURE_ALPHANUM(false), '')).to.have.lengthOf(0);
   });
 
   it('should disallow spaces', () => {
-    expect(ENSURE_ALPHANUM(false).pattern?.test(alphanum));
-    expect(ENSURE_ALPHANUM(false).pattern?.test(alphanum.substring(1))).to.equal(true);
+    expect(executeEnsure(ENSURE_ALPHANUM(false), alphanum)).satisfies(checkEnsureArgError(descNoSpaces, alphanum));
+    expect(executeEnsure(ENSURE_ALPHANUM(false), alphanum.substring(1))).to.have.lengthOf(0);
   });
 
   it('should disallow non-alphanumeric characters', () => {
-    expect(ensure.pattern?.test('@!$%#?:;-.+')).to.equal(false);
+    const inp = '@!$%#?:;-.+';
+    expect(executeEnsure(ENSURE_ALPHANUM(), inp)).satisfies(checkEnsureArgError(desc, inp));
+    expect(executeEnsure(ENSURE_ALPHANUM(false), inp)).satisfies(checkEnsureArgError(descNoSpaces, inp));
   });
 });

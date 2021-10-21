@@ -10,8 +10,8 @@ const ENSURE_PATTERN = (
   pattern: RegExp,
   description: string | (() => string),
 ): ValidationConfig => ({
-    pattern,
     description,
+    process: (value) => pattern.test(value),
   });
 
 export default ENSURE_PATTERN;

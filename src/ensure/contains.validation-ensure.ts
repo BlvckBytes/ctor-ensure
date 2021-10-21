@@ -8,10 +8,15 @@ import { ValidationConfig } from '../validation-config.interface';
  * @param string String that has to be contained inside field
  * @param allow True if the string should contain, false if it shouldn't
  */
-const ENSURE_CONTAINS = (string: string, allow = true): ValidationConfig => ({
-    pattern: new RegExp(`(${escapeRegExp(string)})`),
-    negate: !allow,
-    description: template('ENSURE_CONTAINS', { str: string }),
-  });
+const ENSURE_CONTAINS = (string: string, allow = true): ValidationConfig => {
+  const pattern = new RegExp(`(${escapeRegExp(string)})`);
+  return {
+    description: template('ENSURE_CONTAINS', { 
+      str: string,
+      allow,
+    }),
+    process: (value) => pattern.test(value) !== (!allow),
+  };
+};
 
 export default ENSURE_CONTAINS;

@@ -1,28 +1,21 @@
 import { expect } from 'chai';
-import { ENSURE_MAXLEN, evalStrThunk, STAGE_ISPATTERN } from '../../src';
-import { runStageTesting } from '../test-util';
+import { ENSURE_MAXLEN, evalStrThunk, pluralize } from '../../src';
+import { checkEnsureArgError, executeEnsure } from '../test-util';
 
 describe('ENSURE_MAXLEN', () => {
-  it('should have it\'s default description', () => {
-    let desc = evalStrThunk(ENSURE_MAXLEN(5).description);
-    expect(desc).to.equal('up to 5 characters');
+  const desc = (max: number) => `up to ${max} ${pluralize('character', max)}`;
 
-    desc = evalStrThunk(ENSURE_MAXLEN(1).description);
-    expect(desc).to.equal('up to 1 character');
+  it('should have it\'s default description', () => {
+    expect(evalStrThunk(ENSURE_MAXLEN(5).description)).to.equal(desc(5));
+    expect(evalStrThunk(ENSURE_MAXLEN(1).description)).to.equal(desc(1));
   });
 
-  const max = 5;
-  const ensure = ENSURE_MAXLEN(max);
   it('should allow 0 to max characters', () => {
-    let { result } = runStageTesting(STAGE_ISPATTERN, ensure, 'X'.repeat(max));
-    expect(result).to.be.null;
-
-    result = runStageTesting(STAGE_ISPATTERN, ensure, '').result;
-    expect(result).to.be.null;
+    for (let i = 0; i <= 5; i += 1)
+      expect(executeEnsure(ENSURE_MAXLEN(5), 'X'.repeat(i))).have.lengthOf(0);
   });
 
   it('shouldn\'t allow more than max characters', () => {
-    const { control, result } = runStageTesting(STAGE_ISPATTERN, ensure, 'X'.repeat(max + 1));
-    expect(result?.field).to.equal(control.displayName);
+    expect(executeEnsure(ENSURE_MAXLEN(5), 'X'.repeat(6))).satisfy(checkEnsureArgError(desc(5), 'X'.repeat(6)));
   });
 });

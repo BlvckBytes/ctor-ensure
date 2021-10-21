@@ -1,9 +1,10 @@
 import { expect } from 'chai';
 import { ENSURE_ALPHA, evalStrThunk } from '../../src';
+import { executeEnsure, checkEnsureArgError } from '../test-util';
 
 describe('ENSURE_ALPHA', () => {
 
-  let alpha = ' '; // Include space
+  let alpha = ' '; // Include space at 0
   for (let i = 0; i < 26; i += 1) {
     // Uppercase letters
     alpha += String.fromCharCode(i + 65);
@@ -12,30 +13,35 @@ describe('ENSURE_ALPHA', () => {
     alpha += String.fromCharCode(i + 97);
   }
 
+  const desc = 'only alphabetical characters';
+  const descNoSpaces = 'only alphabetical characters without spaces';
+
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_ALPHA().description)).to.equal('only alphabetical characters');
-    expect(evalStrThunk(ENSURE_ALPHA(false).description)).to.equal('only alphabetical characters without spaces');
+    expect(evalStrThunk(ENSURE_ALPHA().description)).to.equal(desc);
+    expect(evalStrThunk(ENSURE_ALPHA(false).description)).to.equal(descNoSpaces);
   });
 
   it('should allow all alphabetical characters', () => {
-    expect(ENSURE_ALPHA().pattern?.test(alpha)).to.equal(true);
+    expect(executeEnsure(ENSURE_ALPHA(), alpha)).to.have.lengthOf(0);
   });
 
   it('should allow empty strings', () => {
-    expect(ENSURE_ALPHA().pattern?.test('')).to.equal(true);
-    expect(ENSURE_ALPHA(false).pattern?.test('')).to.equal(true);
+    expect(executeEnsure(ENSURE_ALPHA(), '')).to.have.lengthOf(0);
+    expect(executeEnsure(ENSURE_ALPHA(false), '')).to.have.lengthOf(0);
   });
 
   it('should disallow spaces', () => {
-    expect(ENSURE_ALPHA(false).pattern?.test(alpha));
-    expect(ENSURE_ALPHA(false).pattern?.test(alpha.substring(1))).to.equal(true);
+    expect(executeEnsure(ENSURE_ALPHA(false), alpha)).satisfies(checkEnsureArgError(descNoSpaces, alpha));
+    expect(executeEnsure(ENSURE_ALPHA(false), alpha.substring(1))).to.have.lengthOf(0);
   });
 
-  it('should disallow non-numeric characters', () => {
-    expect(ENSURE_ALPHA().pattern?.test('0123456789')).to.equal(false);
+  it('should disallow numeric non-alpha characters', () => {
+    const nonAlpha = '0123456789';
+    expect(executeEnsure(ENSURE_ALPHA(), nonAlpha)).satisfies(checkEnsureArgError(desc, nonAlpha));
   });
 
-  it('should disallow non-alphabetical characters', () => {
-    expect(ENSURE_ALPHA().pattern?.test('@!$%#?:;-.+')).to.equal(false);
+  it('should disallow other non-alpha characters', () => {
+    const nonAlpha = '@!$%#?:;-.+';
+    expect(executeEnsure(ENSURE_ALPHA(), nonAlpha)).satisfies(checkEnsureArgError(desc, nonAlpha));
   });
 });

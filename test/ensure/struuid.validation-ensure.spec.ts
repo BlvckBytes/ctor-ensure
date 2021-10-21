@@ -1,28 +1,23 @@
 import { expect } from 'chai';
-import { ENSURE_STRUUID, evalStrThunk, STAGE_ISPATTERN, STAGE_ISTYPE } from '../../src';
-import { runStageTesting } from '../test-util';
+import { ENSURE_STRUUID, evalStrThunk } from '../../src';
+import { checkEnsureArgError, executeEnsure } from '../test-util';
 
 describe('ENSURE_STRUUID', () => {
-  const ensure = ENSURE_STRUUID();
-  const stages = [STAGE_ISPATTERN, STAGE_ISTYPE];
+  const desc = 'uuid as string';
 
   it('should have it\'s default description', () => {
-    const desc = evalStrThunk(ensure.description);
-    expect(desc).to.equal('uuid as string');
+    expect(evalStrThunk(ENSURE_STRUUID().description)).to.equal(desc);
   });
 
   it('should allow string uuid', () => {
-    const { result } = runStageTesting(stages, ensure, 'A5D8A2A2-C3BD-46AD-AFCC-9223B0078209');
-    expect(result).to.be.null;
+    expect(executeEnsure(ENSURE_STRUUID(), 'A5D8A2A2-C3BD-46AD-AFCC-9223B0078209')).to.have.lengthOf(0);
   });
 
   it('should allow empty string', () => {
-    const { result } = runStageTesting(stages, ensure, '');
-    expect(result).to.be.null;
+    expect(executeEnsure(ENSURE_STRUUID(), '')).to.have.lengthOf(0);
   });
 
   it('shouldn\'t allow invalid uuid', () => {
-    const { control, result } = runStageTesting(stages, ensure, 'A5D8A2A2-C3BD-9223B0078209');
-    expect(result?.field).to.equal(control.displayName);
+    expect(executeEnsure(ENSURE_STRUUID(), 'A5D8A2A2-C3BD-9223B0078209')).satisfy(checkEnsureArgError(desc, 'A5D8A2A2-C3BD-9223B0078209'));
   });
 });

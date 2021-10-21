@@ -1,56 +1,31 @@
 import { expect } from 'chai';
-import { ENSURE_FLOAT, evalStrThunk, STAGE_ISTYPE } from '../../src';
-import { runStageTesting } from '../test-util';
+import { ENSURE_FLOAT, evalStrThunk } from '../../src';
+import { checkEnsureArgError, executeEnsure } from '../test-util';
 
 describe('ENSURE_FLOAT', () => {
-  const ensure = ENSURE_FLOAT();
+  const desc = 'floating point number';
 
   it('should have it\'s default description', () => {
-    const desc = evalStrThunk(ensure.description);
-    expect(desc).to.equal('floating point number');
+    expect(evalStrThunk(ENSURE_FLOAT().description)).to.equal(desc);
   });
 
   it('should allow float number', () => {
-    const value = 55.555;
-
-    const { result } = runStageTesting(
-      STAGE_ISTYPE, ensure, value,
-    );
-
-    // No errors expected
-    expect(result).to.be.null;
+    expect(executeEnsure(ENSURE_FLOAT(), 5.55)).to.have.lengthOf(0);
   });
 
   it('should allow integer number', () => {
-    const value = 55;
-
-    const { result } = runStageTesting(
-      STAGE_ISTYPE, ensure, value,
-    );
-
-    // No errors expected
-    expect(result).to.be.null;
+    expect(executeEnsure(ENSURE_FLOAT(), 5)).to.have.lengthOf(0);
   });
 
   it('shouldn\'t allow string float', () => {
-    const value = '55.555';
-
-    const { control, result } = runStageTesting(
-      STAGE_ISTYPE, ensure, value,
-    );
-
-    // Error expected
-    expect(result?.field).to.equal(control.displayName);
+    expect(executeEnsure(ENSURE_FLOAT(), '5.55')).satisfy(checkEnsureArgError(desc, '5.55'));
   });
 
-  it('shouldn\'t allow alphabetical value', () => {
-    const value = 'hello world';
+  it('shouldn\'t allow string integer', () => {
+    expect(executeEnsure(ENSURE_FLOAT(), '5')).satisfy(checkEnsureArgError(desc, '5'));
+  });
 
-    const { control, result } = runStageTesting(
-      STAGE_ISTYPE, ensure, value,
-    );
-
-    // Error expected
-    expect(result?.field).to.equal(control.displayName);
+  it('shouldn\'t allow alphabetic value', () => {
+    expect(executeEnsure(ENSURE_FLOAT(), 'a')).satisfy(checkEnsureArgError(desc, 'a'));
   });
 });

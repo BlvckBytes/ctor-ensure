@@ -1,27 +1,23 @@
 import { expect } from 'chai';
-import { ENSURE_NOSPACES, evalStrThunk, STAGE_ISPATTERN } from '../../src';
-import { runStageTesting } from '../test-util';
+import { ENSURE_NOSPACES, evalStrThunk } from '../../src';
+import { checkEnsureArgError, executeEnsure } from '../test-util';
 
 describe('ENSURE_NOSPACES', () => {
-  const ensure = ENSURE_NOSPACES();
+  const desc = 'can\'t contain spaces';
 
   it('should have it\'s default description', () => {
-    const desc = evalStrThunk(ensure.description);
-    expect(desc).to.equal('can\'t contain spaces');
+    expect(evalStrThunk(ENSURE_NOSPACES().description)).to.equal(desc);
   });
 
   it('should allow non-space string', () => {
-    const { result } = runStageTesting(STAGE_ISPATTERN, ensure, 'hello');
-    expect(result).to.be.null;
+    expect(executeEnsure(ENSURE_NOSPACES(), 'hello')).to.have.lengthOf(0);
   });
 
   it('should allow empty string', () => {
-    const { result } = runStageTesting(STAGE_ISPATTERN, ensure, '');
-    expect(result).to.be.null;
+    expect(executeEnsure(ENSURE_NOSPACES(), '')).to.have.lengthOf(0);
   });
 
   it('shouldn\'t allow space string', () => {
-    const { control, result } = runStageTesting(STAGE_ISPATTERN, ensure, 'hello world');
-    expect(result?.field).to.equal(control.displayName);
+    expect(executeEnsure(ENSURE_NOSPACES(), 'hello world')).satisfy(checkEnsureArgError(desc, 'hello world'));
   });
 });

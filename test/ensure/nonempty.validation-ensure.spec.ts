@@ -1,22 +1,19 @@
 import { expect } from 'chai';
-import { ENSURE_NONEMPTY, evalStrThunk, STAGE_ISPATTERN } from '../../src';
-import { runStageTesting } from '../test-util';
+import { ENSURE_NONEMPTY, evalStrThunk } from '../../src';
+import { checkEnsureArgError, executeEnsure } from '../test-util';
 
 describe('ENSURE_NONEMPTY', () => {
+  const desc = 'no empty value';
+
   it('should have it\'s default description', () => {
-    const ensure = ENSURE_NONEMPTY();
-    const desc = evalStrThunk(ensure.description);
-    expect(desc).to.equal('no empty value');
+    expect(evalStrThunk(ENSURE_NONEMPTY().description)).to.equal(desc);
   });
 
-  const ensure = ENSURE_NONEMPTY();
   it('should allow non-empty string', () => {
-    const { result } = runStageTesting(STAGE_ISPATTERN, ensure, 'hello world');
-    expect(result).to.be.null;
+    expect(executeEnsure(ENSURE_NONEMPTY(), 'hello world')).to.have.lengthOf(0);
   });
 
   it('shouldn\'t allow empty string', () => {
-    const { control, result } = runStageTesting(STAGE_ISPATTERN, ensure, '');
-    expect(result?.field).to.equal(control.displayName);
+    expect(executeEnsure(ENSURE_NONEMPTY(), '')).satisfy(checkEnsureArgError(desc, ''));
   });
 });

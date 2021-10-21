@@ -1,5 +1,4 @@
 import { template } from '../description-template.factory';
-import FieldType from '../field-type.enum';
 import { ValidationConfig } from '../validation-config.interface';
 
 /**
@@ -7,9 +6,8 @@ import { ValidationConfig } from '../validation-config.interface';
  * Ensure this field has a defined value
  */
 const ENSURE_EXISTING = (): ValidationConfig => ({
-    type: FieldType.UNDEFINED,
-    negate: true,
     description: template('ENSURE_EXISTING'),
+    process: (value) => value !== undefined,
   });
 
 export default ENSURE_EXISTING;

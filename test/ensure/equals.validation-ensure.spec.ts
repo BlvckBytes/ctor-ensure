@@ -1,20 +1,32 @@
 import { expect } from 'chai';
 import { ENSURE_EQUALS, evalStrThunk } from '../../src';
+import { checkEnsureArgError, executeEnsure } from '../test-util';
 
 describe('ENSURE_EQUALS', () => {
-  it('should have it\'s default description', () => {
-    // Plural
-    let fields = ['a', 'b', 'test'];
-    let ensure = ENSURE_EQUALS(...fields);
-    let desc = evalStrThunk(ensure.description);
-    expect(desc).to.equal('needs to equal to the fields: a, b, test');
-    expect(ensure.equalsToFields).to.deep.equal(fields);
+  const desc = (field: string) => `needs to equal to the field: ${field}`;
+  const descPlural = (...fields: string[]) => `needs to equal to the fields: ${fields.join(', ')}`;
 
-    // Singular
-    fields = ['a'];
-    ensure = ENSURE_EQUALS(...fields);
-    desc = evalStrThunk(ensure.description);
-    expect(desc).to.equal('needs to equal to the field: a');
-    expect(ensure.equalsToFields).to.deep.equal(fields);
+  it('should have it\'s default description', () => {
+    expect(evalStrThunk(ENSURE_EQUALS('a').description)).to.equal(desc('a'));
+    expect(evalStrThunk(ENSURE_EQUALS('a', 'b').description)).to.equal(descPlural('a', 'b'));
+  });
+
+  it('should allow matching fields', () => {
+    const value = 'hello world';
+    expect(executeEnsure(ENSURE_EQUALS('a', 'b', 'c'), value, {
+      a: value, b: value, c: value,
+    })).to.have.lengthOf(0);
+  });
+
+  it('shouldn\'t allow differing fields', () => {
+    const value = 'hello world';
+    const valueDifferent = 'bye world';
+    expect(executeEnsure(ENSURE_EQUALS('a', 'b', 'c'), valueDifferent, {
+      a: value, b: value, c: value,
+    })).to.satisfy(checkEnsureArgError(descPlural('a', 'b', 'c'), valueDifferent));
+  });
+
+  it('should throw on unknown field', () => {
+    expect(() => executeEnsure(ENSURE_EQUALS('unknown'), '')).to.throw('Unknown field requested!');
   });
 });

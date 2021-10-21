@@ -1,28 +1,22 @@
 import { expect } from 'chai';
-import { ENSURE_MINLEN, evalStrThunk, STAGE_ISPATTERN } from '../../src';
-import { runStageTesting } from '../test-util';
+import { ENSURE_MINLEN, evalStrThunk, pluralize } from '../../src';
+import { checkEnsureArgError, executeEnsure } from '../test-util';
 
 describe('ENSURE_MINLEN', () => {
-  it('should have it\'s default description', () => {
-    let desc = evalStrThunk(ENSURE_MINLEN(5).description);
-    expect(desc).to.equal('at least 5 characters');
+  const desc = (min: number) => `at least ${min} ${pluralize('character', min)}`;
 
-    desc = evalStrThunk(ENSURE_MINLEN(1).description);
-    expect(desc).to.equal('at least 1 character');
+  it('should have it\'s default description', () => {
+    expect(evalStrThunk(ENSURE_MINLEN(5).description)).equal(desc(5));
+    expect(evalStrThunk(ENSURE_MINLEN(1).description)).equal(desc(1));
   });
 
-  const min = 5;
-  const ensure = ENSURE_MINLEN(min);
-  it('should allow more down to min characters', () => {
-    let { result } = runStageTesting(STAGE_ISPATTERN, ensure, 'X'.repeat(min));
-    expect(result).to.be.null;
-
-    result = runStageTesting(STAGE_ISPATTERN, ensure, 'X'.repeat(min * 5)).result;
-    expect(result).to.be.null;
+  it('should allow more than min characters', () => {
+    for (let i = 5; i <= 10; i += 1)
+      expect(executeEnsure(ENSURE_MINLEN(5), 'X'.repeat(i))).to.have.lengthOf(0);
   });
 
   it('shouldn\'t allow less than min characters', () => {
-    const { control, result } = runStageTesting(STAGE_ISPATTERN, ensure, 'X'.repeat(min - 1));
-    expect(result?.field).to.equal(control.displayName);
+    for (let i = 0; i < 5; i += 1)
+      expect(executeEnsure(ENSURE_MINLEN(5), 'X'.repeat(i))).satisfy(checkEnsureArgError(desc(5), 'X'.repeat(i)));
   });
 });

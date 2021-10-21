@@ -1,34 +1,19 @@
 import { expect } from 'chai';
-import { ENSURE_EXISTING, evalStrThunk, STAGE_ISTYPE } from '../../src';
-import { runStageTesting } from '../test-util';
+import { ENSURE_EXISTING, evalStrThunk } from '../../src';
+import { checkEnsureArgError, executeEnsure } from '../test-util';
 
 describe('ENSURE_EXISTING', () => {
-  const ensure = ENSURE_EXISTING();
+  const desc = 'mandatory field';
 
   it('should have it\'s default description', () => {
-    const desc = evalStrThunk(ensure.description);
-    expect(desc).to.equal('mandatory field');
+    expect(evalStrThunk(ENSURE_EXISTING().description)).to.equal(desc);
   });
 
   it('should allow defined fields', () => {
-    const value = 'i am defined';
-
-    const { result } = runStageTesting(
-      STAGE_ISTYPE, ensure, value,
-    );
-
-    // No errors expected
-    expect(result).to.be.null;
+    expect(executeEnsure(ENSURE_EXISTING(), 'defined')).to.have.lengthOf(0);
   });
 
   it('shouldn\'t allow undefined fields', () => {
-    const value = undefined;
-
-    const { result, control } = runStageTesting(
-      STAGE_ISTYPE, ensure, value,
-    );
-
-    // Error should occur
-    expect(result?.field).to.equal(control.displayName);
+    expect(executeEnsure(ENSURE_EXISTING(), undefined)).satisfy(checkEnsureArgError(desc, undefined));
   });
 });

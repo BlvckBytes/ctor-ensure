@@ -1,46 +1,23 @@
 import { expect } from 'chai';
-import { ENSURE_NONNULL, evalStrThunk, STAGE_ISTYPE } from '../../src';
-import { runStageTesting } from '../test-util';
+import { ENSURE_NONNULL, evalStrThunk } from '../../src';
+import { checkEnsureArgError, executeEnsure } from '../test-util';
 
 describe('ENSURE_NONNULL', () => {
-  const ensure = ENSURE_NONNULL();
+  const desc = 'no null value';
 
   it('should have it\'s default description', () => {
-    const desc = evalStrThunk(ensure.description);
-    expect(desc).to.equal('no null value');
+    expect(evalStrThunk(ENSURE_NONNULL().description)).to.equal(desc);
   });
 
   it('should allow non-null fields', () => {
-    const value = 'i am not null';
-
-    const { result } = runStageTesting(
-      STAGE_ISTYPE, ensure, value,
-    );
-
-    // No errors expected
-    expect(result).to.be.null;
+    expect(executeEnsure(ENSURE_NONNULL(), 'hello world')).to.have.lengthOf(0);
   });
 
   it('shouldn\'t allow undefined fields', () => {
-    const value = undefined;
-
-    const { control, result } = runStageTesting(
-      STAGE_ISTYPE, ensure, value,
-    );
-
-    // Error should occur
-    expect(result?.field).to.equal(control.displayName);
+    expect(executeEnsure(ENSURE_NONNULL(), undefined)).satisfy(checkEnsureArgError(desc, undefined));
   });
 
   it('shouldn\'t allow null fields', () => {
-    const value = null;
-
-    const { control, result } = runStageTesting(
-      STAGE_ISTYPE, ensure, value,
-    );
-
-    // Error should occur
-    expect(result?.field).to.equal(control.displayName);
- 
+    expect(executeEnsure(ENSURE_NONNULL(), null)).satisfy(checkEnsureArgError(desc, null));
   });
 });

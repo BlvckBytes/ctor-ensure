@@ -1,28 +1,26 @@
 import { expect } from 'chai';
 import { Constructable, META_KEY_VALIDATION, ValidatedArg, ValidationConfig, ValidationControl } from '../src';
-import { ValidationFlags } from '../src/validation-flags.interface';
 
 describe('@ValidatedArg', () => {
-  const callWith = (clazz: Constructable, index: number, confs = 1, confsOff = 0, flags: ValidationFlags | null = null) => {
+  const callWith = (clazz: Constructable, index: number, confs = 1, confsOff = 0) => {
     // Create single or multiple configs, based on confs
     const mkConfs: () => ValidationConfig | ValidationConfig[] = () => {
       if (confs === 1)
-        return { description: `description${index}` };
+        return { description: `description${index}`, process: () => true };
 
       return [...Array(confs).keys()].map((_, ind) => ({
-        description: `description${index}-${confsOff + ind}`,
+        description: `description${index}-${confsOff + ind}`, process: () => true,
       }));
     };
 
     // Call decorator as function on clazz
-    ValidatedArg(`field${index}`, mkConfs(), flags)(clazz, `field${index}`, index);
+    ValidatedArg(`field${index}`, mkConfs())(clazz, `field${index}`, index);
   };
 
-  const expectMetadata = (control: ValidationControl, index: number, subs = 1, isArray = false) => {
+  const expectMetadata = (control: ValidationControl, index: number, subs = 1) => {
     // Validate control
     expect(control?.ctorInd).to.equal(index);
     expect(control?.displayName).to.equal(`field${index}`);
-    expect(control?.flags.isArray).to.equal(isArray);
   
     // Only one sub-config, validate without suffix
     if (subs === 1) {

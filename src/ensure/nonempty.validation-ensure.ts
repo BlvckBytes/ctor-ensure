@@ -5,9 +5,12 @@ import { ValidationConfig } from '../validation-config.interface';
  * Ensure to be used within config of {@link ValidatedArg}
  * Ensure this field is not empty
  */
-const ENSURE_NONEMPTY = (): ValidationConfig => ({
-    pattern: /.+/,
+const ENSURE_NONEMPTY = (): ValidationConfig => {
+  const pattern = /.+/;
+  return {
     description: template('ENSURE_NONEMPTY'),
-  });
+    process: (value) => pattern.test(value),
+  };
+};
 
 export default ENSURE_NONEMPTY;

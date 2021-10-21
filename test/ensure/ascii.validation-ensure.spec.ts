@@ -1,14 +1,8 @@
 import { expect } from 'chai';
 import { ENSURE_ASCII, evalStrThunk } from '../../src';
+import { checkEnsureArgError, executeEnsure } from '../test-util';
 
 describe('ENSURE_ASCII', () => {
-
-  it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_ASCII().description)).to.equal('only ascii characters');
-    expect(evalStrThunk(ENSURE_ASCII(false, false).description)).to.equal('only ascii characters without spaces');
-    expect(evalStrThunk(ENSURE_ASCII(true).description)).to.equal('only printable ascii characters');
-    expect(evalStrThunk(ENSURE_ASCII(true, false).description)).to.equal('only printable ascii characters without spaces');
-  });
 
   let asciiFull = '';
   let asciiPrintable = '';
@@ -18,41 +12,52 @@ describe('ENSURE_ASCII', () => {
     if (i >= 32 && i <= 126)
       asciiPrintable += curr;
   }
+  const asciiFullNoSpaces = asciiFull.replace(' ', '');
+  const asciiPrintableNoSpaces = asciiPrintable.replace(' ', '');
+
+  const desc = 'only ascii characters';
+  const descNoSpaces = 'only ascii characters without spaces';
+  const descPrintable = 'only printable ascii characters';
+  const descPrintableNoSpaces = 'only printable ascii characters without spaces';
+
+  it('should have it\'s default description', () => {
+    expect(evalStrThunk(ENSURE_ASCII().description)).to.equal(desc);
+    expect(evalStrThunk(ENSURE_ASCII(false, false).description)).to.equal(descNoSpaces);
+    expect(evalStrThunk(ENSURE_ASCII(true).description)).to.equal(descPrintable);
+    expect(evalStrThunk(ENSURE_ASCII(true, false).description)).to.equal(descPrintableNoSpaces);
+  });
 
   it('should allow all ascii characters', () => {
-    const ensure = ENSURE_ASCII();
-    expect(ensure.pattern?.test(asciiFull)).to.equal(true);
+    expect(executeEnsure(ENSURE_ASCII(), asciiFull)).to.have.lengthOf(0);
   });
 
   it('should allow only printable ascii characters', () => {
-    const ensure = ENSURE_ASCII(true);
-    expect(ensure.pattern?.test(asciiPrintable)).to.equal(true);
-    expect(ensure.pattern?.test(asciiFull)).to.equal(false);
+    expect(executeEnsure(ENSURE_ASCII(true), asciiPrintable)).to.have.lengthOf(0);
+    expect(executeEnsure(ENSURE_ASCII(true), asciiFull)).satisfies(checkEnsureArgError(descPrintable, asciiFull));
   });
 
   it('should allow empty strings', () => {
-    expect(ENSURE_ASCII().pattern?.test('')).equal(true);
-    expect(ENSURE_ASCII(false, false).pattern?.test('')).equal(true);
-    expect(ENSURE_ASCII(true, false).pattern?.test('')).equal(true);
-    expect(ENSURE_ASCII(true, true).pattern?.test('')).equal(true);
+    expect(executeEnsure(ENSURE_ASCII(), '')).to.have.lengthOf(0);
+    expect(executeEnsure(ENSURE_ASCII(false, false), '')).to.have.lengthOf(0);
+    expect(executeEnsure(ENSURE_ASCII(true, false), '')).to.have.lengthOf(0);
+    expect(executeEnsure(ENSURE_ASCII(true, true), '')).to.have.lengthOf(0);
   });
 
   it('should allow all ascii characters without space', () => {
-    const ensure = ENSURE_ASCII(false, false);
-    expect(ensure.pattern?.test(asciiFull.replace(' ', ''))).to.equal(true);
-    expect(ensure.pattern?.test(asciiFull)).to.equal(false);
+    expect(executeEnsure(ENSURE_ASCII(false, false), asciiFullNoSpaces)).to.have.lengthOf(0);
+    expect(executeEnsure(ENSURE_ASCII(false, false), asciiFull)).satisfies(checkEnsureArgError(descNoSpaces, asciiFull));
   });
 
   it('should allow only printable ascii characters without space', () => {
-    const ensure = ENSURE_ASCII(true, false);
-    expect(ensure.pattern?.test(asciiPrintable.replace(' ', ''))).to.equal(true);
-    expect(ensure.pattern?.test(asciiPrintable)).to.equal(false);
-    expect(ensure.pattern?.test(asciiFull)).to.equal(false);
-    expect(ensure.pattern?.test(asciiFull.replace(' ', ''))).to.equal(false);
+    expect(executeEnsure(ENSURE_ASCII(true, false), asciiPrintableNoSpaces)).to.have.lengthOf(0);
+    expect(executeEnsure(ENSURE_ASCII(true, false), asciiPrintable)).satisfies(checkEnsureArgError(descPrintableNoSpaces, asciiPrintable));
+    expect(executeEnsure(ENSURE_ASCII(true, false), asciiFull)).satisfies(checkEnsureArgError(descPrintableNoSpaces, asciiFull));
+    expect(executeEnsure(ENSURE_ASCII(true, false), asciiFullNoSpaces)).satisfies(checkEnsureArgError(descPrintableNoSpaces, asciiFullNoSpaces));
   });
 
   it('should disallow unicode', () => {
-    const ensure = ENSURE_ASCII();
-    expect(ensure.pattern?.test('😂')).to.equal(false);
+    const unicode = '🧲';
+    expect(executeEnsure(ENSURE_ASCII(true), unicode)).satisfies(checkEnsureArgError(descPrintable, unicode));
+    expect(executeEnsure(ENSURE_ASCII(true, false), unicode)).satisfies(checkEnsureArgError(descPrintableNoSpaces, unicode));
   });
 });

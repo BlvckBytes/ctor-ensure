@@ -14,7 +14,7 @@ export enum Encoding {
  * @param encoding Encoding base to be allowed
  */
 export const ENSURE_BASEENCODED = (encoding: Encoding): ValidationConfig => {
-  let pattern;
+  let pattern: RegExp;
   switch (encoding) {
     case Encoding.BASE32:
       pattern = /^(?:[A-Z2-7]{8})*(?:[A-Z2-7]{2}={6}|[A-Z2-7]{4}={4}|[A-Z2-7]{5}={3}|[A-Z2-7]{7}=)?$/;
@@ -33,10 +33,10 @@ export const ENSURE_BASEENCODED = (encoding: Encoding): ValidationConfig => {
   } 
 
   return {
-    pattern,
     description: template('ENSURE_BASEENCODED', {
       base: (Encoding[encoding]).toUpperCase(),
     }),
+    process: (value) => pattern.test(value),
   };
 };
 

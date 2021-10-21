@@ -1,45 +1,23 @@
 import { expect } from 'chai';
-import { ENSURE_INT, evalStrThunk, STAGE_ISTYPE } from '../../src';
-import { runStageTesting } from '../test-util';
+import { ENSURE_INT, evalStrThunk } from '../../src';
+import { checkEnsureArgError, executeEnsure } from '../test-util';
 
 describe('ENSURE_INT', () => {
-  const ensure = ENSURE_INT();
+  const desc = 'integer number';
 
   it('should have it\'s default description', () => {
-    const desc = evalStrThunk(ensure.description);
-    expect(desc).to.equal('integer number');
+    expect(evalStrThunk(ENSURE_INT().description)).to.equal(desc);
   });
 
   it('should allow integer value', () => {
-    const value = 55;
-
-    const { result } = runStageTesting(
-      STAGE_ISTYPE, ensure, value,
-    );
-
-    // No errors expected
-    expect(result).to.be.null;
+    expect(executeEnsure(ENSURE_INT(), 5)).to.have.lengthOf(0);
   });
 
   it('shouldn\'t allow string integer value', () => {
-    const value = '55';
-
-    const { control, result } = runStageTesting(
-      STAGE_ISTYPE, ensure, value,
-    );
-
-    // Error expected
-    expect(result?.field).to.equal(control.displayName);
+    expect(executeEnsure(ENSURE_INT(), '5')).satisfy(checkEnsureArgError(desc, '5'));
   });
 
   it('shouldn\'t allow alphabetic value', () => {
-    const value = 'hello world';
-
-    const { control, result } = runStageTesting(
-      STAGE_ISTYPE, ensure, value,
-    );
-
-    // Error expected
-    expect(result?.field).to.equal(control.displayName);
+    expect(executeEnsure(ENSURE_INT(), 'a')).satisfy(checkEnsureArgError(desc, 'a'));
   });
 });

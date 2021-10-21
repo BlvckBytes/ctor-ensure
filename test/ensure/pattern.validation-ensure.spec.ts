@@ -1,10 +1,20 @@
 import { expect } from 'chai';
 import { ENSURE_PATTERN, evalStrThunk } from '../../src';
+import { checkEnsureArgError, executeEnsure } from '../test-util';
 
 describe('ENSURE_PATTERN', () => {
   it('should pass through it\'s description', () => {
-    const ensure = ENSURE_PATTERN(/any/, 'this is a description');
-    const desc = evalStrThunk(ensure.description);
-    expect(desc).to.equal('this is a description');
+    expect(evalStrThunk(ENSURE_PATTERN(/a/, 'this is a test').description)).to.equal('this is a test');
+  });
+
+  const alphaDesc = 'Only the alphabet with spaces';
+  const alphaEnsure = ENSURE_PATTERN(/^[A-Za-z ]+/, alphaDesc);
+
+  it('should allow it\'s pattern', () => {
+    expect(executeEnsure(alphaEnsure, 'Hello World')).to.have.lengthOf(0);
+  });
+
+  it('should deny a foreign pattern', () => {
+    expect(executeEnsure(alphaEnsure, '0123456789')).satisfy(checkEnsureArgError(alphaDesc, '0123456789'));
   });
 });

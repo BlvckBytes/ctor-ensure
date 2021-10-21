@@ -1,20 +1,5 @@
 import { expect } from 'chai'; 
-import { ValidationStage, getRegisteredValidationStages, registerValidationStage, CtorEnsure, META_KEY_DISPLAYNAME, Constructable, ValidatedArg, ENSURE_NONEMPTY, CtorEnsureException, CtorEnsureArgError, ENSURE_MINLEN } from '../src';
-
-describe('registerValidationStage()', () => {
-  it('added stage should be registered', () => {
-    // Create dummy stage
-    const TEST_STAGE: ValidationStage = () => null;
-
-    // Capture size before and after registration
-    const sizeBefore = getRegisteredValidationStages().length;
-    registerValidationStage(TEST_STAGE);
-    const sizeAfter = getRegisteredValidationStages().length;
-
-    // Except array to have grown
-    expect(sizeBefore).to.be.lessThan(sizeAfter);
-  });
-});
+import { CtorEnsure, META_KEY_DISPLAYNAME, Constructable, ValidatedArg, ENSURE_NONEMPTY, CtorEnsureException, CtorEnsureArgError, ENSURE_MINLEN } from '../src';
 
 describe('@CtorEnsure', () => {
   it('should apply the displayname metadata', () => {

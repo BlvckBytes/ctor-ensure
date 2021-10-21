@@ -1,5 +1,4 @@
 import { template } from '../description-template.factory';
-import FieldType from '../field-type.enum';
 import { ValidationConfig } from '../validation-config.interface';
 
 /**
@@ -7,9 +6,8 @@ import { ValidationConfig } from '../validation-config.interface';
  * Ensure this field is not of null value
  */
 const ENSURE_NONNULL = (): ValidationConfig => ({
-    type: FieldType.NULL,
-    negate: true,
     description: template('ENSURE_NONNULL'),
+    process: (value) => value !== null && value !== undefined,
   });
 
 export default ENSURE_NONNULL;

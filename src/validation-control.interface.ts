@@ -1,5 +1,4 @@
 import { ValidationConfig } from './validation-config.interface';
-import { ValidationFlags } from './validation-flags.interface';
 
 /**
  * Control for {@link ValidatedArg} decorator, validating properties
@@ -13,7 +12,4 @@ export interface ValidationControl {
 
   // Configurations for validation (chain elements)
   configs: ValidationConfig[];
-
-  // Flags for this control
-  flags: ValidationFlags;
 }

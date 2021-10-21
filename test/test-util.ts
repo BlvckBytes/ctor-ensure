@@ -1,42 +1,53 @@
-/* eslint-disable import/prefer-default-export */
-import { ValidationConfig, ValidationControl, ValidationStage } from '../src';
-import { ValidationFlags } from '../src/validation-flags.interface';
+import { CtorEnsureArgError, evalStrThunk, ValidationConfig } from '../src';
 
-/**
- * Helper routine to run a stage with a passed config for
- * testing purposes only
- * @param stages Reference to stage(s) function
- * @param config Config to use with stage
- * @param value Value to validate
- * @param isArray Whether or not the value's an array
- * @returns Result and Control in an object
- */
-export const runStageTesting = (
-  stages: ValidationStage | ValidationStage[],
-  config: ValidationConfig,
-  value: any,
-  flags: Partial<ValidationFlags> | null = null,
-) => {
-  const control: ValidationControl = {
-    displayName: 'test',
-    ctorInd: 0,
-    configs: [config],
-    flags: {
-      isArray: false,
-      isUnique: false,
-      ignoreCasing: false,
-      ...flags,
+export const executeEnsure = (ensure: ValidationConfig, value: any, otherControls: { [key: string]: any} = {} ) => {
+  // Dummy controls, having ensure as first control, named test
+  const controls = [
+    {
+      displayName: 'test',
+      ctorInd: 0,
+      configs: [ensure],
     },
-  };
+  ];
 
-  const items = Array.isArray(stages) ? stages : [stages];
-  for (let i = 0; i < items.length; i += 1) {
-    const result = items[i](
-      [control], [value], config, control, value, value,
-    );
+  // Dummy constructor, having value as first key
+  const ctor = [value];
 
-    if (result) return { result, control };
+  // Register other "dummy" controls with their values
+  Object.keys(otherControls).forEach((key, i) => {
+    controls.push({
+      displayName: key,
+      ctorInd: i + 1,
+      configs: [],
+    });
+    ctor.push(otherControls[key]);
+  });
+
+  // List of errors that occurred
+  const errors: CtorEnsureArgError[] = [];
+
+  // Validate whole config chain from top to bottom
+  for (let i = 0; i < controls[0].configs.length; i += 1) {
+    const currConfig = controls[0].configs[i];
+
+    // Validate all values individually (to support arrays)
+    const values: any[] = Array.isArray(value) ? value : [value];
+
+    for (let j = 0; j < values.length; j += 1) {
+      const currValue = values[j];
+      const res = currConfig.process(currValue, controls, ctor, controls[0], value);
+
+      if (!res) {
+        errors.push({
+          field: controls[0].displayName,
+          description: evalStrThunk(currConfig.description),
+          value: currValue,
+        });
+      }
+    }
   }
 
-  return { result: null, control };
+  return errors;
 };
+
+export const checkEnsureArgError = (description: string, value: any) => (errors: CtorEnsureArgError[]) => errors?.some(it => it.description === description && it.value === value);

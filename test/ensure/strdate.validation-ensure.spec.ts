@@ -1,27 +1,23 @@
 import { expect } from 'chai';
-import { ENSURE_STRDATE, evalStrThunk, STAGE_ISPATTERN } from '../../src';
-import { runStageTesting } from '../test-util';
+import { ENSURE_STRDATE, evalStrThunk } from '../../src';
+import { checkEnsureArgError, executeEnsure } from '../test-util';
 
 describe('ENSURE_STRDATE', () => {
-  const ensure = ENSURE_STRDATE();
+  const desc = 'valid full ISO-8601 datetime string';
 
   it('should have it\'s default description', () => {
-    const desc = evalStrThunk(ensure.description);
-    expect(desc).to.equal('valid full ISO-8601 datetime string');
+    expect(evalStrThunk(ENSURE_STRDATE().description)).to.equal(desc);
   });
 
   it('should allow valid date', () => {
-    const { result } = runStageTesting(STAGE_ISPATTERN, ensure, '2021-10-17T17:38:50+00:00');
-    expect(result).to.be.null;
+    expect(executeEnsure(ENSURE_STRDATE(), '2021-10-17T17:38:50+00:00')).to.have.lengthOf(0);
   });
 
   it('should allow empty string', () => {
-    const { result } = runStageTesting(STAGE_ISPATTERN, ensure, '');
-    expect(result).to.be.null;
+    expect(executeEnsure(ENSURE_STRDATE(), '')).to.have.lengthOf(0);
   });
 
   it('shouldn\'t allow invalid date', () => {
-    const { control, result } = runStageTesting(STAGE_ISPATTERN, ensure, '2021-10-17');
-    expect(result?.field).to.equal(control.displayName);
+    expect(executeEnsure(ENSURE_STRDATE(), '2020-03-05')).satisfy(checkEnsureArgError(desc, '2020-03-05'));
   });
 });

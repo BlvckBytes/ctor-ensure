@@ -13,11 +13,13 @@ const ENSURE_MINMAXLEN = (min: number, max: number): ValidationConfig => {
   if (min > max && max !== -1)
     throw new SyntaxError('Max cannot be less than min!');
 
+  const pattern = new RegExp(`^.{${min > 0 ? min : 0},${max > 0 ? max : ''}}$`);
+
   return {
-    pattern: new RegExp(`^.{${min > 0 ? min : 0},${max > 0 ? max : ''}}$`),
     description: template('ENSURE_MINMAX', {
       min, max, hasMin: min > 0, hasMax: max > 0, hasBoth: min > 0 && max > 0,
     }),
+    process: (value) => pattern.test(value),
   };
 };
 

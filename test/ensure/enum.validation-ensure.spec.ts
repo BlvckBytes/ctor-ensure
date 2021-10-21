@@ -1,54 +1,62 @@
 import { expect } from 'chai';
 import { ENSURE_ENUM, evalStrThunk } from '../../src';
 import { enumKeys, enumValues } from '../../src/ensure/enum.validation-ensure';
+import { executeEnsure } from '../test-util';
+
+enum SINGULAR {
+  TYPE1,
+}
+
+enum PLURAL {
+  TYPE1,
+  TYPE2,
+  TYPE3,
+}
+
+describe('enumValues()', () => {
+  it('should extract correct values', () => {
+    expect(enumValues(PLURAL)).to.include.members(['TYPE1', 'TYPE2', 'TYPE3']);
+  });
+});
+
+describe('enumKeys()', () => {
+  it('should extract correct keys', () => {
+    expect(enumKeys(PLURAL)).to.include.members([0, 1, 2]);
+  });
+});
 
 describe('ENSURE_ENUM', () => {
-  enum SINGULAR {
-    TYPE1,
-  }
-
-  enum PLURAL {
-    TYPE1,
-    TYPE2,
-    TYPE3,
-  }
+  const desc = (inp: { [key: string]: string | number }) => `needs to equal to the value: ${enumValues(inp).join(', ')}`;
+  const descPlural = (inp: { [key: string]: string | number }) => `needs to equal to one of the values: ${enumValues(inp).join(', ')}`;
+  const descKeys = (inp: { [key: string]: string | number }) => `needs to equal to the value: ${enumKeys(inp).join(', ')}`;
+  const descKeysPlural = (inp: { [key: string]: string | number }) => `needs to equal to one of the values: ${enumKeys(inp).join(', ')}`;
 
   it('should have it\'s default description singular', () => {
-    const desc = evalStrThunk(ENSURE_ENUM(SINGULAR).description);
-    expect(desc).to.equal(`needs to equal to the value: ${SINGULAR[0]}`);
+    expect(evalStrThunk(ENSURE_ENUM(SINGULAR).description)).to.equal(desc(SINGULAR));
+    expect(evalStrThunk(ENSURE_ENUM(SINGULAR, true).description)).to.equal(descKeys(SINGULAR));
   });
 
   it('should have it\'s default description plural', () => {
-    const desc = evalStrThunk(ENSURE_ENUM(PLURAL).description);
-    expect(desc).to.equal(`needs to equal to one of the values: ${PLURAL[0]}, ${PLURAL[1]}, ${PLURAL[2]}`);
+    expect(evalStrThunk(ENSURE_ENUM(PLURAL).description)).to.equal(descPlural(PLURAL));
+    expect(evalStrThunk(ENSURE_ENUM(PLURAL, true).description)).to.equal(descKeysPlural(PLURAL));
   });
 
   it('should allow empty strings', () => {
-    const ensure = ENSURE_ENUM(PLURAL);
-    expect(ensure.pattern?.test('')).to.equal(true);
+    expect(executeEnsure(ENSURE_ENUM(PLURAL), '')).to.have.lengthOf(0);
+    expect(executeEnsure(ENSURE_ENUM(SINGULAR), '')).to.have.lengthOf(0);
+    expect(executeEnsure(ENSURE_ENUM(PLURAL, true), '')).to.have.lengthOf(0);
+    expect(executeEnsure(ENSURE_ENUM(SINGULAR, true), '')).to.have.lengthOf(0);
   });
 
-  it('should have a proper pattern singular', () => {
-    // Singular
-    const ensure = ENSURE_ENUM(SINGULAR);
-    expect(ensure.pattern?.source).to.equal(`(^${SINGULAR[0]}$)|^$`);
+  it('should allow SINGULAR enum values', () => {
+    enumValues(SINGULAR).forEach(value => {
+      expect(executeEnsure(ENSURE_ENUM(SINGULAR), value)).to.have.lengthOf(0);
+    });
   });
 
-  it('should have a proper pattern singular', () => {
-    // Singular
-    const ensure = ENSURE_ENUM(PLURAL);
-    expect(ensure.pattern?.source).to.equal(`(^${PLURAL[0]}|${PLURAL[1]}|${PLURAL[2]}$)|^$`);
-  });
-
-  enum TestEnum {
-    ONE, TWO, THREE,
-  }
-
-  it('should get the right enum keys', () => {
-    expect(enumKeys(TestEnum)).to.deep.equal([TestEnum.ONE, TestEnum.TWO, TestEnum.THREE]);
-  });
-
-  it('should get the right enum values', () => {
-    expect(enumValues(TestEnum)).to.deep.equal([TestEnum[TestEnum.ONE], TestEnum[TestEnum.TWO], TestEnum[TestEnum.THREE]]);
+  it('should allow PLURAL enum values', () => {
+    enumValues(PLURAL).forEach(value => {
+      expect(executeEnsure(ENSURE_ENUM(PLURAL), value)).to.have.lengthOf(0);
+    });
   });
 });

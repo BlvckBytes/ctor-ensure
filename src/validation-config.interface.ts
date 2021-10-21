@@ -10,10 +10,19 @@ export interface ValidationConfig {
   // Callback to process this configuration
   // Returns passing as true and failed as false
   process: (
-    value: any, // Value to validate, always scalar
-    neighbors: ValidationControl[], // Neighbor validation controls
-    ctor: any[], // All constructor arguments
-    parent: ValidationControl, // Parent validation control
-    arg: any, // Current ctor argument, scalar or array
+    // Value to validate, always scalar
+    value: any,
+
+    // Neighbor validation controls
+    neighbors: ValidationControl[],
+
+    // All constructor arguments
+    ctor: any[],
+
+    // Parent validation control
+    parent: ValidationControl,
+
+    // Current ctor argument, scalar or array
+    arg: any,
   ) => boolean;
 }

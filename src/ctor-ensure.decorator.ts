@@ -14,10 +14,12 @@ export const META_KEY_DISPLAYNAME = 'CTOR_ENSURE:DISPLAYNAME';
  * All validation errors will be thrown using a single {@link CtorEnsureException}
  * @param displayname Displayname of class
  * @param multipleErrorsPerField Whether or not to display multiple errors per field, default false
+ * @param extendOverridenFields Whether or not to extend inherited validations from overriden fields of the parent
  */
 export const CtorEnsure = (
   displayname: string,
   multipleErrorsPerField = false,
+  extendOverridenFields = false,
 ) => (Clazz: Constructable): Constructable => {
     // Define display-name
     Reflect.defineMetadata(META_KEY_DISPLAYNAME, displayname, Clazz);
@@ -90,6 +92,25 @@ export const CtorEnsure = (
     // Copy prototype and existing metadata
     interceptor.prototype = Clazz.prototype;
     Reflect.getMetadataKeys(Clazz).forEach(key => {
+
+      // Merge validation metadata
+      if (key === META_KEY_VALIDATION) {
+        const self = Reflect.getMetadata(key, Clazz) as ValidationControl[];
+        const other = Reflect.getMetadata(key, interceptor) as ValidationControl[];
+
+        if (extendOverridenFields) {
+          (other || []).forEach(otherControl => {
+            const control = self.find(it => it.displayName === otherControl.displayName);
+            control?.configs.push(...otherControl.configs);
+          });
+        }
+
+        // Define merge result
+        Reflect.defineMetadata(key, self, interceptor);
+        return;
+      }
+
+      // Just copy (override) all other metadata
       Reflect.defineMetadata(key, Reflect.getMetadata(key, Clazz), interceptor);
     });
 

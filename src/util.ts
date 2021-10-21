@@ -30,9 +30,10 @@ export const ternaryString = (state: boolean, ifTrue: string, ifFalse: string): 
  * Evaluates a string thunk bei either calling it, if it's a
  * function, or returning it's immediate value
  * @param thunk Either a thunk returning a string or a string value
+ * @param args Arguments to be passed to the thunk
  * @returns Evaluated string value
  */
-export const evalStrThunk = (thunk: (() => string) | string): string => typeof thunk === 'function' ? thunk() : thunk;
+export const evalStrThunk = (thunk: ((...args: any[]) => string) | string, ...args: any[]): string => typeof thunk === 'function' ? thunk(...args) : thunk;
 
 /**
  * Escape a string to be used within a regular expression safely

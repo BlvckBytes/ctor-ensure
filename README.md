@@ -39,7 +39,8 @@ Last but not least, make sure you have your .ENV set up properly, feel free to u
 
 ## How to use
 
-Mark the target class for validation. This decorator accepts two parameters, the first one being the class' displayname, the second one being a flag whether or not to allow multiple errors per field (default false). For demonstration purposes, we'll switch that flag on.
+Mark the target class for validation. This decorator accepts three parameters, the first one being the class' displayname, the second one being a flag whether or not to allow multiple errors per field (default false) and the third one enables overriden inheritance validation extending (default false). For demonstration purposes, we'll switch the first flag on, getting to the second one later down the road.
+
 ```typescript
 @CtorEnsure('UserRegistration', true)
 class UserRegistrationModel {}
@@ -247,6 +248,33 @@ class ClassB extends ClassA {
 ```
 
 The simplicity of this is beautiful: Once you call new on ClassB, it internally will invoke a super-call, which will invoke the constructor of ClassA. If anything regarding the validation of ClassA fails, it's constructor will throw an error. That error will bubble up to the super-call. ClassB is going to fork the exception, and only change the display-name to it's own (model-b). This way, the exception provides the impression that it's a single class, when in reality, there are two separate classes, that organize and keep the code clean. Of course - you can add as many levels to this as you'd like to, the latest class in the call-chain will always apply it's name.
+
+When you override a field, it can extend the inherited parent's validation, if desired, just set the flag:
+
+```typescript
+@CtorEnsure('model-a')
+class ClassA {
+
+  constructor (
+    @ValidatedArg('field', ENSURE_MINMAXLEN(5, 10))
+    public field: string,
+  ) {}
+}
+
+// Parameters: displayname, multiple errors per field, inherit overriden fields
+@CtorEnsure('model-b', true, true)
+class ClassB extends ClassA {
+
+  constructor (
+    @ValidatedArg('field', ENSURE_ALPHA())
+    public field: string,
+  ) {
+    super(field);
+  }
+}
+```
+
+Now, `field` will validate with `ENSURE_MINMAXLEN(5, 10)` and `ENSURE_ALPHA()`.
 
 ## Standard Ensures
 

@@ -1,5 +1,5 @@
 import { expect } from 'chai'; 
-import { CtorEnsure, META_KEY_DISPLAYNAME, Constructable, ValidatedArg, ENSURE_NONEMPTY, CtorEnsureException, CtorEnsureArgError, ENSURE_MINLEN } from '../src';
+import { CtorEnsure, META_KEY_DISPLAYNAME, Constructable, ValidatedArg, ENSURE_NONEMPTY, CtorEnsureException, CtorEnsureArgError, ENSURE_MINLEN, ENSURE_ALPHA } from '../src';
 
 describe('@CtorEnsure', () => {
   it('should apply the displayname metadata', () => {
@@ -167,6 +167,89 @@ describe('@CtorEnsure', () => {
     .and.to.satisfy((e: CtorEnsureException) => (
       e.displayName === 'test-model-b' &&
       e.errors[0]?.field === 'fieldB'
+    ));
+  });
+
+  it('should work on same-named inherited field with flag on', () => {
+    @CtorEnsure('test-model-a')
+    class TestClassA {
+      constructor (
+        @ValidatedArg('field', ENSURE_ALPHA())
+        public field: string,
+      ) {}
+    }
+
+    @CtorEnsure('test-model-b', true, true)
+    class TestClassB extends TestClassA {
+      constructor (
+        @ValidatedArg('field', ENSURE_MINLEN(5))
+        public field: string,
+      ) {
+        super(field);
+      }
+    }
+
+    expect(() => new TestClassB('1'))
+    .to.throw(CtorEnsureException.message)
+    .and.to.satisfy((e: CtorEnsureException) => (
+      e.displayName === 'test-model-b' &&
+      e.errors[0]?.field === 'field' &&
+      e.errors[1]?.field === 'field'
+    ));
+  });
+
+  it('shouldn\'t work on same-named inherited field with flag off', () => {
+    @CtorEnsure('test-model-a')
+    class TestClassA {
+      constructor (
+        @ValidatedArg('field', ENSURE_ALPHA())
+        public field: string,
+      ) {}
+    }
+
+    @CtorEnsure('test-model-b', true)
+    class TestClassB extends TestClassA {
+      constructor (
+        @ValidatedArg('field', ENSURE_MINLEN(5))
+        public field: string,
+      ) {
+        super(field);
+      }
+    }
+
+    expect(() => new TestClassB('1'))
+    .to.throw(CtorEnsureException.message)
+    .and.to.satisfy((e: CtorEnsureException) => (
+      e.displayName === 'test-model-b' &&
+      e.errors[0]?.field === 'field' &&
+      e.errors.length === 1
+    ));
+  });
+
+  it('should work on same-named inherited field with no added decorator', () => {
+    @CtorEnsure('test-model-a')
+    class TestClassA {
+      constructor (
+        @ValidatedArg('field', ENSURE_MINLEN(5))
+        public field: string,
+      ) {}
+    }
+
+    @CtorEnsure('test-model-b', true, true)
+    class TestClassB extends TestClassA {
+      constructor (
+        public field: string,
+      ) {
+        super(field);
+      }
+    }
+
+    expect(() => new TestClassB('1'))
+    .to.throw(CtorEnsureException.message)
+    .and.to.satisfy((e: CtorEnsureException) => (
+      e.displayName === 'test-model-b' &&
+      e.errors[0]?.field === 'field' &&
+      e.errors.length === 1
     ));
   });
 

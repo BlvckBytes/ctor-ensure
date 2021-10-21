@@ -1,5 +1,12 @@
 import { CtorEnsureArgError, evalStrThunk, ValidationConfig } from '../src';
 
+/**
+ * Execute a ensure and retrieve a list of it's ensure-arg errors
+ * @param ensure Ensure to execute
+ * @param value Value to execute it against
+ * @param otherControls Neighbor controls, for real-case scenario mocks
+ * @returns List of ensure-arg errors that occurred
+ */
 export const executeEnsure = (ensure: ValidationConfig, value: any, otherControls: { [key: string]: any} = {} ) => {
   // Dummy controls, having ensure as first control, named test
   const controls = [
@@ -50,4 +57,11 @@ export const executeEnsure = (ensure: ValidationConfig, value: any, otherControl
   return errors;
 };
 
+/**
+ * To be used in conjunction with satisfy() from chai, to check the
+ * valid existence of an ensure-arg error
+ * @param description Expected description of the error
+ * @param value Value that is causing this error
+ * @returns True if found, false otherwise
+ */
 export const checkEnsureArgError = (description: string, value: any) => (errors: CtorEnsureArgError[]) => errors?.some(it => it.description === description && it.value === value);

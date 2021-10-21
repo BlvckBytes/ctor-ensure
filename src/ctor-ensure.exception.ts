@@ -5,22 +5,27 @@ import { META_KEY_DISPLAYNAME } from './ctor-ensure.decorator';
 /**
  * Thrown when a constructor didn't pass validation
  */
-class CtorEnsureException extends Error {
+export interface CtorEnsureException {
+  // Name of source class
+  displayName: string;
+
+  // Source class
+  clazz: Constructable;
+
+  // Validation errors based on individual fields
+  errors: CtorEnsureArgError[];
+}
+
+export class CtorEnsureException extends Error {
   static message = 'Could not validate constructor call!';
 
-  // Name of source class
-  readonly displayName: string;
+  displayName: string;
 
   constructor (
-    // Source class
-    public readonly clazz: Constructable,
-
-    // Validation errors based on individual fields
-    public readonly errors: CtorEnsureArgError[],
+    public clazz: Constructable,
+    public errors: CtorEnsureArgError[],
   ) {
     super(CtorEnsureException.message);
     this.displayName = Reflect.getOwnMetadata(META_KEY_DISPLAYNAME, this.clazz);
   }
 }
-
-export default CtorEnsureException;

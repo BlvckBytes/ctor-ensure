@@ -36,7 +36,7 @@ export { CtorEnsure } from './ctor-ensure.decorator';
 
 // Types
 export { default as CtorEnsureArgError } from './ctor-ensure-arg-error.interface';
-export { default as CtorEnsureException } from './ctor-ensure.exception';
+export { CtorEnsureException } from './ctor-ensure.exception';
 export { TemplateFunction, FunctionMap, VariableMap } from './description-template.factory';
 export { ValidationConfig } from './validation-config.interface';
 export { ValidationControl } from './validation-control.interface';

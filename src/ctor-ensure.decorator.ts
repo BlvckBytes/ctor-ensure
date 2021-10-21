@@ -1,7 +1,7 @@
 import { evalStrThunk } from '.';
 import { Constructable } from './constructable.type';
 import CtorEnsureArgError from './ctor-ensure-arg-error.interface';
-import CtorEnsureException from './ctor-ensure.exception';
+import { CtorEnsureException } from './ctor-ensure.exception';
 import { ValidationControl } from './validation-control.interface';
 
 // Key used for metadata regarding validation

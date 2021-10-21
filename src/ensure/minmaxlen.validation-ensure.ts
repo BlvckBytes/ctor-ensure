@@ -16,7 +16,7 @@ const ENSURE_MINMAXLEN = (min: number, max: number): ValidationConfig => {
   const pattern = new RegExp(`^.{${min > 0 ? min : 0},${max > 0 ? max : ''}}$`);
 
   return {
-    description: template('ENSURE_MINMAX', {
+    description: template('ENSURE_MINMAXLEN', {
       min, max, hasMin: min > 0, hasMax: max > 0, hasBoth: min > 0 && max > 0,
     }),
     process: (value) => pattern.test(value),

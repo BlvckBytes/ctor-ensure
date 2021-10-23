@@ -26,6 +26,7 @@ export class CtorEnsureException extends Error {
     public errors: CtorEnsureArgError[],
   ) {
     super(CtorEnsureException.message);
+    Object.setPrototypeOf(this, CtorEnsureException.prototype);
     this.displayName = Reflect.getOwnMetadata(META_KEY_DISPLAYNAME, this.clazz);
   }
 }

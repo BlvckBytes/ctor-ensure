@@ -1,11 +1,11 @@
-import { expect } from 'chai'; 
+import { expect } from 'chai';
 import { CtorEnsure, META_KEY_DISPLAYNAME, Constructable, ValidatedArg, ENSURE_NONEMPTY, CtorEnsureException, CtorEnsureArgError, ENSURE_MINLEN, ENSURE_ALPHA } from '../src';
 
 describe('@CtorEnsure', () => {
   it('should apply the displayname metadata', () => {
     // Create test class and apply decorator
-    @CtorEnsure('test-model')
-    class TestClass {}
+    @CtorEnsure({ displayname: 'test-model' })
+    class TestClass { }
 
     // Get displayname from metadata
     const displayname = Reflect.getMetadata(META_KEY_DISPLAYNAME, TestClass);
@@ -25,9 +25,9 @@ describe('@CtorEnsure', () => {
     };
 
     @ConstructorBufferer() // Buffer constructor before change
-    @CtorEnsure('test-model') // Make change
+    @CtorEnsure({ displayname: 'test-model' }) // Make change
     @ConstructorBufferer() // Buffer constructor after change
-    class TestClass {}
+    class TestClass { }
 
     // Expect the constructors to have been changed
     expect(ctors[0]).to.not.equal(ctors[1]);
@@ -50,8 +50,8 @@ describe('@CtorEnsure', () => {
     };
 
     @TestMetadataDecorator(testMetadata) // Will be called first
-    @CtorEnsure('test-model') // Will be called second
-    class TestClass {}
+    @CtorEnsure({ displayname: 'test-model' }) // Will be called second
+    class TestClass { }
 
     // Check that the metadata defined first is still there
     Object.keys(testMetadata).forEach(key => {
@@ -68,12 +68,12 @@ describe('@CtorEnsure', () => {
 
   it('should throw an exception if errors occur', () => {
     // Create a model that only accepts non-empty names
-    @CtorEnsure('test-model')
+    @CtorEnsure({ displayname: 'test-model' })
     class TestClass {
       constructor (
         @ValidatedArg('name', ENSURE_NONEMPTY())
         public name: string,
-      ) {}
+      ) { }
     }
 
     // Empty value - error
@@ -88,7 +88,10 @@ describe('@CtorEnsure', () => {
   });
 
   it('should add a k-v map of all validated fields to the exception', () => {
-    @CtorEnsure('test-model', true)
+    @CtorEnsure({
+      displayname: 'test-model', 
+      multipleErrorsPerField: true,
+    })
     class TestClass {
       constructor (
         @ValidatedArg('name', ENSURE_MINLEN(5))
@@ -99,7 +102,7 @@ describe('@CtorEnsure', () => {
         public name2: string,
         @ValidatedArg('name3', ENSURE_MINLEN(5))
         public name3: string,
-      ) {}
+      ) { }
     }
 
     const anyError = (errFn: (err: CtorEnsureArgError) => boolean) => (ex: CtorEnsureException) => ex.errors.some(errIt => errFn(errIt));
@@ -107,20 +110,20 @@ describe('@CtorEnsure', () => {
     expect(() => {
       new TestClass('0', '1', '2', '3');
     })
-    .to.throw(CtorEnsureException.message)
-    .satisfies(anyError(err => err.field === 'name' && err.value === '0'))
-    .satisfies(anyError(err => err.field === 'name1' && err.value === '1'))
-    .satisfies(anyError(err => err.field === 'name2' && err.value === '2'))
-    .satisfies(anyError(err => err.field === 'name3' && err.value === '3'))
-    .has.property('displayName', 'test-model');
+      .to.throw(CtorEnsureException.message)
+      .satisfies(anyError(err => err.field === 'name' && err.value === '0'))
+      .satisfies(anyError(err => err.field === 'name1' && err.value === '1'))
+      .satisfies(anyError(err => err.field === 'name2' && err.value === '2'))
+      .satisfies(anyError(err => err.field === 'name3' && err.value === '3'))
+      .has.property('displayName', 'test-model');
   });
 
   it('should only keep the latest name on inheritance', () => {
-    @CtorEnsure('test-model-a')
-    class TestClassA {}
+    @CtorEnsure({ displayname: 'test-model-a' })
+    class TestClassA { }
 
-    @CtorEnsure('test-model-b')
-    class TestClassB extends TestClassA {}
+    @CtorEnsure({ displayname: 'test-model-b' })
+    class TestClassB extends TestClassA { }
 
     // The metadata defined secondly should be there too
     const displayname = Reflect.getMetadata(META_KEY_DISPLAYNAME, TestClassB);
@@ -128,8 +131,7 @@ describe('@CtorEnsure', () => {
   });
 
   it('should throw errors properly with inheritance', () => {
-    // Create model A with one validated field
-    @CtorEnsure('test-model-a')
+    @CtorEnsure({ displayname: 'test-model-a' })
     class TestClassA {
       constructor (
         @ValidatedArg('fieldA', ENSURE_NONEMPTY())
@@ -137,8 +139,7 @@ describe('@CtorEnsure', () => {
       ) {}
     }
 
-    // Create model B with one validated field
-    @CtorEnsure('test-model-b')
+    @CtorEnsure({ displayname: 'test-model-b' })
     class TestClassB extends TestClassA {
       constructor (
         // Just passed through to the super-call
@@ -147,39 +148,39 @@ describe('@CtorEnsure', () => {
         @ValidatedArg('fieldB', ENSURE_NONEMPTY())
         public fieldB: string,
       ) {
-        // This is calling the A-constructor, and thus throwing
-        // before the own constructor can complete it's call
         super(fieldA);
       }
     }
 
-    // Constructor A failing
     expect(() => new TestClassB('', 'content'))
-    .to.throw(CtorEnsureException.message)
-    .and.to.satisfy((e: CtorEnsureException) => (
-      e.displayName === 'test-model-b' &&
-      e.errors[0]?.field === 'fieldA'
-    ));
+      .to.throw(CtorEnsureException.message)
+      .and.to.satisfy((e: CtorEnsureException) => (
+        e.displayName === 'test-model-b' &&
+        e.errors[0]?.field === 'fieldA'
+      ));
 
-    // Constructor A failing
     expect(() => new TestClassB('content', ''))
-    .to.throw(CtorEnsureException.message)
-    .and.to.satisfy((e: CtorEnsureException) => (
-      e.displayName === 'test-model-b' &&
-      e.errors[0]?.field === 'fieldB'
-    ));
+      .to.throw(CtorEnsureException.message)
+      .and.to.satisfy((e: CtorEnsureException) => (
+        e.displayName === 'test-model-b' &&
+        e.errors[0]?.field === 'fieldB'
+      ));
   });
 
   it('should work on same-named inherited field with flag on', () => {
-    @CtorEnsure('test-model-a')
+    @CtorEnsure({ displayname: 'test-model-a' })
     class TestClassA {
       constructor (
         @ValidatedArg('field', ENSURE_ALPHA())
         public field: string,
-      ) {}
+      ) { }
     }
 
-    @CtorEnsure('test-model-b', true, true)
+    @CtorEnsure({
+      displayname: 'test-model-b', 
+      multipleErrorsPerField: true,
+      inheritValidation: true,
+    })
     class TestClassB extends TestClassA {
       constructor (
         @ValidatedArg('field', ENSURE_MINLEN(5))
@@ -190,24 +191,28 @@ describe('@CtorEnsure', () => {
     }
 
     expect(() => new TestClassB('1'))
-    .to.throw(CtorEnsureException.message)
-    .and.to.satisfy((e: CtorEnsureException) => (
-      e.displayName === 'test-model-b' &&
-      e.errors[0]?.field === 'field' &&
-      e.errors[1]?.field === 'field'
-    ));
+      .to.throw(CtorEnsureException.message)
+      .and.to.satisfy((e: CtorEnsureException) => (
+        e.displayName === 'test-model-b' &&
+        e.errors[0]?.field === 'field' &&
+        e.errors[1]?.field === 'field'
+      ));
   });
 
   it('shouldn\'t work on same-named inherited field with flag off', () => {
-    @CtorEnsure('test-model-a')
+    @CtorEnsure({ displayname: 'test-model-a' })
     class TestClassA {
       constructor (
         @ValidatedArg('field', ENSURE_ALPHA())
         public field: string,
-      ) {}
+      ) { }
     }
 
-    @CtorEnsure('test-model-b', true)
+    @CtorEnsure({
+      displayname: 'test-model-b', 
+      multipleErrorsPerField: true, 
+      inheritValidation: false,
+    })
     class TestClassB extends TestClassA {
       constructor (
         @ValidatedArg('field', ENSURE_MINLEN(5))
@@ -218,44 +223,51 @@ describe('@CtorEnsure', () => {
     }
 
     expect(() => new TestClassB('1'))
-    .to.throw(CtorEnsureException.message)
-    .and.to.satisfy((e: CtorEnsureException) => (
-      e.displayName === 'test-model-b' &&
-      e.errors[0]?.field === 'field' &&
-      e.errors.length === 1
-    ));
+      .to.throw(CtorEnsureException.message)
+      .and.to.satisfy((e: CtorEnsureException) => (
+        e.displayName === 'test-model-b' &&
+        e.errors[0]?.field === 'field' &&
+        e.errors.length === 1
+      ));
   });
 
-  it('should work on same-named inherited field with no added decorator', () => {
-    @CtorEnsure('test-model-a')
+  it('should throw errors for all fields on inheritance', () => {
+    @CtorEnsure({ displayname: 'test-model-a' })
     class TestClassA {
       constructor (
-        @ValidatedArg('field', ENSURE_MINLEN(5))
-        public field: string,
-      ) {}
+        @ValidatedArg('field1', ENSURE_MINLEN(5))
+        public field1: string,
+      ) { }
     }
 
-    @CtorEnsure('test-model-b', true, true)
+    @CtorEnsure({
+      displayname: 'test-model-b', 
+      multipleErrorsPerField: true, 
+      inheritValidation: true,
+    })
     class TestClassB extends TestClassA {
       constructor (
-        public field: string,
+        field1: string,
+        @ValidatedArg('field2', ENSURE_ALPHA()) 
+        public field2: string,
       ) {
-        super(field);
+        super(field1);
       }
     }
 
-    expect(() => new TestClassB('1'))
-    .to.throw(CtorEnsureException.message)
-    .and.to.satisfy((e: CtorEnsureException) => (
-      e.displayName === 'test-model-b' &&
-      e.errors[0]?.field === 'field' &&
-      e.errors.length === 1
+    expect(() => new TestClassB('1', '1'))
+      .to.throw(CtorEnsureException.message)
+      .and.to.satisfy((e: CtorEnsureException) => (
+        e.displayName === 'test-model-b' &&
+        e.errors.some(it => it.field === 'field1') &&
+        e.errors.some(it => it.field === 'field2') &&
+        e.errors.length === 2
     ));
   });
 
   it('should work on empty ctors', () => {
-    @CtorEnsure('test-model')
-    class TestClass {}
+    @CtorEnsure({ displayname: 'test-model' })
+    class TestClass { }
 
     // Should create no worries
     expect(() => new TestClass()).not.to.throw;
@@ -263,7 +275,7 @@ describe('@CtorEnsure', () => {
 
   it('should re-throw non-validation errors in ctor', () => {
     const errMsg = 'We don\'t do that here!';
-    @CtorEnsure('test-model')
+    @CtorEnsure({ displayname: 'test-model' })
     class TestClass {
       constructor () {
         throw new Error(errMsg);

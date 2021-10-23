@@ -3,7 +3,7 @@ import { CtorEnsure, CtorEnsureException } from '../src';
 
 describe('new CtorEnsureException()', () => {
   it('should fetch the class\' display-name correctly', () => {
-    @CtorEnsure('test-model')
+    @CtorEnsure({ displayname: 'test-model' })
     class TestClass {}
 
     // Construct a new exception targetting the test class

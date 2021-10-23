@@ -1,12 +1,70 @@
 import { evalStrThunk } from '.';
 import { Constructable } from './constructable.type';
 import CtorEnsureArgError from './ctor-ensure-arg-error.interface';
+import CtorEnsureConfig from './ctor-ensure-config.interface';
 import { CtorEnsureException } from './ctor-ensure.exception';
+import { getLastSuperclassProto } from './util';
 import { ValidationControl } from './validation-control.interface';
 
 // Key used for metadata regarding validation
 export const META_KEY_VALIDATION = 'CTOR_ENSURE:VALIDATION';
 export const META_KEY_DISPLAYNAME = 'CTOR_ENSURE:DISPLAYNAME';
+
+// Unique metadata valiation key
+const META_KEY_VALIDATION_UNIQUE = (displayname: string) => `CTOR_ENSURE:${displayname}:VALIDATION`;
+
+// Key used to store blocked field information in class prototypes
+const META_KEY_BLOCKED_FIELDS = 'CTOR_ENSURE:BLOCKED_FIELDS';
+
+/**
+ * Validate an array of constructor arguments based on an array of controls which
+ * define the requested validation schema, then collect and return those errors
+ * @param args Constructor arguments to validate
+ * @param controls Controls to use for the schema
+ * @param multipleErrorsPerField Whether or not to exit after one error per field
+ * @returns List of occurred errors
+ */
+const validateCtorArgs = (args: any[], controls: ValidationControl[], multipleErrorsPerField: boolean) => {
+  const errors: CtorEnsureArgError[] = [];
+
+  // Iterate every control
+  controls.forEach(currControl => {
+    // Get target value from constructor args
+    const currArg = args[currControl.ctorInd];
+
+    // Validate whole config chain from top to bottom
+    for (let i = 0; i < currControl.configs.length; i += 1) {
+      const currConfig = currControl.configs[i];
+
+      // Flag, marks if this field has passed validation
+      let passed = true;
+
+      // Validate all values individually (to support arrays)
+      const values: any[] = Array.isArray(currArg) ? currArg : [currArg];
+      for (let j = 0; j < values.length; j += 1) {
+        const currValue = values[j];
+
+        // Call ensure process callback with all dependencies
+        const res = currConfig.process(currValue, controls, args, currControl, currArg);
+
+        // Validation error occurred, push and set flag
+        if (!res) {
+          errors.push({
+            field: currControl.displayName,
+            description: evalStrThunk(currConfig.description),
+            value: currValue,
+          });
+          passed = false;
+        }
+      }
+
+      // Config didn't pass, and only max. one error per field is desired
+      if (!passed && !multipleErrorsPerField) break;
+    }
+  });
+
+  return errors;
+};
 
 /**
  * Decorator signalling that the following class' constructor will be validated
@@ -14,106 +72,78 @@ export const META_KEY_DISPLAYNAME = 'CTOR_ENSURE:DISPLAYNAME';
  * All validation errors will be thrown using a single {@link CtorEnsureException}
  * @param displayname Displayname of class
  * @param multipleErrorsPerField Whether or not to display multiple errors per field, default false
- * @param extendOverridenFields Whether or not to extend inherited validations from overriden fields of the parent
  */
 export const CtorEnsure = (
-  displayname: string,
-  multipleErrorsPerField = false,
-  extendOverridenFields = false,
+  config: CtorEnsureConfig,
 ) => (Clazz: Constructable): Constructable => {
-    // Define display-name
-    Reflect.defineMetadata(META_KEY_DISPLAYNAME, displayname, Clazz);
 
-    // Intercept constructor call
-    // eslint-disable-next-line func-names
-    const interceptor: any = function (...ctorArgs: any[]) {
-      // Get controls from class
-      const controls: ValidationControl[] = Reflect.getOwnMetadata(
-        META_KEY_VALIDATION,
-        Clazz,
-      ) || [];
+  // Buffer original clazz and it's prototype before interception
+  const OrigClazz = Clazz;
+  const origProto = OrigClazz.prototype;
 
-      // List of errors that occurred
-      const errors: CtorEnsureArgError[] = [];
-      controls
-        // Iterate every control
-        .forEach(currControl => {
-          // Get target value from constructor args
-          const currArg = ctorArgs[currControl.ctorInd];
+  // Intercept constructor call
+  // eslint-disable-next-line func-names
+  const interceptor: any = function (...ctorArgs: any[]) {
 
-          // Validate whole config chain from top to bottom
-          for (let i = 0; i < currControl.configs.length; i += 1) {
-            const currConfig = currControl.configs[i];
+    // Most base-class will define blocked fields on most super-class' prototype
+    const sC = getLastSuperclassProto(origProto);
+    if (!Reflect.hasMetadata(META_KEY_BLOCKED_FIELDS, sC))
+      Reflect.defineMetadata(META_KEY_BLOCKED_FIELDS, config.blockInheritanceForFields || [], sC);
 
-            // Validate all values individually (to support arrays)
-            const values: any[] = Array.isArray(currArg) ? currArg : [currArg];
+    // Retrieve blocked fields
+    const blockedFields = Reflect.getMetadata(META_KEY_BLOCKED_FIELDS, sC) as string[];
 
-            let passed = true;
-            for (let j = 0; j < values.length; j += 1) {
-              const currValue = values[j];
+    // Arrived at most super-class, remove definition
+    if (sC === origProto)
+      Reflect.deleteMetadata(META_KEY_BLOCKED_FIELDS, sC);
 
-              const res = currConfig.process(currValue, controls, ctorArgs, currControl, currArg);
+    // Get controls from this class
+    const controls = ((Reflect.getOwnMetadata(
+      META_KEY_VALIDATION_UNIQUE(config.displayname),
+      interceptor,
+    ) || []) as ValidationControl[])
+    // Filter out controls (fields) that are on the block-list
+      .filter(ctl => !blockedFields.some(blk => blk.toLowerCase() === ctl.displayName.toLowerCase()));
 
-              if (!res) {
-                errors.push({
-                  field: currControl.displayName,
-                  description: evalStrThunk(currConfig.description),
-                  value: currValue,
-                });
-                passed = false;
-              }
-            }
+    // Validate args based on defined controls
+    const errors = validateCtorArgs(ctorArgs, controls, config.multipleErrorsPerField || false);
 
-            // Config didn't pass, and only max. one error per field is desired
-            if (!passed && !multipleErrorsPerField) break;
-          }
-        });
+    try {
+      // Call ctor, this will possibly throw super-call ensure-exceptions
+      // Pass invocation information as last argument, that will be caught and removed later on
+      const inst = new OrigClazz(...ctorArgs);
 
-      // Errors occurred
+      // No super-errors occurred, throw own errors, if any
       if (errors.length > 0) throw new CtorEnsureException(interceptor, errors);
 
-      // Try calling the constructor
-      try {
-        return new Clazz(ctorArgs);
-      } 
-      
-      // An error occurred!
-      catch (e) {
-        // Change the displayname to current context (re-construct)
-        // if the error occurred in a superclass (super() call)
-        if (e instanceof CtorEnsureException && e.clazz !== Clazz)
-          throw new CtorEnsureException(Clazz, e.errors);
-       
-        // Rethrow other errors
-        throw e;
-      }
-    };
+      // Return instance
+      return inst;
+    } 
+    
+    catch (e) {
+      // Listen for exceptions of super-classes
+      if (e instanceof CtorEnsureException && e.clazz !== interceptor)
+        // Throw exception with changed class and merged errors
+        throw new CtorEnsureException(interceptor, config.inheritValidation ? [...e.errors, ...errors] : e.errors);
 
-    // Copy prototype and existing metadata
-    interceptor.prototype = Clazz.prototype;
-    Reflect.getMetadataKeys(Clazz).forEach(key => {
-
-      // Merge validation metadata
-      if (key === META_KEY_VALIDATION) {
-        const self = Reflect.getMetadata(key, Clazz) as ValidationControl[];
-        const other = Reflect.getMetadata(key, interceptor) as ValidationControl[];
-
-        if (extendOverridenFields) {
-          (other || []).forEach(otherControl => {
-            const control = self.find(it => it.displayName === otherControl.displayName);
-            control?.configs.push(...otherControl.configs);
-          });
-        }
-
-        // Define merge result
-        Reflect.defineMetadata(key, self, interceptor);
-        return;
-      }
-
-      // Just copy (override) all other metadata
-      Reflect.defineMetadata(key, Reflect.getMetadata(key, Clazz), interceptor);
-    });
-
-    // This will be the new constructor
-    return interceptor;
+      // Just rethrow others
+      throw e;
+    }
   };
+
+  // Unique-ify validation based on displayname
+  // Used keep apart validation schemes, since inner decorators
+  // don't know the displayname at their time of execution yet
+  Reflect.defineMetadata(META_KEY_VALIDATION_UNIQUE(config.displayname), Reflect.getMetadata(META_KEY_VALIDATION, Clazz), interceptor);
+  Reflect.deleteMetadata(META_KEY_VALIDATION, Clazz);
+
+  // Copy prototype and existing metadata
+  interceptor.prototype = Clazz.prototype;
+  Reflect.getMetadataKeys(Clazz).forEach(key => Reflect.defineMetadata(key, Reflect.getMetadata(key, Clazz), interceptor));
+
+  // (Re-)Define display-name
+  Reflect.defineMetadata(META_KEY_DISPLAYNAME, config.displayname, interceptor);
+
+  // This will be the new constructor
+  return interceptor;
+};

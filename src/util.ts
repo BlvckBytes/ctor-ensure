@@ -1,3 +1,5 @@
+import { Constructable } from '.';
+
 /**
  * Make a string optional, which means it'll be empty when the
  * condition didin't evaluate to true
@@ -41,3 +43,25 @@ export const evalStrThunk = (thunk: ((...args: any[]) => string) | string, ...ar
  * @returns Regex-safe string
  */
 export const escapeRegExp = (val: string) => val.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/**
+ * Find the last (highest) super-class prototype, starting from a
+ * derived class constructor function
+ * @param clazz Derived class to start from
+ * @returns Prototype of superclass or undefined when there's no inheritance
+ */
+export const getLastSuperclassProto = (clazz: Constructable) => {
+  const protos = [];
+  let curr = clazz;
+
+  // Crawl till' end
+  do {
+    protos.push(curr);
+    curr = Object.getPrototypeOf(curr);
+  } while (curr !== null);
+
+  // Get the previous of last, since last is the
+  // object prototype (last in chain)
+  return protos[protos.length - 2];
+};
+

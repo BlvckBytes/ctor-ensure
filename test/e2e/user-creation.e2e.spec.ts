@@ -8,7 +8,10 @@ describe('user-creation E2E', () => {
     ADMIN,
   }
 
-  @CtorEnsure('user', true)
+  @CtorEnsure({
+    displayname: 'user', 
+    multipleErrorsPerField: true,
+  })
   class User {
     constructor (
       @ValidatedArg('username', [

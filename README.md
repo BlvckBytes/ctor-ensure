@@ -39,16 +39,49 @@ Last but not least, make sure you have your .ENV set up properly, feel free to u
 
 ## How to use
 
-Mark the target class for validation. This decorator accepts three parameters, the first one being the class' displayname, the second one being a flag whether or not to allow multiple errors per field (default false) and the third one enables overriden inheritance validation extending (default false). For demonstration purposes, we'll switch the first flag on, getting to the second one later down the road.
+Mark the target class for validation. This decorator uses a configuration object as it's only parameter, like you're probably used to already from other frameworks. The following options are at your disposal:
 
 ```typescript
-@CtorEnsure('UserRegistration', true)
+/**
+ * Configuration to be used with the {@link CtorEnsure} decorator
+ */
+interface CtorEnsureConfig {
+  // Displayname of the class
+  displayname: string;
+
+  // Whether or not to display multiple errors per field
+  // Default: false
+  multipleErrorsPerField?: boolean;
+
+  // Whether or not to inherit any validation from super-classes
+  // Default: false
+  inheritValidation?: boolean;
+
+  // Fields for which inheritance of validation is blocked
+  // This is only processed for the called class and does not
+  // merge with super-classes. It has full access to all super-
+  // class fields, including the most-base class
+  // Default: empty
+  blockInheritanceForFields?: string[];
+}
+```
+
+For demonstration purposes, we'll switch multiple errors on and leave the other fields at their default value for now.
+
+```typescript
+@CtorEnsure({
+  displayname: 'UserRegistration', 
+  multipleErrorsPerField: true,
+})
 class UserRegistrationModel {}
 ```
 
 Create a constructor using shorthand properties
 ```typescript
-@CtorEnsure('UserRegistration', true)
+@CtorEnsure({
+  displayname: 'UserRegistration', 
+  multipleErrorsPerField: true,
+})
 class UserRegistrationModel {
 
   constructor(
@@ -66,7 +99,10 @@ class UserRegistrationModel {
 Now it's time to decide on which and how arguments need to be validated. This decorator has just two parameters: The field's displayname and either a single or an array of ensures. Personally, I like to always put an array with one ensure per line, just for readability's sake, and for quick addition of more ensures.
 
 ```typescript
-@CtorEnsure('UserRegistration', true)
+@CtorEnsure({
+  displayname: 'UserRegistration', 
+  multipleErrorsPerField: true,
+})
 class UserRegistrationModel {
 
   constructor(
@@ -216,65 +252,135 @@ Wow! Now that's what I call a descriptive error message, providing a nice user e
 
 ### Inheritance
 
-What if you abstracted some fields into a super-class that you want to validate and use multiple times? Easy.
+There are many ways to implement validation inheritance, and I've tried many of them. The goal of this project is to keep a balance between simplicity and granularity, which I think I've achieved with the following solution:
 
+Let's start by defining two separate, independent, validated classes:
 ```typescript
-// Create model A with one validated field
-@CtorEnsure('model-a')
-class ClassA {
-
+@CtorEnsure({
+  displayname: 'Credentials',
+  multipleErrorsPerField: true,
+})
+class Credentials {
   constructor (
-    @ValidatedArg('fieldA', ENSURE_NONEMPTY())
-    public fieldA: string,
+    @ValidatedArg('username', [
+      ENSURE_ALPHANUM(),
+      ENSURE_MINMAXLEN(5, 30),
+    ])
+    public username: string,
+
+    @ValidatedArg('password', [
+      ENSURE_NONEMPTY(),
+      ENSURE_MINMAXLEN(10, 30),
+    ])
+    public password: string,
   ) {}
 }
 
-// Create model B with one validated field
-@CtorEnsure('model-b')
-class ClassB extends ClassA {
-
+@CtorEnsure({
+  displayname: 'User',
+  multipleErrorsPerField: true,
+})
+class User {
   constructor (
-    // Just passed through to the super-call
-    fieldA: string,
+    @ValidatedArg('id', [
+      ENSURE_NONEMPTY(),
+      ENSURE_STRUUID(),
+    ])
+    public id: string,
+  ) {}
+}
+```
 
-    @ValidatedArg('fieldB', ENSURE_NONEMPTY())
-    public fieldB: string,
+Obviously, the user is going to need some credentials still. Since we've already defined a class and some pretty plausible validations for it, we'd like to reuse that within the user's class. In order to accomplish this, I will add it as a super-class, add passthrough-arguments to the constructor, and enable the inheritance flag on the user's decorator.
+
+```typescript
+@CtorEnsure({
+  displayname: 'Credentials',
+  multipleErrorsPerField: true,
+})
+class Credentials {
+  constructor (
+    @ValidatedArg('username', [
+      ENSURE_ALPHANUM(),
+      ENSURE_MINMAXLEN(5, 30),
+    ])
+    public username: string,
+
+    @ValidatedArg('password', [
+      ENSURE_NONEMPTY(),
+      ENSURE_MINMAXLEN(10, 30),
+    ])
+    public password: string,
+  ) {}
+}
+
+@CtorEnsure({
+  displayname: 'User',
+  multipleErrorsPerField: true,
+  inheritValidation: true,
+})
+class User extends Credentials {
+  constructor (
+    @ValidatedArg('id', [
+      ENSURE_NONEMPTY(),
+      ENSURE_STRUUID(),
+    ])
+    public id: string,
+    username: string,
+    password: string,
   ) {
-    // This is calling the A-constructor, and thus throwing
-    // before the own constructor can complete it's call
-    super(fieldA);
+    super(username, password);
   }
 }
 ```
 
-The simplicity of this is beautiful: Once you call new on ClassB, it internally will invoke a super-call, which will invoke the constructor of ClassA. If anything regarding the validation of ClassA fails, it's constructor will throw an error. That error will bubble up to the super-call. ClassB is going to fork the exception, and only change the display-name to it's own (model-b). This way, the exception provides the impression that it's a single class, when in reality, there are two separate classes, that organize and keep the code clean. Of course - you can add as many levels to this as you'd like to, the latest class in the call-chain will always apply it's name.
-
-When you override a field, it can extend the inherited parent's validation, if desired, just set the flag:
+Yep, that's it! But wait, what if I want to - just for the user's class - disable the validation of the `password` field? There's a way to block individual fields using yet another config property, which works like this: Add the displayname of any field to the array, and it will not be validated for **the current model's invocation only**. All fields from *(including)* the derived class this is applied on, up to *(including)* the highest base-class are available! By design, this is **not** stackable, which means if there would be another class inbetween, which blocks fields, it only blocks them for itself, not affecting classes below it in the chain. That would just get confusing real quick, and is not really necessary.
 
 ```typescript
-@CtorEnsure('model-a')
-class ClassA {
-
+@CtorEnsure({
+  displayname: 'Credentials',
+  multipleErrorsPerField: true,
+})
+class Credentials {
   constructor (
-    @ValidatedArg('field', ENSURE_MINMAXLEN(5, 10))
-    public field: string,
+    @ValidatedArg('username', [
+      ENSURE_ALPHANUM(),
+      ENSURE_MINMAXLEN(5, 30),
+    ])
+    public username: string,
+
+    @ValidatedArg('password', [
+      ENSURE_NONEMPTY(),
+      ENSURE_MINMAXLEN(10, 30),
+    ])
+    public password: string,
   ) {}
 }
 
-// Parameters: displayname, multiple errors per field, inherit overriden fields
-@CtorEnsure('model-b', true, true)
-class ClassB extends ClassA {
-
+@CtorEnsure({
+  displayname: 'User',
+  multipleErrorsPerField: true,
+  inheritValidation: true,
+  blockInheritanceForFields: [
+    'password',
+  ],
+})
+class User extends Credentials {
   constructor (
-    @ValidatedArg('field', ENSURE_ALPHA())
-    public field: string,
+    @ValidatedArg('id', [
+      ENSURE_NONEMPTY(),
+      ENSURE_STRUUID(),
+    ])
+    public id: string,
+    username: string,
+    password: string,
   ) {
-    super(field);
+    super(username, password);
   }
 }
 ```
 
-Now, `field` will validate with `ENSURE_MINMAXLEN(5, 10)` and `ENSURE_ALPHA()`.
+Whenever you instantiate a user, it will validate all fields, but skip `password`. This technique allows for a very flexible and DRY schema notation.
 
 ## Standard Ensures
 

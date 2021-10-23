@@ -3,6 +3,8 @@
   "compilerOptions": {
     "module": "esnext",
     "lib": ["dom", "esnext"],
+    "target": "ES5",
+    "downlevelIteration": true,
     "importHelpers": true,
     // output .d.ts declaration files for consumers
     "declaration": true,

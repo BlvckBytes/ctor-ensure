@@ -6,7 +6,10 @@ describe('post-arrays E2E', () => {
     TAG1, TAG2, TAG3, TAG4, TAG5,
   }
 
-  @CtorEnsure('post', true)
+  @CtorEnsure({
+    displayname: 'post', 
+    multipleErrorsPerField: true,
+  })
   class Post {
     constructor (
       @ValidatedArg('tags', [
@@ -17,7 +20,10 @@ describe('post-arrays E2E', () => {
     ) {}
   }
 
-  @CtorEnsure('post', true)
+  @CtorEnsure({
+    displayname: 'post', 
+    multipleErrorsPerField: true,
+  })
   class Post2 {
     constructor (
       @ValidatedArg('tags', [

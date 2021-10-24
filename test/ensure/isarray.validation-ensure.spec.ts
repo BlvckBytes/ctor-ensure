@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_ISARRAY, evalStrThunk, strOpt } from '../../src';
-import { executeEnsure, checkEnsureArgError } from '../test-util';
+import { executeEnsure, checkEnsureArgErrors } from '../test-util';
 
 describe('ENSURE_ISARRAY', () => {
 
@@ -13,34 +13,36 @@ describe('ENSURE_ISARRAY', () => {
 
   it('should allow scalar value but no array', () => {
     expect(executeEnsure(ENSURE_ISARRAY(false), 5)).to.have.lengthOf(0);
-    expect(executeEnsure(ENSURE_ISARRAY(false), [5])).satisfy(checkEnsureArgError(desc(false), 5));
+
+    const arr = [5];
+    expect(executeEnsure(ENSURE_ISARRAY(false), arr)).satisfy(checkEnsureArgErrors(desc(false), arr));
   });
 
   it('should allow array but no scalar value', () => {
     expect(executeEnsure(ENSURE_ISARRAY(), [5])).to.have.lengthOf(0);
-    expect(executeEnsure(ENSURE_ISARRAY(), 5)).satisfy(checkEnsureArgError(desc(), 5));
+    expect(executeEnsure(ENSURE_ISARRAY(), 5)).satisfy(checkEnsureArgErrors(desc(), 5));
   });
 
   it('should allow unique array but no scalar and no duplicate', () => {
     expect(executeEnsure(ENSURE_ISARRAY(true, true), [5])).to.have.lengthOf(0);
-    expect(executeEnsure(ENSURE_ISARRAY(true, true), [5, 5])).satisfy(checkEnsureArgError(desc(true, true), 5));
-    expect(executeEnsure(ENSURE_ISARRAY(true, true), 5)).satisfy(checkEnsureArgError(desc(true, true), 5));
+    expect(executeEnsure(ENSURE_ISARRAY(true, true), [5, 5])).satisfy(checkEnsureArgErrors(desc(true, true), 5));
+    expect(executeEnsure(ENSURE_ISARRAY(true, true), 5)).satisfy(checkEnsureArgErrors(desc(true, true), 5));
   });
 
   it('should allow duplicate array but no scalar', () => {
     expect(executeEnsure(ENSURE_ISARRAY(true), [5, 5])).to.have.lengthOf(0);
-    expect(executeEnsure(ENSURE_ISARRAY(true), 5)).satisfy(checkEnsureArgError(desc(), 5));
+    expect(executeEnsure(ENSURE_ISARRAY(true), 5)).satisfy(checkEnsureArgErrors(desc(), 5));
   });
 
   it('should allow unique array but no scalar and no case-equal duplicate', () => {
     expect(executeEnsure(ENSURE_ISARRAY(true, true), ['hi', 'Hi'])).to.have.lengthOf(0);
-    expect(executeEnsure(ENSURE_ISARRAY(true, true), ['hi', 'hi'])).satisfy(checkEnsureArgError(desc(true, true), 'hi'));
-    expect(executeEnsure(ENSURE_ISARRAY(true, true), 5)).satisfy(checkEnsureArgError(desc(true, true), 5));
+    expect(executeEnsure(ENSURE_ISARRAY(true, true), ['hi', 'hi'])).satisfy(checkEnsureArgErrors(desc(true, true), 'hi'));
+    expect(executeEnsure(ENSURE_ISARRAY(true, true), 5)).satisfy(checkEnsureArgErrors(desc(true, true), 5));
   });
 
   it('should allow unique array but no scalar and no duplicate, ignorecase', () => {
     expect(executeEnsure(ENSURE_ISARRAY(true, true, true), ['hi', 'bye'])).to.have.lengthOf(0);
-    expect(executeEnsure(ENSURE_ISARRAY(true, true, true), ['hi', 'Hi'])).satisfy(checkEnsureArgError(desc(true, true, true), 'Hi'));
-    expect(executeEnsure(ENSURE_ISARRAY(true, true, true), 5)).satisfy(checkEnsureArgError(desc(true, true, true), 5));
+    expect(executeEnsure(ENSURE_ISARRAY(true, true, true), ['hi', 'Hi'])).satisfy(checkEnsureArgErrors(desc(true, true, true), 'Hi'));
+    expect(executeEnsure(ENSURE_ISARRAY(true, true, true), 5)).satisfy(checkEnsureArgErrors(desc(true, true, true), 5));
   });
 });

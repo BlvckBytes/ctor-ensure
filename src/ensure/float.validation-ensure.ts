@@ -22,5 +22,8 @@ export const isFloat = (value: any): boolean => {
  */
 export const ENSURE_FLOAT = (): ValidationConfig => ({
     description: template('ENSURE_FLOAT'),
-    process: (value) => isFloat(value),
+    process: (value) => ({
+      error: !isFloat(value),
+      value,
+    }),
   });

@@ -15,7 +15,10 @@ const ENSURE_CONTAINS = (string: string, allow = true): ValidationConfig => {
       str: string,
       allow,
     }),
-    process: (value) => pattern.test(value) !== (!allow),
+    process: (value) => ({
+      error: !(pattern.test(value) === allow),
+      value,
+    }),
   };
 };
 

@@ -9,7 +9,10 @@ const ENSURE_STRDATE = (): ValidationConfig => {
   const pattern = /(^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|Z)?$)|^$/i;
   return {
     description: template('ENSURE_STRDATE'),
-    process: (value) => pattern.test(value),
+    process: (value) => ({
+      error: !pattern.test(value),
+      value,
+    }),
   };
 };
 

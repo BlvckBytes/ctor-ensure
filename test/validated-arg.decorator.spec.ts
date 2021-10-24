@@ -6,10 +6,10 @@ describe('@ValidatedArg', () => {
     // Create single or multiple configs, based on confs
     const mkConfs: () => ValidationConfig | ValidationConfig[] = () => {
       if (confs === 1)
-        return { description: `description${index}`, process: () => true };
+        return { description: `description${index}`, process: () => ({ error: false }) };
 
       return [...Array(confs).keys()].map((_, ind) => ({
-        description: `description${index}-${confsOff + ind}`, process: () => true,
+        description: `description${index}-${confsOff + ind}`, process: () => ({ error: false }),
       }));
     };
 

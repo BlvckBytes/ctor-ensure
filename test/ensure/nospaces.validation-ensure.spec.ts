@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_NOSPACES, evalStrThunk } from '../../src';
-import { checkEnsureArgError, executeEnsure } from '../test-util';
+import { checkEnsureArgErrors, executeEnsure } from '../test-util';
 
 describe('ENSURE_NOSPACES', () => {
   const desc = 'can\'t contain spaces';
@@ -18,6 +18,6 @@ describe('ENSURE_NOSPACES', () => {
   });
 
   it('shouldn\'t allow space string', () => {
-    expect(executeEnsure(ENSURE_NOSPACES(), 'hello world')).satisfy(checkEnsureArgError(desc, 'hello world'));
+    expect(executeEnsure(ENSURE_NOSPACES(), 'hello world')).satisfy(checkEnsureArgErrors(desc, 'hello world'));
   });
 });

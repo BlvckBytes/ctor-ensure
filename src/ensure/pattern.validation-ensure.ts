@@ -11,7 +11,10 @@ const ENSURE_PATTERN = (
   description: string | (() => string),
 ): ValidationConfig => ({
     description,
-    process: (value) => pattern.test(value),
+    process: (value) => ({
+      error: !pattern.test(value),
+      value,
+    }),
   });
 
 export default ENSURE_PATTERN;

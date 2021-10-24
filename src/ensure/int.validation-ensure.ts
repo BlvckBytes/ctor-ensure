@@ -22,5 +22,8 @@ export const isInt = (value: any): boolean => {
  */
 export const ENSURE_INT = (): ValidationConfig => ({
     description: template('ENSURE_INT'),
-    process: (value) => isInt(value),
+    process: (value) => ({
+      error: !isInt(value),
+      value,
+    }),
   });

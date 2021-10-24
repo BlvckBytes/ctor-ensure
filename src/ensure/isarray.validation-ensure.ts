@@ -14,8 +14,9 @@ const ENSURE_ISARRAY = (positive = true, unique = false, ignoreCase = false): Va
     }),
     process: (_value, _neighbors, _ctor, _parent, arg) => {
       // Not the desired datastructure
-      if (!(Array.isArray(arg) === positive)) return false;
+      if (!(Array.isArray(arg) === positive)) return { error: true, value: arg };
 
+      // Check if it's unique, only if it's an array
       if (positive && unique) {
         const seen: any[] = [];
         for (let i = 0; i < arg.length; i += 1) {
@@ -25,13 +26,13 @@ const ENSURE_ISARRAY = (positive = true, unique = false, ignoreCase = false): Va
           if (ignoreCase) curr = String(curr).toLowerCase();
 
           // Duplicate value
-          if (seen.includes(curr)) return false;
+          if (seen.includes(curr)) return { error: true, value: arg[i] };
           seen.push(curr);
         }
       }
 
       // Validation passed
-      return true;
+      return { error: false };
     },
   });
 

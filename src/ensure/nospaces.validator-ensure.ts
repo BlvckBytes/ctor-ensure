@@ -9,7 +9,10 @@ const ENSURE_NOSPACES = (): ValidationConfig => {
   const pattern = /^[^ ]*$/;
   return {
     description: template('ENSURE_NOSPACES'),
-    process: (value) => pattern.test(value),
+    process: (value) => ({
+      error: !pattern.test(value),
+      value,
+    }),
   };
 };
 

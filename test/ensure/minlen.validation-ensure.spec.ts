@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_MINLEN, evalStrThunk, pluralize } from '../../src';
-import { checkEnsureArgError, executeEnsure } from '../test-util';
+import { checkEnsureArgErrors, executeEnsure } from '../test-util';
 
 describe('ENSURE_MINLEN', () => {
   const desc = (min: number) => `at least ${min} ${pluralize('character', min)}`;
@@ -17,6 +17,6 @@ describe('ENSURE_MINLEN', () => {
 
   it('shouldn\'t allow less than min characters', () => {
     for (let i = 0; i < 5; i += 1)
-      expect(executeEnsure(ENSURE_MINLEN(5), 'X'.repeat(i))).satisfy(checkEnsureArgError(desc(5), 'X'.repeat(i)));
+      expect(executeEnsure(ENSURE_MINLEN(5), 'X'.repeat(i))).satisfy(checkEnsureArgErrors(desc(5), 'X'.repeat(i)));
   });
 });

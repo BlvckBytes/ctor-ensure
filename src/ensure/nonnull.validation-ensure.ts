@@ -7,7 +7,10 @@ import { ValidationConfig } from '../validation-config.interface';
  */
 const ENSURE_NONNULL = (): ValidationConfig => ({
     description: template('ENSURE_NONNULL'),
-    process: (value) => value !== null && value !== undefined,
+    process: (value) => ({
+      error: !(value !== null && value !== undefined),
+      value,
+    }),
   });
 
 export default ENSURE_NONNULL;

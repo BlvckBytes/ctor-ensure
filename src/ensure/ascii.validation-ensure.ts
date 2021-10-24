@@ -16,7 +16,10 @@ const ENSURE_ASCII = (justPrintable = false, allowSpaces = true): ValidationConf
       onlyprint: justPrintable,
       nospaces: !allowSpaces,
     }),
-    process: (value) => pattern.test(value),
+    process: (value) => ({
+      error: !pattern.test(value),
+      value,
+    }),
   };
 };
 

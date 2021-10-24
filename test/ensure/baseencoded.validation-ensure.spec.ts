@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { Encoding, ENSURE_BASEENCODED, evalStrThunk } from '../../src';
-import { checkEnsureArgError, executeEnsure } from '../test-util';
+import { checkEnsureArgErrors, executeEnsure } from '../test-util';
 
 describe('ENSURE_BASEENCODED', () => {
 
@@ -35,8 +35,8 @@ describe('ENSURE_BASEENCODED', () => {
   });
 
   it('shouldn\'t allow invalid encoded data', () => {
-    expect(executeEnsure(ENSURE_BASEENCODED(Encoding.BASE32), validBase58)).satisfies(checkEnsureArgError(desc32, validBase58));
-    expect(executeEnsure(ENSURE_BASEENCODED(Encoding.BASE58), validBase64)).satisfies(checkEnsureArgError(desc58, validBase64));
-    expect(executeEnsure(ENSURE_BASEENCODED(Encoding.BASE64), validBase32)).satisfies(checkEnsureArgError(desc64, validBase32));
+    expect(executeEnsure(ENSURE_BASEENCODED(Encoding.BASE32), validBase58)).satisfies(checkEnsureArgErrors(desc32, validBase58));
+    expect(executeEnsure(ENSURE_BASEENCODED(Encoding.BASE58), validBase64)).satisfies(checkEnsureArgErrors(desc58, validBase64));
+    expect(executeEnsure(ENSURE_BASEENCODED(Encoding.BASE64), validBase32)).satisfies(checkEnsureArgErrors(desc64, validBase32));
   });
 });

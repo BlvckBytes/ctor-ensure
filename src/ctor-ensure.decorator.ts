@@ -48,13 +48,22 @@ const validateCtorArgs = (args: any[], controls: ValidationControl[], multipleEr
         const res = currConfig.process(currValue, controls, args, currControl, currArg);
 
         // Validation error occurred, push and set flag
-        if (!res) {
-          errors.push({
+        if (res.error) {
+          const err = {
             field: currControl.displayName,
             description: evalStrThunk(currConfig.description),
-            value: currValue,
-          });
-          passed = false;
+            value: res.value,
+          };
+
+          // Unique-ify list
+          if (!errors.some(
+            it => it.field === err.field && // Same field
+            it.description === err.description && // Same description
+            JSON.stringify(it.value) === JSON.stringify(err.value), // Same value
+          )) {
+            errors.push(err);
+            passed = false;
+          }
         }
       }
 

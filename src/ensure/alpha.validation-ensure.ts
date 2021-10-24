@@ -12,7 +12,10 @@ const ENSURE_ALPHA = (allowSpaces = true): ValidationConfig => {
     description: template('ENSURE_ALPHA', {
       nospaces: !allowSpaces,
     }),
-    process: (value) => pattern.test(value),
+    process: (value) => ({
+      error: !pattern.test(value),
+      value,
+    }),
   };
 };
 

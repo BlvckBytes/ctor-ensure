@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_NONNULL, evalStrThunk } from '../../src';
-import { checkEnsureArgError, executeEnsure } from '../test-util';
+import { checkEnsureArgErrors, executeEnsure } from '../test-util';
 
 describe('ENSURE_NONNULL', () => {
   const desc = 'no null value';
@@ -14,10 +14,10 @@ describe('ENSURE_NONNULL', () => {
   });
 
   it('shouldn\'t allow undefined fields', () => {
-    expect(executeEnsure(ENSURE_NONNULL(), undefined)).satisfy(checkEnsureArgError(desc, undefined));
+    expect(executeEnsure(ENSURE_NONNULL(), undefined)).satisfy(checkEnsureArgErrors(desc, undefined));
   });
 
   it('shouldn\'t allow null fields', () => {
-    expect(executeEnsure(ENSURE_NONNULL(), null)).satisfy(checkEnsureArgError(desc, null));
+    expect(executeEnsure(ENSURE_NONNULL(), null)).satisfy(checkEnsureArgErrors(desc, null));
   });
 });

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_MINMAXLEN, evalStrThunk, pluralize, strOpt } from '../../src';
-import { checkEnsureArgError, executeEnsure } from '../test-util';
+import { checkEnsureArgErrors, executeEnsure } from '../test-util';
 
 describe('ENSURE_MINMAXLEN', () => {
   const desc = (min: number, max: number) => `${strOpt(`at least ${min} ${pluralize('character', min)}`, min > 0)}${strOpt(' and ', min > 0 && max > 0)}${strOpt(`up to ${max} ${pluralize('character', max)}`, max > 0)}`;
@@ -32,12 +32,12 @@ describe('ENSURE_MINMAXLEN', () => {
 
   it('shouldn\'t allow less than min characters', () => {
     for (let i = 0; i < 2; i += 1)
-      expect(executeEnsure(ENSURE_MINMAXLEN(2, 5), 'X'.repeat(i))).satisfy(checkEnsureArgError(desc(2, 5), 'X'.repeat(i)));
+      expect(executeEnsure(ENSURE_MINMAXLEN(2, 5), 'X'.repeat(i))).satisfy(checkEnsureArgErrors(desc(2, 5), 'X'.repeat(i)));
   });
 
   it('shouldn\'t allow more than max characters', () => {
     for (let i = 6; i < 10; i += 1)
-      expect(executeEnsure(ENSURE_MINMAXLEN(2, 5), 'X'.repeat(i))).satisfy(checkEnsureArgError(desc(2, 5), 'X'.repeat(i)));
+      expect(executeEnsure(ENSURE_MINMAXLEN(2, 5), 'X'.repeat(i))).satisfy(checkEnsureArgErrors(desc(2, 5), 'X'.repeat(i)));
   });
 
   it('shouldn\'t accept smaller max than min', () => {

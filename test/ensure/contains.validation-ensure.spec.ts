@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_CONTAINS, evalStrThunk } from '../../src';
-import { checkEnsureArgError, executeEnsure } from '../test-util';
+import { checkEnsureArgErrors, executeEnsure } from '../test-util';
 
 describe('ENSURE_CONTAINS', () => {
   const contains = 'this is a test';
@@ -18,11 +18,11 @@ describe('ENSURE_CONTAINS', () => {
   });
 
   it('should disallow containing string', () => {
-    expect(executeEnsure(ENSURE_CONTAINS(contains, false), contains)).satisfies(checkEnsureArgError(descNegated, contains));
+    expect(executeEnsure(ENSURE_CONTAINS(contains, false), contains)).satisfies(checkEnsureArgErrors(descNegated, contains));
     expect(executeEnsure(ENSURE_CONTAINS(contains, false), nonContains)).to.have.lengthOf(0);
   });
 
   it('should disallow non-containing string', () => {
-    expect(executeEnsure(ENSURE_CONTAINS(contains), nonContains)).satisfies(checkEnsureArgError(desc, nonContains));
+    expect(executeEnsure(ENSURE_CONTAINS(contains), nonContains)).satisfies(checkEnsureArgErrors(desc, nonContains));
   });
 });

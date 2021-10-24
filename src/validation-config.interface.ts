@@ -24,5 +24,10 @@ export interface ValidationConfig {
 
     // Current ctor argument, scalar or array
     arg: any,
-  ) => boolean;
+
+  // Return the value that caused trouble, or null if all passed
+  ) => {
+    error: boolean,
+    value?: any,
+  };
 }

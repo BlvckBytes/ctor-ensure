@@ -36,7 +36,10 @@ export const ENSURE_BASEENCODED = (encoding: Encoding): ValidationConfig => {
     description: template('ENSURE_BASEENCODED', {
       base: (Encoding[encoding]).toUpperCase(),
     }),
-    process: (value) => pattern.test(value),
+    process: (value) => ({
+      error: !pattern.test(value),
+      value,
+    }),
   };
 };
 

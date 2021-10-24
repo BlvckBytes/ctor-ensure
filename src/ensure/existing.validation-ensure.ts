@@ -7,7 +7,10 @@ import { ValidationConfig } from '../validation-config.interface';
  */
 const ENSURE_EXISTING = (): ValidationConfig => ({
     description: template('ENSURE_EXISTING'),
-    process: (value) => value !== undefined,
+    process: (value) => ({
+      error: value === undefined,
+      value,
+    }),
   });
 
 export default ENSURE_EXISTING;

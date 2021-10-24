@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_ALPHANUM, evalStrThunk } from '../../src';
-import { checkEnsureArgError, executeEnsure } from '../test-util';
+import { checkEnsureArgErrors, executeEnsure } from '../test-util';
 
 describe('ENSURE_ALPHANUM', () => {
   let alphanum = ' '; // With space at 0
@@ -34,13 +34,13 @@ describe('ENSURE_ALPHANUM', () => {
   });
 
   it('should disallow spaces', () => {
-    expect(executeEnsure(ENSURE_ALPHANUM(false), alphanum)).satisfies(checkEnsureArgError(descNoSpaces, alphanum));
+    expect(executeEnsure(ENSURE_ALPHANUM(false), alphanum)).satisfies(checkEnsureArgErrors(descNoSpaces, alphanum));
     expect(executeEnsure(ENSURE_ALPHANUM(false), alphanum.substring(1))).to.have.lengthOf(0);
   });
 
   it('should disallow non-alphanumeric characters', () => {
     const inp = '@!$%#?:;-.+';
-    expect(executeEnsure(ENSURE_ALPHANUM(), inp)).satisfies(checkEnsureArgError(desc, inp));
-    expect(executeEnsure(ENSURE_ALPHANUM(false), inp)).satisfies(checkEnsureArgError(descNoSpaces, inp));
+    expect(executeEnsure(ENSURE_ALPHANUM(), inp)).satisfies(checkEnsureArgErrors(desc, inp));
+    expect(executeEnsure(ENSURE_ALPHANUM(false), inp)).satisfies(checkEnsureArgErrors(descNoSpaces, inp));
   });
 });

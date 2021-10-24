@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_EMAIL, evalStrThunk } from '../../src';
-import { checkEnsureArgError, executeEnsure } from '../test-util';
+import { checkEnsureArgErrors, executeEnsure } from '../test-util';
 
 describe('ENSURE_EMAIL', () => {
   const validEmail = 'blvckbytes@gmail.com';
@@ -16,7 +16,7 @@ describe('ENSURE_EMAIL', () => {
   });
 
   it('should disallow invalid e-mail address', () => {
-    expect(executeEnsure(ENSURE_EMAIL(), invalidEmail)).satisfies(checkEnsureArgError(desc, invalidEmail));
+    expect(executeEnsure(ENSURE_EMAIL(), invalidEmail)).satisfies(checkEnsureArgErrors(desc, invalidEmail));
   });
 
   it('should allow empty values', () => {

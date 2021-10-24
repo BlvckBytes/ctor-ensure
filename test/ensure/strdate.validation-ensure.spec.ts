@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_STRDATE, evalStrThunk } from '../../src';
-import { checkEnsureArgError, executeEnsure } from '../test-util';
+import { checkEnsureArgErrors, executeEnsure } from '../test-util';
 
 describe('ENSURE_STRDATE', () => {
   const desc = 'valid full ISO-8601 datetime string';
@@ -18,6 +18,6 @@ describe('ENSURE_STRDATE', () => {
   });
 
   it('shouldn\'t allow invalid date', () => {
-    expect(executeEnsure(ENSURE_STRDATE(), '2020-03-05')).satisfy(checkEnsureArgError(desc, '2020-03-05'));
+    expect(executeEnsure(ENSURE_STRDATE(), '2020-03-05')).satisfy(checkEnsureArgErrors(desc, '2020-03-05'));
   });
 });

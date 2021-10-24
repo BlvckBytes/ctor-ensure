@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_STRUUID, evalStrThunk } from '../../src';
-import { checkEnsureArgError, executeEnsure } from '../test-util';
+import { checkEnsureArgErrors, executeEnsure } from '../test-util';
 
 describe('ENSURE_STRUUID', () => {
   const desc = 'uuid as string';
@@ -18,6 +18,6 @@ describe('ENSURE_STRUUID', () => {
   });
 
   it('shouldn\'t allow invalid uuid', () => {
-    expect(executeEnsure(ENSURE_STRUUID(), 'A5D8A2A2-C3BD-9223B0078209')).satisfy(checkEnsureArgError(desc, 'A5D8A2A2-C3BD-9223B0078209'));
+    expect(executeEnsure(ENSURE_STRUUID(), 'A5D8A2A2-C3BD-9223B0078209')).satisfy(checkEnsureArgErrors(desc, 'A5D8A2A2-C3BD-9223B0078209'));
   });
 });

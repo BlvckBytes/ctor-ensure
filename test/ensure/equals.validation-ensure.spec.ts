@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_EQUALS, evalStrThunk } from '../../src';
-import { checkEnsureArgError, executeEnsure } from '../test-util';
+import { checkEnsureArgErrors, executeEnsure } from '../test-util';
 
 describe('ENSURE_EQUALS', () => {
   const desc = (field: string) => `needs to equal to the field: ${field}`;
@@ -23,7 +23,7 @@ describe('ENSURE_EQUALS', () => {
     const valueDifferent = 'bye world';
     expect(executeEnsure(ENSURE_EQUALS('a', 'b', 'c'), valueDifferent, {
       a: value, b: value, c: value,
-    })).to.satisfy(checkEnsureArgError(descPlural('a', 'b', 'c'), valueDifferent));
+    })).to.satisfy(checkEnsureArgErrors(descPlural('a', 'b', 'c'), valueDifferent));
   });
 
   it('should throw on unknown field', () => {

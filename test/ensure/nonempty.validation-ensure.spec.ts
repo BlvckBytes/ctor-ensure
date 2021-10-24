@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_NONEMPTY, evalStrThunk } from '../../src';
-import { checkEnsureArgError, executeEnsure } from '../test-util';
+import { checkEnsureArgErrors, executeEnsure } from '../test-util';
 
 describe('ENSURE_NONEMPTY', () => {
   const desc = 'no empty value';
@@ -14,6 +14,7 @@ describe('ENSURE_NONEMPTY', () => {
   });
 
   it('shouldn\'t allow empty string', () => {
-    expect(executeEnsure(ENSURE_NONEMPTY(), '')).satisfy(checkEnsureArgError(desc, ''));
+    expect(executeEnsure(ENSURE_NONEMPTY(), ''))
+    .satisfy(checkEnsureArgErrors(desc, ''));
   });
 });

@@ -9,7 +9,10 @@ const ENSURE_STRINT = (): ValidationConfig => {
   const pattern = /(^[0-9]+$)|^$/;
   return {
     description: template('ENSURE_STRINT'),
-    process: (value) => typeof value === 'string' && pattern.test(value),
+    process: (value) => ({
+      error: !(typeof value === 'string' && pattern.test(value)),
+      value,
+    }),
   };
 };
 

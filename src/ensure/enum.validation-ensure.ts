@@ -23,15 +23,16 @@ export const enumKeys = (values: { [key: string]: any }) => Object.keys(values).
  * @param useKeys If true, the enum keys (numeric) will be used, otherwise it'll be the string values
  */
 export const ENSURE_ENUM = (values: { [key: string]: string | number }, useKeys = false): ValidationConfig => {
-  const vals = useKeys ? enumKeys(values) : enumValues(values);
-  const pattern = new RegExp(`(^${vals.join('|')}$)|^$`);
-
+  const vals: any[] = useKeys ? enumKeys(values) : enumValues(values);
   return {
     description: template('ENSURE_ENUM', {
       numValues: vals.length,
       multiple: vals.length > 1,
       values: vals.join(', '),
     }),
-    process: (value) => pattern.test(value),
+    process: (value) => ({
+      error: !(vals.includes(value) || value === ''),
+      value,
+    }),
   };
 };

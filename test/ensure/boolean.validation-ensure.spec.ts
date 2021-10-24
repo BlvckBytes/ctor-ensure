@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_BOOLEAN, evalStrThunk } from '../../src';
-import { checkEnsureArgError, executeEnsure } from '../test-util';
+import { checkEnsureArgErrors, executeEnsure } from '../test-util';
 
 describe('ENSURE_BOOLEAN', () => {
   const desc = 'boolean value';
@@ -15,7 +15,7 @@ describe('ENSURE_BOOLEAN', () => {
   });
 
   it('shouldn\'t allow string boolean value', () => {
-    expect(executeEnsure(ENSURE_BOOLEAN(), 'true')).satisfies(checkEnsureArgError(desc, 'true'));
-    expect(executeEnsure(ENSURE_BOOLEAN(), 'false')).satisfies(checkEnsureArgError(desc, 'false'));
+    expect(executeEnsure(ENSURE_BOOLEAN(), 'true')).satisfies(checkEnsureArgErrors(desc, 'true'));
+    expect(executeEnsure(ENSURE_BOOLEAN(), 'false')).satisfies(checkEnsureArgErrors(desc, 'false'));
   });
 });

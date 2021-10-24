@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_INT, evalStrThunk } from '../../src';
-import { checkEnsureArgError, executeEnsure } from '../test-util';
+import { checkEnsureArgErrors, executeEnsure } from '../test-util';
 
 describe('ENSURE_INT', () => {
   const desc = 'integer number';
@@ -14,10 +14,10 @@ describe('ENSURE_INT', () => {
   });
 
   it('shouldn\'t allow string integer value', () => {
-    expect(executeEnsure(ENSURE_INT(), '5')).satisfy(checkEnsureArgError(desc, '5'));
+    expect(executeEnsure(ENSURE_INT(), '5')).satisfy(checkEnsureArgErrors(desc, '5'));
   });
 
   it('shouldn\'t allow alphabetic value', () => {
-    expect(executeEnsure(ENSURE_INT(), 'a')).satisfy(checkEnsureArgError(desc, 'a'));
+    expect(executeEnsure(ENSURE_INT(), 'a')).satisfy(checkEnsureArgErrors(desc, 'a'));
   });
 });

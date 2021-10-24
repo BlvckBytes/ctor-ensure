@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_MAXLEN, evalStrThunk, pluralize } from '../../src';
-import { checkEnsureArgError, executeEnsure } from '../test-util';
+import { checkEnsureArgErrors, executeEnsure } from '../test-util';
 
 describe('ENSURE_MAXLEN', () => {
   const desc = (max: number) => `up to ${max} ${pluralize('character', max)}`;
@@ -16,6 +16,6 @@ describe('ENSURE_MAXLEN', () => {
   });
 
   it('shouldn\'t allow more than max characters', () => {
-    expect(executeEnsure(ENSURE_MAXLEN(5), 'X'.repeat(6))).satisfy(checkEnsureArgError(desc(5), 'X'.repeat(6)));
+    expect(executeEnsure(ENSURE_MAXLEN(5), 'X'.repeat(6))).satisfy(checkEnsureArgErrors(desc(5), 'X'.repeat(6)));
   });
 });

@@ -9,7 +9,10 @@ const ENSURE_STRFLOAT = (): ValidationConfig => {
   const pattern = /(^[0-9]+\.[0-9]+$)|^$/;
   return {
     description: template('ENSURE_STRFLOAT'),
-    process: (value) => typeof value === 'string' && pattern.test(value),
+    process: (value) => ({
+      error: !(typeof value === 'string' && pattern.test(value)),
+      value,
+    }),
   };
 };
 

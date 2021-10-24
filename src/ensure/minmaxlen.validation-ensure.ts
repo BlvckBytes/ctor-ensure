@@ -19,7 +19,10 @@ const ENSURE_MINMAXLEN = (min: number, max: number): ValidationConfig => {
     description: template('ENSURE_MINMAXLEN', {
       min, max, hasMin: min > 0, hasMax: max > 0, hasBoth: min > 0 && max > 0,
     }),
-    process: (value) => pattern.test(value),
+    process: (value) => ({
+      error: !pattern.test(value),
+      value,
+    }),
   };
 };
 

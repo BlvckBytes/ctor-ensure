@@ -7,7 +7,7 @@ import { CtorEnsureArgError, CtorEnsureException, evalStrThunk, ValidationConfig
  * @param otherControls Neighbor controls, for real-case scenario mocks
  * @returns List of ensure-arg errors that occurred
  */
-export const executeEnsure = (ensure: ValidationConfig, value: any, otherControls: { [key: string]: any} = {} ) => {
+export const executeEnsure = (ensure: ValidationConfig, value: any, otherControls: { [key: string]: any} = {}) => {
   // Dummy controls, having ensure as first control, named test
   const controls = [
     {
@@ -38,18 +38,28 @@ export const executeEnsure = (ensure: ValidationConfig, value: any, otherControl
     const currConfig = controls[0].configs[i];
 
     // Validate all values individually (to support arrays)
+    // Call this loop at least once, even if the provided array is empty
+    // In that case, the current value will be null, of course, but
+    // ensures that just care about the array will be invoked
     const values: any[] = Array.isArray(value) ? value : [value];
-
-    for (let j = 0; j < values.length; j += 1) {
-      const currValue = values[j];
+    for (let j = 0; j < Math.max(1, values.length); j += 1) {
+      const currValue = values.length > 0 ? values[j] : null;
       const res = currConfig.process(currValue, controls, ctor, controls[0], value);
 
-      if (!res) {
-        errors.push({
+      if (res.error) {
+        const err = {
           field: controls[0].displayName,
           description: evalStrThunk(currConfig.description),
-          value: currValue,
-        });
+          value: res.value,
+        };
+
+        // Unique-ify list
+        if (!errors.some(
+          it => it.field === err.field && // Same field
+          it.description === err.description && // Same description
+          JSON.stringify(it.value) === JSON.stringify(err.value), // Same value
+        ))
+          errors.push(err);
       }
     }
   }
@@ -62,9 +72,10 @@ export const executeEnsure = (ensure: ValidationConfig, value: any, otherControl
  * valid existence of an ensure-arg error
  * @param description Expected description of the error
  * @param value Value that is causing this error
+ * @param size Expected size of errors array, defaults to 1
  * @returns True if found, false otherwise
  */
-export const checkEnsureArgError = (description: string, value: any) => (errors: CtorEnsureArgError[]) => errors?.some(it => it.description === description && it.value === value);
+export const checkEnsureArgErrors = (description: string, value: any, size = 1) => (errors: CtorEnsureArgError[]) => errors.length === size && errors?.some(it => it.description === description && it.value === value);
 
 /**
  * To be used in conjunction with satisfy() from chai, to check if

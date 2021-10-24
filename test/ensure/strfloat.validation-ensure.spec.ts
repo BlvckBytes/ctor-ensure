@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_STRFLOAT, evalStrThunk } from '../../src';
-import { checkEnsureArgError, executeEnsure } from '../test-util';
+import { checkEnsureArgErrors, executeEnsure } from '../test-util';
 
 describe('ENSURE_STRFLOAT', () => {
   const desc = 'floating point number as string';
@@ -18,14 +18,14 @@ describe('ENSURE_STRFLOAT', () => {
   });
 
   it('shouldn\'t allow string int', () => {
-    expect(executeEnsure(ENSURE_STRFLOAT(), '5')).satisfy(checkEnsureArgError(desc, '5'));
+    expect(executeEnsure(ENSURE_STRFLOAT(), '5')).satisfy(checkEnsureArgErrors(desc, '5'));
   });
 
   it('shouldn\'t allow number int', () => {
-    expect(executeEnsure(ENSURE_STRFLOAT(), 5)).satisfy(checkEnsureArgError(desc, 5));
+    expect(executeEnsure(ENSURE_STRFLOAT(), 5)).satisfy(checkEnsureArgErrors(desc, 5));
   });
 
   it('shouldn\'t allow number float', () => {
-    expect(executeEnsure(ENSURE_STRFLOAT(), 5.5)).satisfy(checkEnsureArgError(desc, 5.5));
+    expect(executeEnsure(ENSURE_STRFLOAT(), 5.5)).satisfy(checkEnsureArgErrors(desc, 5.5));
   });
 });

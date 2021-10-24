@@ -9,7 +9,10 @@ const ENSURE_NONEMPTY = (): ValidationConfig => {
   const pattern = /.+/;
   return {
     description: template('ENSURE_NONEMPTY'),
-    process: (value) => pattern.test(value),
+    process: (value) => ({
+      error: !pattern.test(value),
+      value,
+    }),
   };
 };
 

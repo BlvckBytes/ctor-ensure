@@ -20,11 +20,13 @@ const ENSURE_EQUALS = (...fieldNames: string[]): ValidationConfig => ({
         if (!index) throw SyntaxError('Unknown field requested!');
 
         // Partner-field mismatched
-        if (ctor[index] !== value || value === undefined)
-          return false;
+        const curr = ctor[index];
+        if (curr !== value || value === undefined)
+          return { error: true, value };
       }
+
       // All passed
-      return true;
+      return { error: false };
     },
   });
 

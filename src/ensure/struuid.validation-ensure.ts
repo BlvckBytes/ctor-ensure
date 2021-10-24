@@ -9,7 +9,10 @@ const ENSURE_STRUUID = (): ValidationConfig => {
   const pattern = /(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$)|^$/i;
   return {
     description: template('ENSURE_STRUUID'),
-    process: (value) => typeof value === 'string' && pattern.test(value),
+    process: (value) => ({
+      error: !(typeof value === 'string' && pattern.test(value)),
+      value,
+    }),
   };
 };
 

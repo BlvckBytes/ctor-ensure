@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_ALPHA, evalStrThunk } from '../../src';
-import { executeEnsure, checkEnsureArgError } from '../test-util';
+import { executeEnsure, checkEnsureArgErrors } from '../test-util';
 
 describe('ENSURE_ALPHA', () => {
 
@@ -31,17 +31,17 @@ describe('ENSURE_ALPHA', () => {
   });
 
   it('should disallow spaces', () => {
-    expect(executeEnsure(ENSURE_ALPHA(false), alpha)).satisfies(checkEnsureArgError(descNoSpaces, alpha));
+    expect(executeEnsure(ENSURE_ALPHA(false), alpha)).satisfies(checkEnsureArgErrors(descNoSpaces, alpha));
     expect(executeEnsure(ENSURE_ALPHA(false), alpha.substring(1))).to.have.lengthOf(0);
   });
 
   it('should disallow numeric non-alpha characters', () => {
     const nonAlpha = '0123456789';
-    expect(executeEnsure(ENSURE_ALPHA(), nonAlpha)).satisfies(checkEnsureArgError(desc, nonAlpha));
+    expect(executeEnsure(ENSURE_ALPHA(), nonAlpha)).satisfies(checkEnsureArgErrors(desc, nonAlpha));
   });
 
   it('should disallow other non-alpha characters', () => {
     const nonAlpha = '@!$%#?:;-.+';
-    expect(executeEnsure(ENSURE_ALPHA(), nonAlpha)).satisfies(checkEnsureArgError(desc, nonAlpha));
+    expect(executeEnsure(ENSURE_ALPHA(), nonAlpha)).satisfies(checkEnsureArgErrors(desc, nonAlpha));
   });
 });

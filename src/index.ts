@@ -29,6 +29,9 @@ export { default as ENSURE_ALPHA } from './ensure/alpha.validation-ensure';
 export { default as ENSURE_BOOLEAN } from './ensure/boolean.validation-ensure';
 export { ENSURE_BASEENCODED, Encoding } from './ensure/baseencoded.validation-ensure';
 export { default as ENSURE_ISARRAY } from './ensure/isarray.validation-ensure';
+export { default as ENSURE_ARRAYSIZE } from './ensure/arraysize.validation-ensure';
+export { default as ENSURE_ARRAYSIZEMIN } from './ensure/arraysizemin.validation-ensure';
+export { default as ENSURE_ARRAYSIZEMAX } from './ensure/arraysizemax.validation-ensure';
 
 // Decorators
 export { default as ValidatedArg } from './validated-arg.decorator';

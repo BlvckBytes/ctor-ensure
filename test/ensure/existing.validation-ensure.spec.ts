@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_EXISTING, evalStrThunk } from '../../src';
-import { checkEnsureArgError, executeEnsure } from '../test-util';
+import { checkEnsureArgErrors, executeEnsure } from '../test-util';
 
 describe('ENSURE_EXISTING', () => {
   const desc = 'mandatory field';
@@ -14,6 +14,6 @@ describe('ENSURE_EXISTING', () => {
   });
 
   it('shouldn\'t allow undefined fields', () => {
-    expect(executeEnsure(ENSURE_EXISTING(), undefined)).satisfy(checkEnsureArgError(desc, undefined));
+    expect(executeEnsure(ENSURE_EXISTING(), undefined)).satisfy(checkEnsureArgErrors(desc, undefined));
   });
 });

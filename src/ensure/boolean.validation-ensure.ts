@@ -7,7 +7,10 @@ import { ValidationConfig } from '../validation-config.interface';
  */
 const ENSURE_BOOLEAN = (): ValidationConfig => ({
     description: template('ENSURE_BOOLEAN'),
-    process: (value) => typeof value === 'boolean',
+    process: (value) => ({
+      error: typeof value !== 'boolean',
+      value,
+    }),
   });
 
 export default ENSURE_BOOLEAN;

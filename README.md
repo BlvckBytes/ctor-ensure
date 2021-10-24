@@ -391,6 +391,7 @@ There are a lot of standard ensures shipped with this module that you can combin
 |--------|------------|--------|---------------------|
 | **Datatypes** |
 | ENSURE_ISARRAY | positive: boolean, unique: boolean, ignoreCase: boolean | Data structure and content | yes |
+| ENSURE_ARRAYSIZE | min: number, max: number | Data structure size | yes |
 | ENSURE_BOOLEAN | / | Boolean value (true/false) | no |
 | ENSURE_ENUM | values: { [key: string]: string | number }, useKey: boolean | Only enum keys/values | yes |
 | ENSURE_FLOAT | / | Floating point number | no |
@@ -425,7 +426,7 @@ Please try to avoid defining ensures inline with the constructor parameter decor
 /**
  * Configuration of a validation chain element
  */
-export interface ValidationConfig {
+interface ValidationConfig {
   // Description of this validator
   description: (() => string) | string;
 
@@ -446,11 +447,16 @@ export interface ValidationConfig {
 
     // Current ctor argument, scalar or array
     arg: any,
-  ) => boolean;
+
+  // Return the value that caused trouble, or null if all passed
+  ) => {
+    error: boolean,
+    value?: any,
+  };
 }
 ```
 
-The description may be an immediate value, or a thunk. `process()` will be called for every field (or element of an array) the ensure is connected with. It simply returns true if the validation succeeded, and false if it didn't. To get a feel for how the standard ensures have been implemented, have a look at the sourcecode.
+The description may be an immediate value, or a thunk. `process()` will be called for every field (or element of an array) the ensure is connected with. It returns an object with the error-flag (true on error, false if valid) and the value that caused trouble. To get a feel for how the standard ensures have been implemented, have a look at the sourcecode.
 
 ## Templating
 
@@ -595,7 +601,7 @@ const executeEnsure = (ensure: ValidationConfig, value: any, otherControls: { [k
  * @param value Value that is causing this error
  * @returns True if found, false otherwise
  */
-export const checkEnsureArgError = (description: string, value: any) => (errors: CtorEnsureArgError[]): boolean;
+export const checkEnsureArgErrors = (description: string, value: any) => (errors: CtorEnsureArgError[]): boolean;
 ```
 
 And here's a quick example of how I tend to use these:
@@ -619,18 +625,18 @@ describe('ENSURE_ALPHA', () => {
   });
 
   it('should disallow spaces', () => {
-    expect(executeEnsure(ENSURE_ALPHA(false), alpha)).satisfies(checkEnsureArgError(descNoSpaces, alpha));
+    expect(executeEnsure(ENSURE_ALPHA(false), alpha)).satisfies(checkEnsureArgErrors(descNoSpaces, alpha));
     expect(executeEnsure(ENSURE_ALPHA(false), alpha.substring(1))).to.have.lengthOf(0);
   });
 
   it('should disallow numeric non-alpha characters', () => {
     const nonAlpha = '0123456789';
-    expect(executeEnsure(ENSURE_ALPHA(), nonAlpha)).satisfies(checkEnsureArgError(desc, nonAlpha));
+    expect(executeEnsure(ENSURE_ALPHA(), nonAlpha)).satisfies(checkEnsureArgErrors(desc, nonAlpha));
   });
 
   it('should disallow other non-alpha characters', () => {
     const nonAlpha = '@!$%#?:;-.+';
-    expect(executeEnsure(ENSURE_ALPHA(), nonAlpha)).satisfies(checkEnsureArgError(desc, nonAlpha));
+    expect(executeEnsure(ENSURE_ALPHA(), nonAlpha)).satisfies(checkEnsureArgErrors(desc, nonAlpha));
   });
 });
 ```

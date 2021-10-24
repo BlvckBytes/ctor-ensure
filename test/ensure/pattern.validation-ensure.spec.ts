@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_PATTERN, evalStrThunk } from '../../src';
-import { checkEnsureArgError, executeEnsure } from '../test-util';
+import { checkEnsureArgErrors, executeEnsure } from '../test-util';
 
 describe('ENSURE_PATTERN', () => {
   it('should pass through it\'s description', () => {
@@ -15,6 +15,6 @@ describe('ENSURE_PATTERN', () => {
   });
 
   it('should deny a foreign pattern', () => {
-    expect(executeEnsure(alphaEnsure, '0123456789')).satisfy(checkEnsureArgError(alphaDesc, '0123456789'));
+    expect(executeEnsure(alphaEnsure, '0123456789')).satisfy(checkEnsureArgErrors(alphaDesc, '0123456789'));
   });
 });

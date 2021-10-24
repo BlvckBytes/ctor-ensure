@@ -12,7 +12,10 @@ const ENSURE_ALPHANUM = (allowSpaces = true): ValidationConfig => {
     description: template('ENSURE_ALPHANUM', {
       nospaces: !allowSpaces,
     }),
-    process: (value) => pattern.test(value),
+    process: (value) => ({
+      error: !pattern.test(value),
+      value,
+    }),
   };
 };
 

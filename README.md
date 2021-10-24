@@ -3,6 +3,7 @@
 [![codecov](https://codecov.io/gh/BlvckBytes/ctor-ensure/branch/master/graph/badge.svg)](https://codecov.io/gh/BlvckBytes/ctor-ensure)
 ![Build Status](https://github.com/BlvckBytes/ctor-ensure/workflows/NodeJS%20CI/badge.svg)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 Ensure that the arguments of your constructor meet constraints defined through decorators.
 

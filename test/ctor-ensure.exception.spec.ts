@@ -11,5 +11,7 @@ describe('new CtorEnsureException()', () => {
 
     // Should have extracted the displayname properly
     expect(exception.displayName).to.equal('test-model');
+    expect(exception).instanceOf(CtorEnsureException);
+    expect(exception.message).to.equal(CtorEnsureException.message);
   });
 });

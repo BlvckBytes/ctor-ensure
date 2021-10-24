@@ -291,7 +291,7 @@ class User {
 }
 ```
 
-Obviously, the user is going to need some credentials still. Since we've already defined a class and some pretty plausible validations for it, we'd like to reuse that within the user's class. In order to accomplish this, I will add it as a super-class, add passthrough-arguments to the constructor, and enable the inheritance flag on the user's decorator.
+Obviously, the user is going to need some credentials still. Since we've already defined a class and some pretty plausible validations for it, we'd like to reuse that within the user's class. In order to accomplish this, I will add it as a super-class, add passthrough-arguments to the constructor, and enable the inheritance flag on the user's decorator. When this flag is off, all errors above the class are ignored, and thus not inherited. This also affects class down the chain.
 
 ```typescript
 @CtorEnsure({
@@ -380,7 +380,7 @@ class User extends Credentials {
 }
 ```
 
-Whenever you instantiate a user, it will validate all fields, but skip `password`. This technique allows for a very flexible and DRY schema notation.
+Whenever you instantiate a user, it will validate all fields, but skip `password`. This technique allows for a very flexible and DRY schema notation. You can use `*` as a field-name inside the block-list to disable all fields within the whole chain up from *(including)* this class, which can be useful too, if not abused.
 
 ## Standard Ensures
 

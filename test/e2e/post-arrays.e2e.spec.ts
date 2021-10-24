@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { CtorEnsure, CtorEnsureException, ENSURE_ENUM, ENSURE_ISARRAY, ValidatedArg } from '../../src';
+import { checkExceptionHasFields } from '../test-util';
 
 describe('post-arrays E2E', () => {
   enum Tags {
@@ -21,7 +22,7 @@ describe('post-arrays E2E', () => {
   }
 
   @CtorEnsure({
-    displayname: 'post', 
+    displayname: 'post2', 
     multipleErrorsPerField: true,
   })
   class Post2 {
@@ -34,24 +35,32 @@ describe('post-arrays E2E', () => {
     ) {}
   }
 
-  const satisfyField = (field = 'tags') => (e: CtorEnsureException) => e.errors[0]?.field === field;
-
   it('should accept correct values', () => {
     expect(() => new Post([])).not.to.throw;
     expect(() => new Post([Tags[0], Tags[1], Tags[2]])).not.to.throw;
   });
 
   it('shouldn\'t accept a scalar value', () => {
-    expect(() => new Post(Tags[0])).to.throw(CtorEnsureException.message).and.satisfy(satisfyField());
+    expect(() => new Post(Tags[0]))
+    .to.throw(CtorEnsureException.message)
+    .to.satisfy(checkExceptionHasFields('post', ['tags']));
   });
 
   it('shouldn\'t accept duplicates case-sensitive', () => {
-    expect(() => new Post([Tags[0], Tags[0]])).to.throw(CtorEnsureException.message).and.satisfy(satisfyField());
+    expect(() => new Post([Tags[0], Tags[0]]))
+    .to.throw(CtorEnsureException.message)
+    .to.satisfy(checkExceptionHasFields('post', ['tags']));
+
     expect(() => new Post([Tags[0], Tags[0].toLocaleLowerCase()])).not.to.throw;
   });
 
   it('shouldn\'t accept duplicates ignorecase', () => {
-    expect(() => new Post2([Tags[0], Tags[0]])).to.throw(CtorEnsureException.message).and.satisfy(satisfyField());
-    expect(() => new Post2([Tags[0], Tags[0].toLocaleLowerCase()])).to.throw(CtorEnsureException.message).and.satisfy(satisfyField());
+    expect(() => new Post2([Tags[0], Tags[0]]))
+    .to.throw(CtorEnsureException.message)
+    .to.satisfy(checkExceptionHasFields('post2', ['tags']));
+
+    expect(() => new Post2([Tags[0], Tags[0].toLocaleLowerCase()]))
+    .to.throw(CtorEnsureException.message)
+    .to.satisfy(checkExceptionHasFields('post2', ['tags']));
   });
 });

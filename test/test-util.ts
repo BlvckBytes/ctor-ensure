@@ -1,4 +1,4 @@
-import { CtorEnsureArgError, evalStrThunk, ValidationConfig } from '../src';
+import { CtorEnsureArgError, CtorEnsureException, evalStrThunk, ValidationConfig } from '../src';
 
 /**
  * Execute a ensure and retrieve a list of it's ensure-arg errors
@@ -65,3 +65,18 @@ export const executeEnsure = (ensure: ValidationConfig, value: any, otherControl
  * @returns True if found, false otherwise
  */
 export const checkEnsureArgError = (description: string, value: any) => (errors: CtorEnsureArgError[]) => errors?.some(it => it.description === description && it.value === value);
+
+/**
+ * To be used in conjunction with satisfy() from chai, to check if
+ * the thrown exception contains all target fields
+ * @param displayname Displayname of throwing model
+ * @param fields Target fields to look for
+ * @returns True if all are found, false otherwise
+ */
+export const checkExceptionHasFields = (displayname: string, fields: string[]) => (ex: CtorEnsureException) => 
+  // Matching displayname
+  ex.displayName === displayname &&
+  // Check if there are as many different fields as provided in the fields array
+  ex.errors.reduce((acc, curr) => acc.some(it => it.field === curr.field) ? acc : [...acc, curr], <CtorEnsureArgError[]>[]).length === fields.length &&
+  // Fields occur
+  fields.every(field => ex.errors.some(err => err.field === field));

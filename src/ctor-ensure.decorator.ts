@@ -67,6 +67,27 @@ const validateCtorArgs = (args: any[], controls: ValidationControl[], multipleEr
 };
 
 /**
+ * Get all active controls from a class' metadata, taking block-lists into account
+ * @param clazz Class to search in
+ * @param displayname Displayname of the class to construct metadata key
+ * @param blockedFields List of currently blocked fields
+ * @returns List of validation-controls that are currently active
+ */
+const getActiveControls = (clazz: Constructable, displayname: string, blockedFields: string[]): ValidationControl[] => {
+  // Get controls from this class
+  const controls = ((Reflect.getOwnMetadata(
+    META_KEY_VALIDATION_UNIQUE(displayname),
+    clazz,
+  ) || []) as ValidationControl[]);
+
+  // All fields have been blocked (full disable)
+  if (blockedFields.includes('*')) return [];
+
+  // Return filtered list of controls
+  return controls.filter(ctl => !blockedFields.some(blk => blk.toLowerCase() === ctl.displayName.toLowerCase()));
+};
+
+/**
  * Decorator signalling that the following class' constructor will be validated
  * using {@link ValidatedArg} decorators on members in constructor.
  * All validation errors will be thrown using a single {@link CtorEnsureException}
@@ -93,17 +114,16 @@ export const CtorEnsure = (
     // Retrieve blocked fields
     const blockedFields = Reflect.getMetadata(META_KEY_BLOCKED_FIELDS, sC) as string[];
 
+    // Block all fields for classes higher up the chain if inheritance has been broken
+    if (!config.inheritValidation && !blockedFields.includes('*'))
+      Reflect.defineMetadata(META_KEY_BLOCKED_FIELDS, [...blockedFields, '*'], sC);
+
     // Arrived at most super-class, remove definition
     if (sC === origProto)
       Reflect.deleteMetadata(META_KEY_BLOCKED_FIELDS, sC);
 
-    // Get controls from this class
-    const controls = ((Reflect.getOwnMetadata(
-      META_KEY_VALIDATION_UNIQUE(config.displayname),
-      interceptor,
-    ) || []) as ValidationControl[])
-    // Filter out controls (fields) that are on the block-list
-      .filter(ctl => !blockedFields.some(blk => blk.toLowerCase() === ctl.displayName.toLowerCase()));
+    // Get all currently active controls
+    const controls = getActiveControls(interceptor, config.displayname, blockedFields);
 
     // Validate args based on defined controls
     const errors = validateCtorArgs(ctorArgs, controls, config.multipleErrorsPerField || false);
@@ -124,7 +144,7 @@ export const CtorEnsure = (
       // Listen for exceptions of super-classes
       if (e instanceof CtorEnsureException && e.clazz !== interceptor)
         // Throw exception with changed class and merged errors
-        throw new CtorEnsureException(interceptor, config.inheritValidation ? [...e.errors, ...errors] : e.errors);
+        throw new CtorEnsureException(interceptor, [...e.errors, ...errors]);
 
       // Just rethrow others
       throw e;

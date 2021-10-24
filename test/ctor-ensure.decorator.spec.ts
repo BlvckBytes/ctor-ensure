@@ -139,7 +139,10 @@ describe('@CtorEnsure', () => {
       ) {}
     }
 
-    @CtorEnsure({ displayname: 'test-model-b' })
+    @CtorEnsure({ 
+      displayname: 'test-model-b',
+      inheritValidation: true,
+    })
     class TestClassB extends TestClassA {
       constructor (
         // Just passed through to the super-call

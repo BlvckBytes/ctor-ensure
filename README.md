@@ -393,7 +393,7 @@ There are a lot of standard ensures shipped with this module that you can combin
 | ENSURE_ISARRAY | positive: boolean, unique: boolean, ignoreCase: boolean | Data structure and content | yes |
 | ENSURE_ARRAYSIZE | min: number, max: number | Data structure size | yes |
 | ENSURE_BOOLEAN | / | Boolean value (true/false) | no |
-| ENSURE_ENUM | values: { [key: string]: string | number }, useKey: boolean | Only enum keys/values | yes |
+| ENSURE_ENUM | values: { [key: string]: string \| number }, useKey: boolean | Only enum keys/values | yes |
 | ENSURE_FLOAT | / | Floating point number | no |
 | ENSURE_INT | / | Integer number | no |
 | ENSURE_EXISTING | / | Has to be defined | yes |

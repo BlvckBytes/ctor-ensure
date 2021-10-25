@@ -390,8 +390,8 @@ There are a lot of standard ensures shipped with this module that you can combin
 | Ensure | Parameters | Checks | Allows Empty Values |
 |--------|------------|--------|---------------------|
 | **Datatypes** |
-| ENSURE_ISARRAY | positive: boolean, unique: boolean, ignoreCase: boolean | Data structure and content | yes |
-| ENSURE_ARRAYSIZE | min: number, max: number | Data structure size | yes |
+| ENSURE_ISARRAY | positive: boolean, unique: boolean, ignoreCase: boolean | Allow/disallow array type, allow/disallow duplicates | yes |
+| ENSURE_ARRAYSIZE | min: number, max: number | Check array size, if is array, ignores otherwise | yes |
 | ENSURE_BOOLEAN | / | Boolean value (true/false) | no |
 | ENSURE_ENUM | values: { [key: string]: string \| number }, useKey: boolean | Only enum keys/values | yes |
 | ENSURE_FLOAT | / | Floating point number | no |

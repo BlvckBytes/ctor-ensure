@@ -422,6 +422,9 @@ There are a lot of standard ensures shipped with this module that you can combin
 | ENSURE_ARRAYSIZE | min: number, max: number | Minimum and maximum array size if is array, ignores otherwise | yes |
 | ENSURE_ARRAYSIZEMAX | max: number | Maximum array size if is array, ignores otherwise | yes |
 | ENSURE_ARRAYSIZEMIN | min: number, max: number | Minimum array size if is array, ignores otherwise | yes |
+| ENSURE_MINMAXNUMBER | min: number, max: number | Minimum and maximum number value if is number, ignores otherwise | yes |
+| ENSURE_MAXNUMBER | max: number | Maximum number value if is number, ignores otherwise | yes |
+| ENSURE_MINNUMBER | min: number| Minimum number value if is number, ignores otherwise | yes |
 | **Miscellaneous** |
 | ENSURE_EQUALS | ...fieldNames: string[] | Content equals to content of provided fields | / |
 

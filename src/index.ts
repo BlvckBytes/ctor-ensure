@@ -36,6 +36,9 @@ export { default as ENSURE_ISDATE } from './ensure/datatypes/isdate.validation-e
 export { default as ENSURE_MINMAXDATE } from './ensure/ranges/minmaxdate.validation-ensure';
 export { default as ENSURE_MINDATE } from './ensure/ranges/mindate.validation-ensure';
 export { default as ENSURE_MAXDATE } from './ensure/ranges/maxdate.validation-ensure';
+export { default as ENSURE_MINMAXNUMBER } from './ensure/ranges/minmaxnumber.validation-ensure';
+export { default as ENSURE_MAXNUMBER } from './ensure/ranges/maxnumber.validation-ensure';
+export { default as ENSURE_MINNUMBER } from './ensure/ranges/minnumber.validation-ensure';
 
 // Decorators
 export { default as ValidatedArg } from './validated-arg.decorator';

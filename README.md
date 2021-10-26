@@ -398,6 +398,7 @@ There are a lot of standard ensures shipped with this module that you can combin
 | ENSURE_INT | / | Integer number | no |
 | ENSURE_EXISTING | / | Has to be defined | yes |
 | ENSURE_NONNULL | / | No null values | yes |
+| ENSURE_ISDATE | / | JS date object | no |
 | **Strings** |
 | ENSURE_MAXLEN | max: number | Maximum string length | yes |
 | ENSURE_MINLEN | min: number | Minimum string length | / |
@@ -417,12 +418,26 @@ There are a lot of standard ensures shipped with this module that you can combin
 | ENSURE_EMAIL | / | Valid E-Mail format | yes |
 | **Miscellaneous** |
 | ENSURE_EQUALS | ...fieldNames: string[] | Content equals to content of provided fields | / |
+| ENSURE_MINMAXDATE | min: Date, max: Date | Minimum and maximum date stamps | yes |
+| ENSURE_MINDATE | min: Date | Minimum date stamp | yes |
+| ENSURE_MAXDATE | max: Date | Maximum date stamp | yes |
 
 ## Custom Ensures
 
 Please try to avoid defining ensures inline with the constructor parameter decorator, while it is certainly possible, this causes nothing but confusion and inconsistencies. Just define your own ensure, which does nothing but create `ValidationConfig` based on your arguments.
 
 ```typescript
+/**
+ * Result of calling process() on a {@link ValidationConfig}
+ */
+interface ValidationResult {
+  // True if it didn't pass validation, false on success
+  error: boolean;
+
+  // Specific value that caused this error
+  value?: any;
+}
+
 /**
  * Configuration of a validation chain element
  */
@@ -449,11 +464,9 @@ interface ValidationConfig {
     arg: any,
 
   // Return the value that caused trouble, or null if all passed
-  ) => {
-    error: boolean,
-    value?: any,
-  };
+  ) => ValidationResult;
 }
+
 ```
 
 The description may be an immediate value, or a thunk. `process()` will be called for every field (or element of an array) the ensure is connected with. It returns an object with the error-flag (true on error, false if valid) and the value that caused trouble. To get a feel for how the standard ensures have been implemented, have a look at the sourcecode.

@@ -32,6 +32,10 @@ export { default as ENSURE_ISARRAY } from './ensure/isarray.validation-ensure';
 export { default as ENSURE_ARRAYSIZE } from './ensure/arraysize.validation-ensure';
 export { default as ENSURE_ARRAYSIZEMIN } from './ensure/arraysizemin.validation-ensure';
 export { default as ENSURE_ARRAYSIZEMAX } from './ensure/arraysizemax.validation-ensure';
+export { default as ENSURE_ISDATE } from './ensure/isdate.validation-ensure';
+export { default as ENSURE_MINMAXDATE } from './ensure/minmaxdate.validation-ensure';
+export { default as ENSURE_MINDATE } from './ensure/mindate.validation-ensure';
+export { default as ENSURE_MAXDATE } from './ensure/maxdate.validation-ensure';
 
 // Decorators
 export { default as ValidatedArg } from './validated-arg.decorator';
@@ -42,6 +46,7 @@ export { default as CtorEnsureArgError } from './ctor-ensure-arg-error.interface
 export { CtorEnsureException } from './ctor-ensure.exception';
 export { TemplateFunction, FunctionMap, VariableMap } from './description-template.factory';
 export { ValidationConfig } from './validation-config.interface';
+export { ValidationResult } from './validation-result.interface';
 export { ValidationControl } from './validation-control.interface';
 export { Constructable } from './constructable.type';
 

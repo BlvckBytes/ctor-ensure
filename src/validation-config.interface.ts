@@ -1,4 +1,4 @@
-import { ValidationControl } from '.';
+import { ValidationControl, ValidationResult } from '.';
 
 /**
  * Configuration of a validation chain element
@@ -26,8 +26,5 @@ export interface ValidationConfig {
     arg: any,
 
   // Return the value that caused trouble, or null if all passed
-  ) => {
-    error: boolean,
-    value?: any,
-  };
+  ) => ValidationResult;
 }

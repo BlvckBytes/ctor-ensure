@@ -4,12 +4,14 @@ import { ValidationConfig } from '../../validation-config.interface';
 /**
  * Ensure to be used within config of {@link ValidatedArg}
  * Ensure this field's content matches with all other provided fields
+ * @param positive Whether or not it should match or mismatch (allow-/block)
  * @param fieldName Names of partner fields, need to be registered {@link ValidatedArg}
  */
-const ENSURE_EQUALS = (...fieldNames: string[]): ValidationConfig => ({
-    description: template('ENSURE_EQUALS', {
+const ENSURE_EQUALSFIELD = (positive: boolean, ...fieldNames: string[]): ValidationConfig => ({
+    description: template('ENSURE_EQUALSFIELD', {
       numFields: fieldNames.length,
       fieldNames: fieldNames.join(', '),
+      disallow: !positive,
     }),
     process: (value, neighbors, ctor) => {
       for (let i = 0; i < fieldNames.length; i += 1) {
@@ -21,7 +23,7 @@ const ENSURE_EQUALS = (...fieldNames: string[]): ValidationConfig => ({
 
         // Partner-field mismatched
         const curr = ctor[index];
-        if (curr !== value || value === undefined)
+        if (positive ? (curr !== value || value === undefined) : (curr === value))
           return { error: true, value };
       }
 
@@ -30,4 +32,4 @@ const ENSURE_EQUALS = (...fieldNames: string[]): ValidationConfig => ({
     },
   });
 
-export default ENSURE_EQUALS;
+export default ENSURE_EQUALSFIELD;

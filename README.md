@@ -124,7 +124,7 @@ class UserRegistrationModel {
 
     // Equal to the password-argument
     @ValidatedArg('passwordRepeated', [
-      ENSURE_EQUALS('password'),
+      ENSURE_EQUALSFIELD(true, 'password'),
     ])
     public passwordRepeated: string,
 
@@ -426,7 +426,7 @@ There are a lot of standard ensures shipped with this module that you can combin
 | ENSURE_MAXNUMBER | max: number | Maximum number value if is number, ignores otherwise | yes |
 | ENSURE_MINNUMBER | min: number| Minimum number value if is number, ignores otherwise | yes |
 | **Miscellaneous** |
-| ENSURE_EQUALS | ...fieldNames: string[] | Content equals to content of provided fields | / |
+| ENSURE_EQUALSFIELD | positive: boolean, ...fieldNames: string[] | Content equals (or not) to content of provided fields | / |
 
 ## Custom Ensures
 

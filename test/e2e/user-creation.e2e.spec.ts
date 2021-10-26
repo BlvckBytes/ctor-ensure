@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { CtorEnsure, CtorEnsureException, ENSURE_ALPHANUM, ENSURE_EMAIL, ENSURE_ENUM, ENSURE_EQUALS, ENSURE_MINLEN, ENSURE_MINMAXLEN, ENSURE_NOSPACES, ENSURE_STRDATE, META_KEY_DISPLAYNAME, ValidatedArg } from '../../src';
+import { CtorEnsure, CtorEnsureException, ENSURE_ALPHANUM, ENSURE_EMAIL, ENSURE_ENUM, ENSURE_EQUALSFIELD, ENSURE_MINLEN, ENSURE_MINMAXLEN, ENSURE_NOSPACES, ENSURE_STRDATE, META_KEY_DISPLAYNAME, ValidatedArg } from '../../src';
 import { checkExceptionHasFields } from '../test-util';
 
 describe('user-creation E2E', () => {
@@ -28,7 +28,7 @@ describe('user-creation E2E', () => {
       public password: string,
 
       @ValidatedArg('passwordRepeated', [
-        ENSURE_EQUALS('password'),
+        ENSURE_EQUALSFIELD(true, 'password'),
       ])
       public passwordRepeated: string,
 

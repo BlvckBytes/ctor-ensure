@@ -7,7 +7,7 @@ dotenv.config();
 // Predefined ensures
 export { default as ENSURE_ALPHANUM } from './ensure/strings/alphanum.validation-ensure';
 export { default as ENSURE_EMAIL } from './ensure/strings/email.validation-ensure';
-export { default as ENSURE_EQUALS } from './ensure/miscellaneous/equals.validation-ensure';
+export { default as ENSURE_EQUALSFIELD } from './ensure/miscellaneous/equalsfield.validation-ensure';
 export { default as ENSURE_EXISTING } from './ensure/datatypes/existing.validation-ensure';
 export { ENSURE_FLOAT, isFloat } from './ensure/datatypes/float.validation-ensure';
 export { ENSURE_INT, isInt } from './ensure/datatypes/int.validation-ensure';

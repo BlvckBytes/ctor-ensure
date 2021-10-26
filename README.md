@@ -7,6 +7,21 @@
 
 Ensure that the arguments of your constructor meet constraints defined through decorators.
 
+## Table of Contents
+* [Aims](#aims)
+* [Advantages](#advantages)
+* [Installation](#installation)
+* [How To use](#how-to-use)
+  * [Full Example](#full-example)
+  * [Optionality](#optionality)
+  * [Inheritance](#inheritance)
+* [Standard Ensures](#standard-ensures)
+* [Custom Ensures](#custom-ensures)
+* [Templating](#templating)
+  * [Syntax JS](#syntax-in-js)
+  * [Syntax .ENV](#syntax-in-env)
+* [Contribution](#contribution)
+  * [Testing](#testing)
 ## Aims
 
 I developed this from scratch, since I couldn't find any other module that was able to directly validate constructor arguments (to make use of typescript's shorthand notation) and which wasn't bloatware. Simple things like these should be kept as small and concise as possible.
@@ -38,7 +53,9 @@ yarn add ctor-ensure
 
 Last but not least, make sure you have your .ENV set up properly, feel free to use the default provided by `.env-presets`.
 
-## How to use
+## How To use
+
+### Full Example
 
 Mark the target class for validation. This decorator uses a configuration object as it's only parameter, like you're probably used to already from other frameworks. The following options are at your disposal:
 
@@ -513,7 +530,7 @@ There are two elements at your disposal:
 * ✅ Variables: passed through by the template invocation
 * ✅ Functions: allowing to format conditionally
 
-### Syntax in JS
+### Syntax JS
 
 Here's a quick example of a template for the minmaxlen-ensure:
 
@@ -543,7 +560,7 @@ const ENSURE_MINMAXLEN = (min: number, max: number): ValidationConfig => {
 
 After the ensure's arguments have been validated, a pattern is built conditionally, which will later be used to test against the value inside `process()`. For the description, I call `template()`, using the name specified inside `.env`, and a map of variables. `min` and `max` are just passed along, `hasMin`, `hasMax` and `hasBoth` are evaluated booleans.
 
-### Syntax in .ENV
+### Syntax .ENV
 
 ```
 # Format: CTOR_ENSURE_<name>_DESC=<template>

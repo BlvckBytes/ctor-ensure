@@ -38,7 +38,7 @@ describe('user-creation E2E', () => {
       @ValidatedArg('email', ENSURE_EMAIL())
       public email: string,
 
-      @ValidatedArg('role', ENSURE_ENUM(Role, true))
+      @ValidatedArg('role', ENSURE_ENUM(Role, false, true))
       public role: Role,
     ) {}
   }

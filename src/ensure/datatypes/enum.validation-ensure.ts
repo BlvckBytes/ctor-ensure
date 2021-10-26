@@ -20,18 +20,20 @@ export const enumKeys = (values: { [key: string]: any }) => Object.keys(values).
  * Ensure to be used within config of {@link ValidatedArg}
  * Ensure this field is a member of an enum
  * @param values Enum to be checked against
+ * @param disallow Whether or not to disallow these values (blocklist)
  * @param useKeys If true, the enum keys (numeric) will be used, otherwise it'll be the string values
  */
-export const ENSURE_ENUM = (values: { [key: string]: string | number }, useKeys = false): ValidationConfig => {
+export const ENSURE_ENUM = (values: { [key: string]: string | number }, disallow = false, useKeys = false): ValidationConfig => {
   const vals: any[] = useKeys ? enumKeys(values) : enumValues(values);
   return {
     description: template('ENSURE_ENUM', {
       numValues: vals.length,
       multiple: vals.length > 1,
       values: vals.join(', '),
+      disallow,
     }),
     process: (value) => ({
-      error: !(vals.includes(value) || value === ''),
+      error: value !== '' && vals.includes(value) === disallow,
       value,
     }),
   };

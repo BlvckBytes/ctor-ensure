@@ -392,7 +392,7 @@ There are a lot of standard ensures shipped with this module that you can combin
 | **Datatypes** |
 | ENSURE_ISARRAY | positive: boolean, unique: boolean, ignoreCase: boolean | Allow/disallow array type, allow/disallow duplicates | yes |
 | ENSURE_BOOLEAN | / | Boolean value (true/false) | no |
-| ENSURE_ENUM | values: { [key: string]: string \| number }, useKey: boolean | Only enum keys/values | yes |
+| ENSURE_ENUM | values: { [key: string]: string \| number }, disallow: boolean, useKey: boolean | Only (or not) enum keys/values | yes |
 | ENSURE_FLOAT | / | Floating point number | no |
 | ENSURE_INT | / | Integer number | no |
 | ENSURE_EXISTING | / | Has to be defined | yes |

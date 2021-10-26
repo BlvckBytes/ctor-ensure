@@ -388,8 +388,8 @@ Whenever you instantiate a user, it will validate all fields, but skip `password
 There are a lot of standard ensures shipped with this module that you can combine with your decorators to build great validation.
 
 | Ensure | Parameters | Checks | Allows Empty Values |
-|--------|------------|--------|---------------------|
-| **Datatypes** |
+| :----- | :--------- | :----- | :-------------------|
+| **Datatypes** |
 | ENSURE_ISARRAY | positive: boolean, unique: boolean, ignoreCase: boolean | Allow/disallow array type, allow/disallow duplicates | yes |
 | ENSURE_ARRAYSIZE | min: number, max: number | Check array size, if is array, ignores otherwise | yes |
 | ENSURE_BOOLEAN | / | Boolean value (true/false) | no |

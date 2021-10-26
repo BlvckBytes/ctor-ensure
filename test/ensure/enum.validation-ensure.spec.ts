@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ENSURE_ENUM, evalStrThunk } from '../../src';
-import { enumKeys, enumValues } from '../../src/ensure/enum.validation-ensure';
+import { enumValues, enumKeys } from '../../src/ensure/datatypes/enum.validation-ensure';
 import { executeEnsure } from '../test-util';
 
 enum SINGULAR {

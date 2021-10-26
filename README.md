@@ -391,7 +391,6 @@ There are a lot of standard ensures shipped with this module that you can combin
 | :----- | :--------- | :----- | :-------------------|
 | **Datatypes** |
 | ENSURE_ISARRAY | positive: boolean, unique: boolean, ignoreCase: boolean | Allow/disallow array type, allow/disallow duplicates | yes |
-| ENSURE_ARRAYSIZE | min: number, max: number | Check array size, if is array, ignores otherwise | yes |
 | ENSURE_BOOLEAN | / | Boolean value (true/false) | no |
 | ENSURE_ENUM | values: { [key: string]: string \| number }, useKey: boolean | Only enum keys/values | yes |
 | ENSURE_FLOAT | / | Floating point number | no |
@@ -400,9 +399,6 @@ There are a lot of standard ensures shipped with this module that you can combin
 | ENSURE_NONNULL | / | No null values | yes |
 | ENSURE_ISDATE | / | JS date object | no |
 | **Strings** |
-| ENSURE_MAXLEN | max: number | Maximum string length | yes |
-| ENSURE_MINLEN | min: number | Minimum string length | / |
-| ENSURE_MINMAXLEN | min: number, max: number | Minimum and maximum string length | / |
 | ENSURE_NONEMPTY | / | No empty strings | no |
 | ENSURE_NOSPACES | / | No spaces in string | yes |
 | ENSURE_PATTERN | pattern: RegExp, description: string | Custom pattern validation | / |
@@ -416,11 +412,18 @@ There are a lot of standard ensures shipped with this module that you can combin
 | ENSURE_BASEENCODED | encoding: Encoding | BaseX encoded data | yes |
 | ENSURE_CONTAINS | string: string, allow: boolean | String contains or not contains | / |
 | ENSURE_EMAIL | / | Valid E-Mail format | yes |
+| **Ranges** |
+| ENSURE_MINMAXDATE | min: Date, max: Date | Minimum and maximum date stamps | yes |
+| ENSURE_MAXDATE | max: Date | Maximum date stamp | yes |
+| ENSURE_MINDATE | min: Date | Minimum date stamp | yes |
+| ENSURE_MINMAXLEN | min: number, max: number | Minimum and maximum string length | / |
+| ENSURE_MAXLEN | max: number | Maximum string length | yes |
+| ENSURE_MINLEN | min: number | Minimum string length | / |
+| ENSURE_ARRAYSIZE | min: number, max: number | Minimum and maximum array size if is array, ignores otherwise | yes |
+| ENSURE_ARRAYSIZEMAX | max: number | Maximum array size if is array, ignores otherwise | yes |
+| ENSURE_ARRAYSIZEMIN | min: number, max: number | Minimum array size if is array, ignores otherwise | yes |
 | **Miscellaneous** |
 | ENSURE_EQUALS | ...fieldNames: string[] | Content equals to content of provided fields | / |
-| ENSURE_MINMAXDATE | min: Date, max: Date | Minimum and maximum date stamps | yes |
-| ENSURE_MINDATE | min: Date | Minimum date stamp | yes |
-| ENSURE_MAXDATE | max: Date | Maximum date stamp | yes |
 
 ## Custom Ensures
 

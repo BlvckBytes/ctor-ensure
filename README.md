@@ -97,7 +97,7 @@ class UserRegistrationModel {
 }
 ```
 
-Now it's time to decide on which and how arguments need to be validated. This decorator has just two parameters: The field's displayname and either a single or an array of ensures. Personally, I like to always put an array with one ensure per line, just for readability's sake, and for quick addition of more ensures.
+Now it's time to decide on which and how arguments need to be validated. This decorator has three parameters: The field's displayname, either a single or an array of ensures and last but not least, it's optionality state. Personally, I like to always put an array with one ensure per line, just for readability's sake, and for quick addition of more ensures.
 
 ```typescript
 @CtorEnsure({
@@ -250,6 +250,31 @@ Quick and dirty, but it gets the job done. This is how the output looks like:
 ```
 
 Wow! Now that's what I call a descriptive error message, providing a nice user experience to your API-invoker, especially when you keep the little effort to set this up in mind.
+
+### Optionality
+
+Fields can be optional, where it's then decided whether or not it's nullable, omittable, or both. Use this enum as a third parameter on validated arguments:
+
+```typescript
+/**
+ * Signals the state of optionality of a validated argument
+ */
+enum Optionality {
+  // Needs to have a defined, non-null value
+  REQUIRED,
+
+  // Can be omitted, thus undefined
+  OMITTABLE,
+
+  // Can be null
+  NULLABLE,
+
+  // Can be undefined, null, or an actual value
+  IRRELEVANT,
+}
+```
+
+Required arguments are always validated, omittable's validation is skipped on undefined values, nullable's on null, and irrelevant's on both. By default, all arguments are required.
 
 ### Inheritance
 

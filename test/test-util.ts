@@ -1,4 +1,5 @@
-import { CtorEnsureArgError, CtorEnsureException, evalStrThunk, ValidationConfig } from '../src';
+import { CtorEnsureArgError, CtorEnsureException, evalStrThunk, ValidationConfig, ValidationControl } from '../src';
+import Optionality from '../src/optionality.enum';
 
 /**
  * Execute a ensure and retrieve a list of it's ensure-arg errors
@@ -9,11 +10,12 @@ import { CtorEnsureArgError, CtorEnsureException, evalStrThunk, ValidationConfig
  */
 export const executeEnsure = (ensure: ValidationConfig, value: any, otherControls: { [key: string]: any} = {}) => {
   // Dummy controls, having ensure as first control, named test
-  const controls = [
+  const controls: ValidationControl[] = [
     {
       displayName: 'test',
       ctorInd: 0,
       configs: [ensure],
+      optional: Optionality.REQUIRED,
     },
   ];
 
@@ -26,6 +28,7 @@ export const executeEnsure = (ensure: ValidationConfig, value: any, otherControl
       displayName: key,
       ctorInd: i + 1,
       configs: [],
+      optional: Optionality.REQUIRED,
     });
     ctor.push(otherControls[key]);
   });

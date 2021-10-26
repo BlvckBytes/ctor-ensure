@@ -1,3 +1,4 @@
+import Optionality from './optionality.enum';
 import { ValidationConfig } from './validation-config.interface';
 
 /**
@@ -12,4 +13,7 @@ export interface ValidationControl {
 
   // Configurations for validation (chain elements)
   configs: ValidationConfig[];
+
+  // State of optionality
+  optional: Optionality;
 }

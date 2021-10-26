@@ -1,8 +1,9 @@
-import { evalStrThunk } from '.';
+import { evalStrThunk, template } from '.';
 import { Constructable } from './constructable.type';
 import CtorEnsureArgError from './ctor-ensure-arg-error.interface';
 import CtorEnsureConfig from './ctor-ensure-config.interface';
 import { CtorEnsureException } from './ctor-ensure.exception';
+import Optionality from './optionality.enum';
 import { getLastSuperclassProto } from './util';
 import { ValidationControl } from './validation-control.interface';
 
@@ -17,6 +18,38 @@ const META_KEY_VALIDATION_UNIQUE = (displayname: string) => `CTOR_ENSURE:${displ
 const META_KEY_BLOCKED_FIELDS = 'CTOR_ENSURE:BLOCKED_FIELDS';
 
 /**
+ * Check wheter or not a value is conforming to it's optionality state
+ * @param value Value to check
+ * @param optionality Optionality-level to check against
+ * @returns The error description if any, null if it passed and a
+ * boolean, whether or not further validation is necessary
+ */
+const checkOptionality = (value: any, optionality: Optionality): [string | null, boolean] => {
+  // Account for optionality
+  switch (optionality) {
+    case Optionality.NULLABLE:
+      if (value === null) return [null, false];
+      if (value !== undefined) return [null, true];
+      break;
+
+    case Optionality.OMITTABLE:
+      if (value === undefined) return [null, false];
+      if (value !== null) return [null, true];
+      break;
+
+    case Optionality.IRRELEVANT:
+      return [null, !(value === null || value === undefined)];
+
+    default:
+      return [null, true];
+  }
+
+  return [template('OPTIONALITY', {
+    nullable: optionality === Optionality.NULLABLE,
+  }), false];
+};
+
+/**
  * Validate an array of constructor arguments based on an array of controls which
  * define the requested validation schema, then collect and return those errors
  * @param args Constructor arguments to validate
@@ -28,21 +61,40 @@ const validateCtorArgs = (args: any[], controls: ValidationControl[], multipleEr
   const errors: CtorEnsureArgError[] = [];
 
   // Iterate every control
-  controls.forEach(currControl => {
+  for (let k = 0; k < controls.length; k += 1) {
+    const currControl = controls[k];
+
     // Get target value from constructor args
     const currArg = args[currControl.ctorInd];
 
-    // Validate whole config chain from top to bottom
-    for (let i = 0; i < currControl.configs.length; i += 1) {
-      const currConfig = currControl.configs[i];
+    // Check optionality
+    const [optErr, needsValidation] = checkOptionality(currArg, currControl.optional);
 
-      // Flag, marks if this field has passed validation
-      let passed = true;
+    // Didn't pass optionality, raise error and continue
+    // to next validated arg
+    if (optErr) {
+      errors.push({
+        field: currControl.displayName,
+        description: optErr,
+        value: currArg,
+      });
+      continue;
+    }
 
-      // Validate all values individually (to support arrays)
-      const values: any[] = Array.isArray(currArg) ? currArg : [currArg];
-      for (let j = 0; j < values.length; j += 1) {
-        const currValue = values[j];
+    // No further validation needed
+    if (!needsValidation) continue;
+
+    // Validate all values individually (to support arrays)
+    const values: any[] = Array.isArray(currArg) ? currArg : [currArg];
+    for (let j = 0; j < values.length; j += 1) {
+      const currValue = values[j];
+
+      // Flag, marks if the current value has passed validation
+      let currValuePassed = true;
+
+      // Validate whole config chain from top to bottom
+      for (let i = 0; i < currControl.configs.length; i += 1) {
+        const currConfig = currControl.configs[i];
 
         // Call ensure process callback with all dependencies
         const res = currConfig.process(currValue, controls, args, currControl, currArg);
@@ -55,22 +107,18 @@ const validateCtorArgs = (args: any[], controls: ValidationControl[], multipleEr
             value: res.value,
           };
 
-          // Unique-ify list
-          if (!errors.some(
-            it => it.field === err.field && // Same field
-            it.description === err.description && // Same description
-            JSON.stringify(it.value) === JSON.stringify(err.value), // Same value
-          )) {
-            errors.push(err);
-            passed = false;
-          }
+          errors.push(err);
+
+          // Only one error per field is desired
+          if (!multipleErrorsPerField) break;
+          currValuePassed = false;
         }
       }
 
-      // Config didn't pass, and only max. one error per field is desired
-      if (!passed && !multipleErrorsPerField) break;
+      // One of the array's values didn't pass, skip all other values
+      if (!currValuePassed && Array.isArray(currArg)) break;
     }
-  });
+  }
 
   return errors;
 };

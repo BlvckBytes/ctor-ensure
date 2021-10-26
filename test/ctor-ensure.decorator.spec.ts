@@ -1,7 +1,12 @@
 import { expect } from 'chai';
-import { CtorEnsure, META_KEY_DISPLAYNAME, Constructable, ValidatedArg, ENSURE_NONEMPTY, CtorEnsureException, CtorEnsureArgError, ENSURE_MINLEN, ENSURE_ALPHA } from '../src';
+import { CtorEnsure, META_KEY_DISPLAYNAME, Constructable, ValidatedArg, ENSURE_NONEMPTY, CtorEnsureException, CtorEnsureArgError, ENSURE_MINLEN, ENSURE_ALPHA, strOpt } from '../src';
+import Optionality from '../src/optionality.enum';
+import { checkEnsureArgErrors } from './test-util';
 
 describe('@CtorEnsure', () => {
+
+  const optionalityDesc = (nullable = true) => `no ${nullable ? 'undefined' : 'null'} values allowed`;
+
   it('should apply the displayname metadata', () => {
     // Create test class and apply decorator
     @CtorEnsure({ displayname: 'test-model' })
@@ -85,6 +90,60 @@ describe('@CtorEnsure', () => {
     expect(() => {
       new TestClass('max');
     }).not.to.throw();
+  });
+
+  const optCaseDesc = 'at least 10 characters';
+  const mkOptionalityCase = (optionality: Optionality, value: any, withEnsure = false) => {
+    @CtorEnsure({
+      displayname: 'test-model',
+    })
+    class TestClass {
+      constructor (
+        @ValidatedArg('val', withEnsure ? [ ENSURE_MINLEN(10) ] : [], optionality)
+        public val: any,
+      ) {}
+    }
+    return () => new TestClass(value);
+  };
+
+  it('should allow nullable optionality but disallow undefined', () => {
+    expect(mkOptionalityCase(Optionality.NULLABLE, null)).not.to.throw;
+    expect(mkOptionalityCase(Optionality.NULLABLE, undefined))
+    .to.throw(CtorEnsureException.message)
+    .property('errors').satisfy(checkEnsureArgErrors(optionalityDesc(true), undefined));
+  });
+
+  it('should allow undefined optionality but disallow null', () => {
+    expect(mkOptionalityCase(Optionality.OMITTABLE, undefined)).not.to.throw;
+    expect(mkOptionalityCase(Optionality.OMITTABLE, null))
+    .to.throw(CtorEnsureException.message)
+    .property('errors').satisfy(checkEnsureArgErrors(optionalityDesc(false), null));
+  });
+
+  it('should allow irrelevant optionality and pass values on to validation', () => {
+    expect(mkOptionalityCase(Optionality.IRRELEVANT, null)).not.to.throw;
+    expect(mkOptionalityCase(Optionality.IRRELEVANT, undefined)).not.to.throw;
+    expect(mkOptionalityCase(Optionality.IRRELEVANT, 'value', true))
+    .to.throw(CtorEnsureException.message)
+    .property('errors').satisfy(checkEnsureArgErrors(optCaseDesc, 'value'));
+  });
+
+  it('should forward values to ensures', () => {
+    expect(mkOptionalityCase(Optionality.REQUIRED, 'value', true))
+    .to.throw(CtorEnsureException.message)
+    .property('errors').satisfy(checkEnsureArgErrors(optCaseDesc, 'value'));
+
+    expect(mkOptionalityCase(Optionality.NULLABLE, 'value', true))
+    .to.throw(CtorEnsureException.message)
+    .property('errors').satisfy(checkEnsureArgErrors(optCaseDesc, 'value'));
+
+    expect(mkOptionalityCase(Optionality.OMITTABLE, 'value', true))
+    .to.throw(CtorEnsureException.message)
+    .property('errors').satisfy(checkEnsureArgErrors(optCaseDesc, 'value'));
+
+    expect(mkOptionalityCase(Optionality.IRRELEVANT, 'value', true))
+    .to.throw(CtorEnsureException.message)
+    .property('errors').satisfy(checkEnsureArgErrors(optCaseDesc, 'value'));
   });
 
   it('should add a k-v map of all validated fields to the exception', () => {

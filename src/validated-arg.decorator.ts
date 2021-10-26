@@ -1,4 +1,5 @@
 import { META_KEY_VALIDATION } from './ctor-ensure.decorator';
+import Optionality from './optionality.enum';
 import { ValidationConfig } from './validation-config.interface';
 import { ValidationControl } from './validation-control.interface';
 
@@ -6,11 +7,12 @@ import { ValidationControl } from './validation-control.interface';
  * Apply one or more validations to a constructor property
  * @param displayName Name of the field to validate
  * @param config Validation config
- * @param flags Flags for this control
+ * @param optional Whether or not this field is optional
  */
 const ValidatedArg = (
   displayName: string,
   config: ValidationConfig | ValidationConfig[],
+  optional = Optionality.REQUIRED,
 ): ParameterDecorator => (clazz: any, _: string | symbol, index: number) => {
     // Ensure existence of array
     if (!Reflect.hasOwnMetadata(META_KEY_VALIDATION, clazz))
@@ -33,6 +35,7 @@ const ValidatedArg = (
         displayName,
         ctorInd: index,
         configs: [],
+        optional,
       } as ValidationControl;
       meta.push(control);
     }

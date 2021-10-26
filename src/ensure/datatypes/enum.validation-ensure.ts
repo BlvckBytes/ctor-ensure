@@ -33,7 +33,7 @@ export const ENSURE_ENUM = (values: { [key: string]: string | number }, disallow
       disallow,
     }),
     process: (value) => ({
-      error: value !== '' && vals.includes(value) === disallow,
+      error: vals.includes(value) === disallow,
       value,
     }),
   };

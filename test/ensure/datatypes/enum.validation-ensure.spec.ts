@@ -45,15 +45,6 @@ describe('ENSURE_ENUM', () => {
     expect(evalStrThunk(ENSURE_ENUM(PLURAL, true, true).description)).to.equal(descKeysPlural(PLURAL, true));
   });
 
-  it('should allow empty strings', () => {
-    expect(executeEnsure(ENSURE_ENUM(PLURAL), '')).to.have.lengthOf(0);
-    expect(executeEnsure(ENSURE_ENUM(SINGULAR), '')).to.have.lengthOf(0);
-    expect(executeEnsure(ENSURE_ENUM(PLURAL, false, true), '')).to.have.lengthOf(0);
-    expect(executeEnsure(ENSURE_ENUM(SINGULAR, false, true), '')).to.have.lengthOf(0);
-    expect(executeEnsure(ENSURE_ENUM(PLURAL, true, true), '')).to.have.lengthOf(0);
-    expect(executeEnsure(ENSURE_ENUM(SINGULAR, true, true), '')).to.have.lengthOf(0);
-  });
-
   it('should allow SINGULAR enum values', () => {
     enumValues(SINGULAR).forEach(value => {
       expect(executeEnsure(ENSURE_ENUM(SINGULAR), value)).to.have.lengthOf(0);

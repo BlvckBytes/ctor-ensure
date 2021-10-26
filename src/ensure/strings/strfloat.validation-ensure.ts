@@ -6,7 +6,7 @@ import { ValidationConfig } from '../../validation-config.interface';
  * Ensure this field is a string representing a float
  */
 const ENSURE_STRFLOAT = (): ValidationConfig => {
-  const pattern = /(^[0-9]+\.[0-9]+$)|^$/;
+  const pattern = /^[0-9]+\.[0-9]+$/;
   return {
     description: template('ENSURE_STRFLOAT'),
     process: (value) => ({

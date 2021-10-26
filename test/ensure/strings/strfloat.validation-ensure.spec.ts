@@ -13,10 +13,6 @@ describe('ENSURE_STRFLOAT', () => {
     expect(executeEnsure(ENSURE_STRFLOAT(), '55.55')).to.have.lengthOf(0);
   });
 
-  it('should allow empty values', () => {
-    expect(executeEnsure(ENSURE_STRFLOAT(), '')).to.have.lengthOf(0);
-  });
-
   it('shouldn\'t allow string int', () => {
     expect(executeEnsure(ENSURE_STRFLOAT(), '5')).satisfy(checkEnsureArgErrors(desc, '5'));
   });

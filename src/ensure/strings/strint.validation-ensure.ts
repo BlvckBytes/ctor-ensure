@@ -6,7 +6,7 @@ import { ValidationConfig } from '../../validation-config.interface';
  * Ensure this field is a string representing an integer
  */
 const ENSURE_STRINT = (): ValidationConfig => {
-  const pattern = /(^[0-9]+$)|^$/;
+  const pattern = /^[0-9]+$/;
   return {
     description: template('ENSURE_STRINT'),
     process: (value) => ({

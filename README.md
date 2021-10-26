@@ -392,7 +392,7 @@ There are a lot of standard ensures shipped with this module that you can combin
 | **Datatypes** |
 | ENSURE_ISARRAY | positive: boolean, unique: boolean, ignoreCase: boolean | Allow/disallow array type, allow/disallow duplicates | yes |
 | ENSURE_BOOLEAN | / | Boolean value (true/false) | no |
-| ENSURE_ENUM | values: { [key: string]: string \| number }, disallow: boolean, useKey: boolean | Only (or not) enum keys/values | yes |
+| ENSURE_ENUM | values: { [key: string]: string \| number }, disallow: boolean, useKey: boolean | Only (or not) enum keys/values | no |
 | ENSURE_FLOAT | / | Floating point number | no |
 | ENSURE_INT | / | Integer number | no |
 | ENSURE_EXISTING | / | Has to be defined | yes |
@@ -402,29 +402,29 @@ There are a lot of standard ensures shipped with this module that you can combin
 | ENSURE_NONEMPTY | / | No empty strings | no |
 | ENSURE_NOSPACES | / | No spaces in string | yes |
 | ENSURE_PATTERN | pattern: RegExp, description: string | Custom pattern validation | / |
-| ENSURE_STRDATE | / | Full ISO-8601 datetime string | yes |
-| ENSURE_STRFLOAT | / | Floating point number as string | yes |
-| ENSURE_STRINT | / | Integer number as string | yes |
-| ENSURE_STRUUID | / | UUID as string | yes |
-| ENSURE_ALPHA | allowSpaces: boolean | Alphabetical characters | yes |
-| ENSURE_ALPHANUM | allowSpaces: boolean | Alphanumerical characters | yes |
-| ENSURE_ASCII | justPrintable: boolean, allowSpaces: boolean | ASCII characters | yes |
+| ENSURE_STRDATE | / | Full ISO-8601 datetime string | no |
+| ENSURE_STRFLOAT | / | Floating point number as string | no |
+| ENSURE_STRINT | / | Integer number as string | no |
+| ENSURE_STRUUID | / | UUID as string | no |
+| ENSURE_ALPHA | allowSpaces: boolean | Alphabetical characters | / |
+| ENSURE_ALPHANUM | allowSpaces: boolean | Alphanumerical characters | / |
+| ENSURE_ASCII | justPrintable: boolean, allowSpaces: boolean | ASCII characters | / |
 | ENSURE_BASEENCODED | encoding: Encoding | BaseX encoded data | yes |
 | ENSURE_CONTAINS | string: string, allow: boolean | String contains or not contains | / |
-| ENSURE_EMAIL | / | Valid E-Mail format | yes |
+| ENSURE_EMAIL | / | Valid E-Mail format | no |
 | **Ranges** |
-| ENSURE_MINMAXDATE | min: Date, max: Date | Minimum and maximum date stamps | yes |
-| ENSURE_MAXDATE | max: Date | Maximum date stamp | yes |
-| ENSURE_MINDATE | min: Date | Minimum date stamp | yes |
+| ENSURE_MINMAXDATE | min: Date, max: Date | Minimum and maximum date stamps | no |
+| ENSURE_MAXDATE | max: Date | Maximum date stamp | no |
+| ENSURE_MINDATE | min: Date | Minimum date stamp | no |
 | ENSURE_MINMAXLEN | min: number, max: number | Minimum and maximum string length | / |
-| ENSURE_MAXLEN | max: number | Maximum string length | yes |
+| ENSURE_MAXLEN | max: number | Maximum string length | / |
 | ENSURE_MINLEN | min: number | Minimum string length | / |
-| ENSURE_ARRAYSIZE | min: number, max: number | Minimum and maximum array size if is array, ignores otherwise | yes |
-| ENSURE_ARRAYSIZEMAX | max: number | Maximum array size if is array, ignores otherwise | yes |
-| ENSURE_ARRAYSIZEMIN | min: number, max: number | Minimum array size if is array, ignores otherwise | yes |
-| ENSURE_MINMAXNUMBER | min: number, max: number | Minimum and maximum number value if is number, ignores otherwise | yes |
-| ENSURE_MAXNUMBER | max: number | Maximum number value if is number, ignores otherwise | yes |
-| ENSURE_MINNUMBER | min: number| Minimum number value if is number, ignores otherwise | yes |
+| ENSURE_ARRAYSIZE | min: number, max: number | Minimum and maximum array size | no |
+| ENSURE_ARRAYSIZEMAX | max: number | Maximum array size if is array, ignores otherwise | no |
+| ENSURE_ARRAYSIZEMIN | min: number, max: number | Minimum array size if is array, ignores otherwise | no |
+| ENSURE_MINMAXNUMBER | min: number, max: number | Minimum and maximum number value if is number, ignores otherwise | no |
+| ENSURE_MAXNUMBER | max: number | Maximum number value if is number, ignores otherwise | no |
+| ENSURE_MINNUMBER | min: number| Minimum number value if is number, ignores otherwise | no |
 | **Miscellaneous** |
 | ENSURE_EQUALSFIELD | positive: boolean, ...fieldNames: string[] | Content equals (or not) to content of provided fields | / |
 

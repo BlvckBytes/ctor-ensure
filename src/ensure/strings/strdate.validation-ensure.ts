@@ -6,7 +6,7 @@ import { ValidationConfig } from '../../validation-config.interface';
  * Ensure this field is a valid date string
  */
 const ENSURE_STRDATE = (): ValidationConfig => {
-  const pattern = /(^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|Z)?$)|^$/i;
+  const pattern = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|Z)?$/i;
   return {
     description: template('ENSURE_STRDATE'),
     process: (value) => ({

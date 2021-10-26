@@ -13,10 +13,6 @@ describe('ENSURE_STRDATE', () => {
     expect(executeEnsure(ENSURE_STRDATE(), '2021-10-17T17:38:50+00:00')).to.have.lengthOf(0);
   });
 
-  it('should allow empty string', () => {
-    expect(executeEnsure(ENSURE_STRDATE(), '')).to.have.lengthOf(0);
-  });
-
   it('shouldn\'t allow invalid date', () => {
     expect(executeEnsure(ENSURE_STRDATE(), '2020-03-05')).satisfy(checkEnsureArgErrors(desc, '2020-03-05'));
   });

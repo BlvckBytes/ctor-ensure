@@ -24,8 +24,8 @@ describe('ENSURE_MINMAXNUMBER', () => {
       expect(executeEnsure(ENSURE_MINMAXNUMBER(n1, n2), i)).to.have.lengthOf(0);
   });
 
-  it('should allow string value', () => {
-    expect(executeEnsure(ENSURE_MINMAXNUMBER(n1, n2), 'test')).to.have.lengthOf(0);
+  it('shouldn\'t allow string value', () => {
+    expect(executeEnsure(ENSURE_MINMAXNUMBER(n1, n2), 'test')).satisfy(checkEnsureArgErrors(desc(n1, n2), 'test'));
   });
 
   it('shouldn\'t allow values below range', () => {

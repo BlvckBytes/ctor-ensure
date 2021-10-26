@@ -13,10 +13,6 @@ describe('ENSURE_STRUUID', () => {
     expect(executeEnsure(ENSURE_STRUUID(), 'A5D8A2A2-C3BD-46AD-AFCC-9223B0078209')).to.have.lengthOf(0);
   });
 
-  it('should allow empty string', () => {
-    expect(executeEnsure(ENSURE_STRUUID(), '')).to.have.lengthOf(0);
-  });
-
   it('shouldn\'t allow invalid uuid', () => {
     expect(executeEnsure(ENSURE_STRUUID(), 'A5D8A2A2-C3BD-9223B0078209')).satisfy(checkEnsureArgErrors(desc, 'A5D8A2A2-C3BD-9223B0078209'));
   });

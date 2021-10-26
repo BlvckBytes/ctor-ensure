@@ -13,10 +13,6 @@ describe('ENSURE_STRINT', () => {
     expect(executeEnsure(ENSURE_STRINT(), '5')).to.have.lengthOf(0);
   });
 
-  it('should allow empty string', () => {
-    expect(executeEnsure(ENSURE_STRINT(), '')).to.have.lengthOf(0);
-  });
-
   it('shouldn\'t allow string float', () => {
     expect(executeEnsure(ENSURE_STRINT(), '55.55')).satisfy(checkEnsureArgErrors(desc, '55.55'));
   });

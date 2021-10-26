@@ -18,8 +18,4 @@ describe('ENSURE_EMAIL', () => {
   it('should disallow invalid e-mail address', () => {
     expect(executeEnsure(ENSURE_EMAIL(), invalidEmail)).satisfies(checkEnsureArgErrors(desc, invalidEmail));
   });
-
-  it('should allow empty values', () => {
-    expect(executeEnsure(ENSURE_EMAIL(), '')).to.have.lengthOf(0);
-  });
 });

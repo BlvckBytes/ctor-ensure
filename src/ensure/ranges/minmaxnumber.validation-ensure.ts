@@ -23,8 +23,8 @@ const ENSURE_MINMAXNUMBER = (min: number | null, max: number | null): Validation
     }),
     process: (value) => ({
       error: (
-        // Is a number
-        (isInt(value) || isFloat(value)) &&
+        // Is not a number
+        !(isInt(value) || isFloat(value)) ||
         // And not within specified range
         (
           (max !== null && value > max) ||

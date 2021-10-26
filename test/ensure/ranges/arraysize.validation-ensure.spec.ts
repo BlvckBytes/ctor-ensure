@@ -25,10 +25,6 @@ describe('ENSURE_ARRAYSIZE', () => {
     expect(evalStrThunk(ENSURE_ARRAYSIZE(-1, 3).description)).to.equal(desc(-1, 3));
   });
 
-  it('should ignore non-array datastructures', () => {
-    expect(executeEnsure(ENSURE_ARRAYSIZE(0, 0), 'this is no array')).to.have.lengthOf(0);
-  });
-
   it('should allow array with length of range', () => {
     for (let i = 2; i <= 5; i += 1)
       expect(executeEnsure(ENSURE_ARRAYSIZE(2, 5), Array(i).fill(0))).to.have.lengthOf(0);

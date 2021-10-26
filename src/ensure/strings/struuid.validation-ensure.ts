@@ -6,11 +6,11 @@ import { ValidationConfig } from '../../validation-config.interface';
  * Ensure this field is a valid uuid
  */
 const ENSURE_STRUUID = (): ValidationConfig => {
-  const pattern = /(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$)|^$/i;
+  const pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   return {
     description: template('ENSURE_STRUUID'),
     process: (value) => ({
-      error: !(typeof value === 'string' && pattern.test(value)),
+      error: typeof value !== 'string' || !pattern.test(value),
       value,
     }),
   };

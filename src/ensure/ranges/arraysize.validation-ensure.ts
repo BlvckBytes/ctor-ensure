@@ -23,9 +23,10 @@ const ENSURE_ARRAYSIZE = (min: number, max: number): ValidationConfig => {
     }),
     process: (_value, _neighbors, _ctor, _parent, arg) => ({
       error: (
-        // Is an array
-        Array.isArray(arg) &&
-        // And not within specified range
+        // Is not an array
+        !Array.isArray(arg) ||
+
+        // or not within specified range
         (
           (arg.length < min && min > 0) ||
           (arg.length > max && max > 0)

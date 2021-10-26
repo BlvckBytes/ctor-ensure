@@ -26,9 +26,9 @@ const ENSURE_MINMAXDATE = (min: Date | null, max: Date | null): ValidationConfig
     }),
     process: (value) => ({
       error: (
-        // Is a date
-        value instanceof Date &&
-        // And not within specified range
+        // Isn't a date
+        !(value instanceof Date) ||
+        // or not within specified range
         (
           (value.getTime() > maxStamp && maxStamp > -1) ||
           (value.getTime() < minStamp && minStamp > -1)

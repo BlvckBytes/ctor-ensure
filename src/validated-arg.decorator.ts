@@ -13,6 +13,7 @@ const ValidatedArg = (
   displayName: string,
   config: ValidationConfig | ValidationConfig[],
   optional = Optionality.REQUIRED,
+  skipOn?: (values: { [ key: string ]: any }) => boolean,
 ): ParameterDecorator => (clazz: any, _: string | symbol, index: number) => {
     // Ensure existence of array
     if (!Reflect.hasOwnMetadata(META_KEY_VALIDATION, clazz))
@@ -36,6 +37,7 @@ const ValidatedArg = (
         ctorInd: index,
         configs: [],
         optional,
+        skipOn,
       } as ValidationControl;
       meta.push(control);
     }

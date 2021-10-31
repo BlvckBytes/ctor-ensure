@@ -347,4 +347,119 @@ describe('@CtorEnsure', () => {
     // Should re-throw exception
     expect(() => new TestClass()).to.throw(errMsg);
   });
+
+  it('should skip self-validation using callback', () => {
+    @CtorEnsure({
+      displayname: 'test-model',
+      skipOn: (vals => vals.a === 'skip it!'),
+    })
+    class TestClass {
+      constructor (
+        @ValidatedArg('a', [
+          ENSURE_MINLEN(100),
+        ])
+        public a: string,
+      ) {}
+    }
+
+    expect(() => new TestClass('1'))
+      .to.throw(CtorEnsureException.message)
+      .and.to.satisfy((e: CtorEnsureException) => (
+        e.displayName === 'test-model' &&
+        e.errors.some(it => it.field === 'a') &&
+        e.errors.length === 1
+    ));
+
+    expect(() => new TestClass('skip it!')).not.to.throw;
+  });
+
+  it('should skip parent validation on callback', () => {
+    const mkCase = (paramA: string, paramB: string, skipParent = false) => {
+      @CtorEnsure({
+        displayname: 'test-model-b',
+      })
+      class TestClassB {
+        constructor (
+          @ValidatedArg('b', [
+            ENSURE_MINLEN(100),
+          ])
+          public b: string,
+        ) {}
+      }
+
+      @CtorEnsure({
+        displayname: 'test-model-a',
+        skipOn: (vals) => vals.a === 'skip it!',
+        inheritValidation: true,
+        skipOnSkipsInherited: skipParent,
+      })
+      class TestClassA extends TestClassB {
+        constructor (
+          @ValidatedArg('a', [
+            ENSURE_MINLEN(100),
+          ])
+          public a: string,
+          b: string,
+        ) {
+          super(b);
+        }
+      }
+
+      return () => new TestClassA(paramA, paramB);
+    };
+
+    expect(mkCase('1', '1'))
+      .to.throw(CtorEnsureException.message)
+      .and.to.satisfy((e: CtorEnsureException) => (
+        e.displayName === 'test-model-a' &&
+        e.errors.some(it => it.field === 'a') &&
+        e.errors.some(it => it.field === 'b') &&
+        e.errors.length === 2
+    ));
+
+    expect(mkCase('X'.repeat(100), '1'))
+      .to.throw(CtorEnsureException.message)
+      .and.to.satisfy((e: CtorEnsureException) => (
+        e.displayName === 'test-model-a' &&
+        e.errors.some(it => it.field === 'b') &&
+        e.errors.length === 1
+    ));
+
+    expect(mkCase('skip it!', '1'))
+      .to.throw(CtorEnsureException.message)
+      .and.to.satisfy((e: CtorEnsureException) => (
+        e.displayName === 'test-model-a' &&
+        e.errors.some(it => it.field === 'b') &&
+        e.errors.length === 1
+    ));
+
+    expect(mkCase('skip it!', '1', true)).not.to.throw;
+  });
+
+  it('should skip fields inside class', () => {
+    @CtorEnsure({
+      displayname: 'test-model',
+    })
+    class TestClass {
+      constructor (
+        @ValidatedArg('a', [
+          ENSURE_MINLEN(100),
+        ], Optionality.REQUIRED, (vals) => vals.b === 'skip it!')
+        public a: string,
+
+        @ValidatedArg('b', [])
+        public b: string,
+      ) {}
+    }
+
+    expect(() => new TestClass('1', '1'))
+      .to.throw(CtorEnsureException.message)
+      .and.to.satisfy((e: CtorEnsureException) => (
+        e.displayName === 'test-model' &&
+        e.errors.some(it => it.field === 'a') &&
+        e.errors.length === 1
+      ));
+
+    expect(() => new TestClass('1', 'skip it!')).not.to.throw;
+  });
 });

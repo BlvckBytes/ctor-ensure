@@ -55,14 +55,26 @@ const checkOptionality = (value: any, optionality: Optionality): [string | null,
  * @param args Constructor arguments to validate
  * @param controls Controls to use for the schema
  * @param multipleErrorsPerField Whether or not to exit after one error per field
+ * @param argMap Argument map of field displayname to constructor value
  * @returns List of occurred errors
  */
-const validateCtorArgs = (args: any[], controls: ValidationControl[], multipleErrorsPerField: boolean) => {
+const validateCtorArgs = (
+  args: any[],
+  controls: ValidationControl[],
+  multipleErrorsPerField: boolean,
+  argMap: { [ key: string ]: any },
+) => {
   const errors: CtorEnsureArgError[] = [];
 
   // Iterate every control
   for (let k = 0; k < controls.length; k += 1) {
     const currControl = controls[k];
+
+    // Skip this control if callback returns with true
+    if (currControl.skipOn) {
+      const skip = currControl.skipOn(argMap);
+      if (skip) continue;
+    }
 
     // Get target value from constructor args
     const currArg = args[currControl.ctorInd];
@@ -163,10 +175,26 @@ export const CtorEnsure = (
   // eslint-disable-next-line func-names
   const interceptor: any = function (...ctorArgs: any[]) {
 
+    // Create argument map, mapping displayname to actual value
+    const argMap = getActiveControls(interceptor, config.displayname, [])
+      .reduce((acc, curr) => {
+        acc[curr.displayName] = ctorArgs[curr.ctorInd];
+        return acc;
+      }, <{ [ key: string ]: any}>{});
+
+    // Evaluate skip callback if set
+    const skip = config.skipOn ? config.skipOn(argMap) : false;
+
     // Most base-class will define blocked fields on most super-class' prototype
     const sC = getLastSuperclassProto(origProto);
-    if (!Reflect.hasMetadata(META_KEY_BLOCKED_FIELDS, sC))
-      Reflect.defineMetadata(META_KEY_BLOCKED_FIELDS, config.blockInheritanceForFields || [], sC);
+    if (!Reflect.hasMetadata(META_KEY_BLOCKED_FIELDS, sC)) {
+      Reflect.defineMetadata(
+        META_KEY_BLOCKED_FIELDS,
+        // If inherited errors are also skipped, put * as blocklist
+        (skip && config.skipOnSkipsInherited) ? ['*'] : config.blockInheritanceForFields || [],
+        sC,
+      );
+    }
 
     // Retrieve blocked fields
     const blockedFields = Reflect.getMetadata(META_KEY_BLOCKED_FIELDS, sC) as string[];
@@ -183,7 +211,8 @@ export const CtorEnsure = (
     const controls = getActiveControls(interceptor, config.displayname, blockedFields);
 
     // Validate args based on defined controls
-    const errors = validateCtorArgs(ctorArgs, controls, config.multipleErrorsPerField || false);
+    // Skip validation if skip resulted in true
+    const errors = skip ? [] : validateCtorArgs(ctorArgs, controls, config.multipleErrorsPerField || false, argMap);
 
     try {
       // Call ctor, this will possibly throw super-call ensure-exceptions

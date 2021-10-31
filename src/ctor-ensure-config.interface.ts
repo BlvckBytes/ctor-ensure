@@ -19,6 +19,18 @@ interface CtorEnsureConfig {
   // class fields, including the most-base class
   // Default: empty
   blockInheritanceForFields?: string[];
+
+  // Callback to check whether or not to
+  // skip this class's validation
+  skipOn?: (
+    // Values of constructor, where the key is
+    // is field's displayname
+    values: { [ key: string ]: any }
+  ) => boolean;
+
+  // Whether or not the skipOn callback also skips
+  // inherited errors
+  skipOnSkipsInherited?: boolean;
 }
 
 export default CtorEnsureConfig;

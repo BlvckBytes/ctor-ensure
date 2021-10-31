@@ -81,6 +81,18 @@ interface CtorEnsureConfig {
   // class fields, including the most-base class
   // Default: empty
   blockInheritanceForFields?: string[];
+
+  // Callback to check whether or not to
+  // skip this class's validation
+  skipOn?: (
+    // Values of constructor, where the key is
+    // is field's displayname
+    values: { [ key: string ]: any }
+  ) => boolean;
+
+  // Whether or not the skipOn callback also skips
+  // inherited errors
+  skipOnSkipsInherited?: boolean;
 }
 ```
 
@@ -114,7 +126,7 @@ class UserRegistrationModel {
 }
 ```
 
-Now it's time to decide on which and how arguments need to be validated. This decorator has three parameters: The field's displayname, either a single or an array of ensures and last but not least, it's optionality state. Personally, I like to always put an array with one ensure per line, just for readability's sake, and for quick addition of more ensures.
+Now it's time to decide on which and how arguments need to be validated. This decorator has three parameters: The field's displayname, either a single or an array of ensures, it's optionality state and the skipOn callback to allow conditional skipping of validation for that one field. Personally, I like to always put an array with one ensure per line, just for readability's sake, and for quick addition of more ensures.
 
 ```typescript
 @CtorEnsure({
@@ -424,6 +436,8 @@ class User extends Credentials {
 ```
 
 Whenever you instantiate a user, it will validate all fields, but skip `password`. This technique allows for a very flexible and DRY schema notation. You can use `*` as a field-name inside the block-list to disable all fields within the whole chain up from *(including)* this class, which can be useful too, if not abused.
+
+The `skipOn` callback, which can also be used on class-level, comes with a companion, named `skipOnSkipsInherited`. If that flag is set to true, the inherited validations will also skip, if `skipsOn` evaluates to true. Otherwise, just the class' validation itself will be disabled.
 
 ## Standard Ensures
 

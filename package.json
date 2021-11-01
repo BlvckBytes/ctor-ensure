@@ -1,33 +1,35 @@
 {
-  "version": "0.1.0",
-  "license": "MIT",
-  "main": "dist/index.js",
+  "name": "ctor-ensure",
+  "author": "BlvckBytes",
+  "version": "1.0.0",
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BlvckBytes/ctor-ensure.git"
+  },
+  "main": "lib/index.js",
+  "types": "lib",
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "engines": {
     "node": ">=12"
   },
   "scripts": {
+    "prepublish": "npm run build",
     "test:ci": "jest --runInBand --no-cache --coverage --verbose",
     "test:watch": "jest --watch",
     "lint:check": "eslint --max-warnings 0 --ext .ts src/** test/**",
     "size": "size-limit",
     "prepare": "husky install",
-    "install:ci": "rm -rf node_modules && yarn install --frozen-lockfile && cp .env-presets .env"
+    "install:ci": "rm -rf node_modules && yarn install --frozen-lockfile && cp .env-presets .env",
+    "build": "tsc -p ."
   },
   "husky": {
     "hooks": {
       "pre-commit": "npm run lint"
     }
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/BlvckBytes/ctor-ensure.git"
-  },
-  "name": "ctor-ensure",
-  "author": "BlvckBytes",
   "module": "dist/ctor-ensure.esm.js",
   "size-limit": [
     {

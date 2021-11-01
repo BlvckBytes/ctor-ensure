@@ -15,6 +15,7 @@ Ensure that the arguments of your constructor meet constraints defined through d
   * [Full Example](#full-example)
   * [Optionality](#optionality)
   * [Inheritance](#inheritance)
+  * [Validation Only](#validation-only)
 * [Standard Ensures](#standard-ensures)
 * [Custom Ensures](#custom-ensures)
 * [Templating](#templating)
@@ -438,6 +439,16 @@ class User extends Credentials {
 Whenever you instantiate a user, it will validate all fields, but skip `password`. This technique allows for a very flexible and DRY schema notation. You can use `*` as a field-name inside the block-list to disable all fields within the whole chain up from *(including)* this class, which can be useful too, if not abused.
 
 The `skipOn` callback, which can also be used on class-level, comes with a companion, named `skipOnSkipsInherited`. If that flag is set to true, the inherited validations will also skip, if `skipsOn` evaluates to true. Otherwise, just the class' validation itself will be disabled.
+
+### Validation Only
+
+There's a quick way to just validate a (non-class) object's fields and receive a list of errors, using this method:
+
+```typescript
+const validateCtor = (className: string, value: any): CtorEnsureArgError[] | null;
+```
+
+The `className` corresponds to the displayname defined using `@CtorEnsure` and the value can be any object. If the `className` is unknown, null will be returned, otherwise you'll get a list of errors. This is especially useful to validate fields within a UI, without hardcoding any validation and using async backend calls. Since fields can depend on eachother, I've ommitted single field validation at this point, and just validate the whole object as is.
 
 ## Standard Ensures
 

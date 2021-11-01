@@ -57,3 +57,4 @@ export { Constructable } from './constructable.type';
 export { META_KEY_VALIDATION, META_KEY_DISPLAYNAME } from './ctor-ensure.decorator';
 export { registerTemplateFunction, getRegisteredTemplateFunctions, template } from './description-template.factory';
 export { strOpt, pluralize, evalStrThunk } from './util';
+export { default as validateCtor } from './ctor-validator';

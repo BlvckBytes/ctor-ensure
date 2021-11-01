@@ -24,7 +24,7 @@
         "semi": "off",
         "comma-dangle": "off",
         "no-continue": "off",
-
+        "no-return-assign": ["error", "except-parens"],
         "quotes": ["error", "single", { 
             "allowTemplateLiterals": true
         }],

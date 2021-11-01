@@ -14,6 +14,9 @@ export const META_KEY_DISPLAYNAME = 'CTOR_ENSURE:DISPLAYNAME';
 // Unique metadata valiation key
 const META_KEY_VALIDATION_UNIQUE = (displayname: string) => `CTOR_ENSURE:${displayname}:VALIDATION`;
 
+// This registry saves the class' displayname to it's corresponding class
+export const registry = <{ [ key: string ]: Constructable }>{};
+
 // Key used to store blocked field information in class prototypes
 const META_KEY_BLOCKED_FIELDS = 'CTOR_ENSURE:BLOCKED_FIELDS';
 
@@ -142,7 +145,7 @@ const validateCtorArgs = (
  * @param blockedFields List of currently blocked fields
  * @returns List of validation-controls that are currently active
  */
-const getActiveControls = (clazz: Constructable, displayname: string, blockedFields: string[]): ValidationControl[] => {
+export const getActiveControls = (clazz: Constructable, displayname: string, blockedFields: string[]): ValidationControl[] => {
   // Get controls from this class
   const controls = ((Reflect.getOwnMetadata(
     META_KEY_VALIDATION_UNIQUE(displayname),
@@ -249,6 +252,9 @@ export const CtorEnsure = (
 
   // (Re-)Define display-name
   Reflect.defineMetadata(META_KEY_DISPLAYNAME, config.displayname, interceptor);
+
+  // Register this new class in the registry
+  registry[config.displayname] = interceptor;
 
   // This will be the new constructor
   return interceptor;

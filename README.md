@@ -40,8 +40,6 @@ The biggest advantage of this module is the fact that it allows you to directly 
 
 ## Installation
 
-🧨 [WARNING] 🧨 This module is not yet officially registered! Coming soon!
-
 Using npm:
 ```bash
 npm install ctor-ensure --save

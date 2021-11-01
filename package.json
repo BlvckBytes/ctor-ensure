@@ -10,7 +10,7 @@
   "main": "lib/index.js",
   "types": "lib",
   "files": [
-    "dist"
+    "lib"
   ],
   "engines": {
     "node": ">=12"

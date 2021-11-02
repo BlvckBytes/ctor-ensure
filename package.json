@@ -12,7 +12,7 @@
   "files": [
     "lib"
   ],
-  "tags": [
+  "keywords": [
     "typescript",
     "validator",
     "decorator",

@@ -168,7 +168,7 @@ export const getActiveControls = (clazz: Constructable, displayname: string, blo
  */
 export const CtorEnsure = (
   config: CtorEnsureConfig,
-) => (Clazz: Constructable): Constructable => {
+) => (Clazz: Constructable) => {
 
   // Buffer original clazz and it's prototype before interception
   const OrigClazz = Clazz;

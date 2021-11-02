@@ -1,6 +1,7 @@
 # ctor-ensure
 
 [![install size](https://packagephobia.now.sh/badge?p=ctor-ensure)](https://packagephobia.now.sh/result?p=ctor-ensure)
+[![npm version](https://badge.fury.io/js/ctor-ensure.svg)](https://badge.fury.io/js/ctor-ensure)
 [![codecov](https://codecov.io/gh/BlvckBytes/ctor-ensure/branch/master/graph/badge.svg)](https://codecov.io/gh/BlvckBytes/ctor-ensure)
 ![Build Status](https://github.com/BlvckBytes/ctor-ensure/workflows/NodeJS%20CI/badge.svg)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)

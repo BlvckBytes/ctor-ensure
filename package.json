@@ -12,6 +12,15 @@
   "files": [
     "lib"
   ],
+  "tags": [
+    "typescript",
+    "validator",
+    "decorator",
+    "constructor",
+    "ensure",
+    "template",
+    "lightweight"
+  ],
   "engines": {
     "node": ">=12"
   },

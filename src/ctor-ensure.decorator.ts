@@ -246,8 +246,14 @@ export const CtorEnsure = (
   Reflect.defineMetadata(META_KEY_VALIDATION_UNIQUE(config.displayname), Reflect.getMetadata(META_KEY_VALIDATION, Clazz), interceptor);
   Reflect.deleteMetadata(META_KEY_VALIDATION, Clazz);
 
-  // Copy prototype and existing metadata
-  interceptor.prototype = Clazz.prototype;
+  // Copy prototype and static members
+  Object.getOwnPropertyNames(Clazz)
+    .filter(it => Object.getOwnPropertyDescriptor(Clazz, it)?.writable)
+    .forEach(it => {
+      (interceptor as any)[it] = (Clazz as any)[it];
+    });
+
+  // Copy existing metadata
   Reflect.getMetadataKeys(Clazz).forEach(key => Reflect.defineMetadata(key, Reflect.getMetadata(key, Clazz), interceptor));
 
   // (Re-)Define display-name

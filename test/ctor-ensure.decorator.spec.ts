@@ -462,4 +462,22 @@ describe('@CtorEnsure', () => {
 
     expect(() => new TestClass('1', 'skip it!')).not.to.throw;
   });
+
+  it('should not remove (static) members from class', () => {
+    @CtorEnsure({
+      displayname: 'test',
+    })
+    class Test {
+      static staticNum = 4;
+      public normalNum = 3;
+
+      static staticFn () {
+        return 5;
+      }
+    }
+
+    expect(Test.staticFn()).to.equal(5);
+    expect(Test.staticNum).to.equal(4);
+    expect(new Test().normalNum).to.equal(3);
+  });
 });

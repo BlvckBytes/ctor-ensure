@@ -14,7 +14,6 @@ const validateCtor = (className: string, value: any): CtorEnsureArgError[] | nul
   const ctorArgs = new Array(maxCtorInd + 1).fill(undefined);
   ctls.forEach(ctl => {
     const currValue = value[ctl.displayName];
-    if (!currValue) return;
     ctorArgs[ctl.ctorInd] = currValue;
   });
 

@@ -101,7 +101,10 @@ const validateCtorArgs = (
 
     // Validate all values individually (to support arrays)
     const values: any[] = Array.isArray(currArg) ? currArg : [currArg];
-    for (let j = 0; j < values.length; j += 1) {
+
+    // Always execute the ensures at least once
+    let j = 0;
+    do {
       const currValue = values[j];
 
       // Flag, marks if the current value has passed validation
@@ -132,7 +135,8 @@ const validateCtorArgs = (
 
       // One of the array's values didn't pass, skip all other values
       if (!currValuePassed && Array.isArray(currArg)) break;
-    }
+      j += 1;
+    } while (j < values.length);
   }
 
   return errors;

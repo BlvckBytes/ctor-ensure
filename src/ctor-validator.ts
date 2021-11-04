@@ -1,9 +1,9 @@
 import { CtorEnsureArgError, CtorEnsureException } from '.';
-import { getActiveControls, registry } from './ctor-ensure.decorator';
+import { getActiveControls, classRegistry } from './ctor-ensure.decorator';
 
 const validateCtor = (className: string, value: any): CtorEnsureArgError[] | null => {
   // Find target class
-  const Target = registry[className];
+  const Target = classRegistry[className];
   if (!Target) return null;
 
   // Get all controls of this class and find the highest validated ctor index

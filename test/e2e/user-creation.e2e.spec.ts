@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { CtorEnsure, CtorEnsureException, ENSURE_ALPHANUM, ENSURE_EMAIL, ENSURE_ENUM, ENSURE_EQUALSFIELD, ENSURE_MINLEN, ENSURE_MINMAXLEN, ENSURE_NOSPACES, ENSURE_STRDATE, META_KEY_DISPLAYNAME, ValidatedArg } from '../../src';
-import { checkExceptionHasFields } from '../test-util';
+import { checkExceptionHasFields, genModelName } from '../test-util';
 
 describe('user-creation E2E', () => {
   enum Role {
@@ -9,8 +9,9 @@ describe('user-creation E2E', () => {
     ADMIN,
   }
 
+  const displayname = genModelName();
   @CtorEnsure({
-    displayname: 'user', 
+    displayname, 
     multipleErrorsPerField: true,
   })
   class User {
@@ -67,33 +68,33 @@ describe('user-creation E2E', () => {
     expect(() => mkDefault({
       passwordRepeated: 'different',
     })).to.throw(CtorEnsureException.message)
-    .to.satisfy(checkExceptionHasFields('user', ['passwordRepeated']));
+    .to.satisfy(checkExceptionHasFields(displayname, ['passwordRepeated']));
   });
 
   it('shouldn\'t accept short or long usernames', () => {
     expect(() => mkDefault({
       username: 'short',
     })).to.throw(CtorEnsureException.message)
-    .to.satisfy(checkExceptionHasFields('user', ['username']));
+    .to.satisfy(checkExceptionHasFields(displayname, ['username']));
 
     expect(() => mkDefault({
       username: 'long'.repeat(10),
     })).to.throw(CtorEnsureException.message)
-    .to.satisfy(checkExceptionHasFields('user', ['username']));
+    .to.satisfy(checkExceptionHasFields(displayname, ['username']));
   });
 
   it('shouldn\'t accept invalid email', () => {
     expect(() => mkDefault({
       email: 'non existent @ example-com',
     })).to.throw(CtorEnsureException.message)
-    .to.satisfy(checkExceptionHasFields('user', ['email']));
+    .to.satisfy(checkExceptionHasFields(displayname, ['email']));
   });
 
   it('shouldn\'t accept invalid dob', () => {
     expect(() => mkDefault({
       dateOfBirth: '12.11.2000',
     })).to.throw(CtorEnsureException.message)
-    .to.satisfy(checkExceptionHasFields('user', ['dateOfBirth']));
+    .to.satisfy(checkExceptionHasFields(displayname, ['dateOfBirth']));
   });
 
   it('should accept valid role', () => {
@@ -107,6 +108,6 @@ describe('user-creation E2E', () => {
     expect(() => mkDefault({
       role: 'DEVELOPER',
     })).to.throw(CtorEnsureException.message)
-    .to.satisfy(checkExceptionHasFields('user', ['role']));
+    .to.satisfy(checkExceptionHasFields(displayname, ['role']));
   });
 });

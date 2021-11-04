@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { CtorEnsure, CtorEnsureException, ENSURE_ARRAYSIZEMAX, ENSURE_ARRAYSIZEMIN, ENSURE_ENUM, ENSURE_ISARRAY, ValidatedArg } from '../../src';
-import { checkExceptionHasFields } from '../test-util';
+import { checkExceptionHasFields, genModelName } from '../test-util';
 
 describe('list-ensure E2E', () => {
   enum Skill {
@@ -8,8 +8,10 @@ describe('list-ensure E2E', () => {
     BACKEND,
   }
 
+
+  const displayname = genModelName();
   @CtorEnsure({
-    displayname: 'test',
+    displayname,
     multipleErrorsPerField: true,
   })
   class Test {

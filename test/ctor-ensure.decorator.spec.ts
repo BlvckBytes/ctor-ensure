@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { CtorEnsure, META_KEY_DISPLAYNAME, Constructable, ValidatedArg, ENSURE_NONEMPTY, CtorEnsureException, CtorEnsureArgError, ENSURE_MINLEN, ENSURE_ALPHA, strOpt } from '../src';
 import Optionality from '../src/optionality.enum';
-import { checkEnsureArgErrors } from './test-util';
+import { checkEnsureArgErrors, genModelName } from './test-util';
 
 describe('@CtorEnsure', () => {
 
@@ -9,14 +9,15 @@ describe('@CtorEnsure', () => {
 
   it('should apply the displayname metadata', () => {
     // Create test class and apply decorator
-    @CtorEnsure({ displayname: 'test-model' })
+    const displayname = genModelName();
+    @CtorEnsure({ displayname })
     class TestClass { }
 
     // Get displayname from metadata
-    const displayname = Reflect.getMetadata(META_KEY_DISPLAYNAME, TestClass);
+    const metaName = Reflect.getMetadata(META_KEY_DISPLAYNAME, TestClass);
 
     // Except displayname to equal applied value
-    expect(displayname).to.equal('test-model');
+    expect(metaName).to.equal(displayname);
   });
 
   it('should intercept the constructor call', () => {
@@ -29,8 +30,9 @@ describe('@CtorEnsure', () => {
       return clazz;
     };
 
+    const displayname = genModelName();
     @ConstructorBufferer() // Buffer constructor before change
-    @CtorEnsure({ displayname: 'test-model' }) // Make change
+    @CtorEnsure({ displayname }) // Make change
     @ConstructorBufferer() // Buffer constructor after change
     class TestClass { }
 
@@ -54,8 +56,9 @@ describe('@CtorEnsure', () => {
       return clazz;
     };
 
+    const displayname = genModelName();
     @TestMetadataDecorator(testMetadata) // Will be called first
-    @CtorEnsure({ displayname: 'test-model' }) // Will be called second
+    @CtorEnsure({ displayname }) // Will be called second
     class TestClass { }
 
     // Check that the metadata defined first is still there
@@ -67,13 +70,13 @@ describe('@CtorEnsure', () => {
     });
 
     // The metadata defined secondly should be there too
-    const displayname = Reflect.getMetadata(META_KEY_DISPLAYNAME, TestClass);
-    expect(displayname).to.equal('test-model');
+    const metaName = Reflect.getMetadata(META_KEY_DISPLAYNAME, TestClass);
+    expect(metaName).to.equal(displayname);
   });
 
   it('should throw an exception if errors occur', () => {
     // Create a model that only accepts non-empty names
-    @CtorEnsure({ displayname: 'test-model' })
+    @CtorEnsure({ displayname: genModelName() })
     class TestClass {
       constructor (
         @ValidatedArg('name', ENSURE_NONEMPTY())
@@ -95,7 +98,7 @@ describe('@CtorEnsure', () => {
   const optCaseDesc = 'at least 10 characters';
   const mkOptionalityCase = (optionality: Optionality, value: any, withEnsure = false) => {
     @CtorEnsure({
-      displayname: 'test-model',
+      displayname: genModelName(),
     })
     class TestClass {
       constructor (
@@ -147,8 +150,9 @@ describe('@CtorEnsure', () => {
   });
 
   it('should add a k-v map of all validated fields to the exception', () => {
+    const displayname = genModelName();
     @CtorEnsure({
-      displayname: 'test-model', 
+      displayname, 
       multipleErrorsPerField: true,
     })
     class TestClass {
@@ -174,23 +178,25 @@ describe('@CtorEnsure', () => {
       .satisfies(anyError(err => err.field === 'name1' && err.value === '1'))
       .satisfies(anyError(err => err.field === 'name2' && err.value === '2'))
       .satisfies(anyError(err => err.field === 'name3' && err.value === '3'))
-      .has.property('displayName', 'test-model');
+      .has.property('displayName', displayname);
   });
 
   it('should only keep the latest name on inheritance', () => {
-    @CtorEnsure({ displayname: 'test-model-a' })
+    const displaynameA = genModelName();
+    @CtorEnsure({ displayname: displaynameA })
     class TestClassA { }
 
-    @CtorEnsure({ displayname: 'test-model-b' })
+    const displaynameB = genModelName();
+    @CtorEnsure({ displayname: displaynameB })
     class TestClassB extends TestClassA { }
 
     // The metadata defined secondly should be there too
     const displayname = Reflect.getMetadata(META_KEY_DISPLAYNAME, TestClassB);
-    expect(displayname).to.equal('test-model-b');
+    expect(displayname).to.equal(displaynameB);
   });
 
   it('should throw errors properly with inheritance', () => {
-    @CtorEnsure({ displayname: 'test-model-a' })
+    @CtorEnsure({ displayname: genModelName() })
     class TestClassA {
       constructor (
         @ValidatedArg('fieldA', ENSURE_NONEMPTY())
@@ -198,8 +204,9 @@ describe('@CtorEnsure', () => {
       ) {}
     }
 
+    const displaynameB = genModelName();
     @CtorEnsure({ 
-      displayname: 'test-model-b',
+      displayname: displaynameB,
       inheritValidation: true,
     })
     class TestClassB extends TestClassA {
@@ -217,20 +224,20 @@ describe('@CtorEnsure', () => {
     expect(() => new TestClassB('', 'content'))
       .to.throw(CtorEnsureException.message)
       .and.to.satisfy((e: CtorEnsureException) => (
-        e.displayName === 'test-model-b' &&
+        e.displayName === displaynameB &&
         e.errors[0]?.field === 'fieldA'
       ));
 
     expect(() => new TestClassB('content', ''))
       .to.throw(CtorEnsureException.message)
       .and.to.satisfy((e: CtorEnsureException) => (
-        e.displayName === 'test-model-b' &&
+        e.displayName === displaynameB &&
         e.errors[0]?.field === 'fieldB'
       ));
   });
 
   it('should work on same-named inherited field with flag on', () => {
-    @CtorEnsure({ displayname: 'test-model-a' })
+    @CtorEnsure({ displayname: genModelName() })
     class TestClassA {
       constructor (
         @ValidatedArg('field', ENSURE_ALPHA())
@@ -238,8 +245,10 @@ describe('@CtorEnsure', () => {
       ) { }
     }
 
+
+    const displaynameB = genModelName();
     @CtorEnsure({
-      displayname: 'test-model-b', 
+      displayname: displaynameB, 
       multipleErrorsPerField: true,
       inheritValidation: true,
     })
@@ -255,14 +264,14 @@ describe('@CtorEnsure', () => {
     expect(() => new TestClassB('1'))
       .to.throw(CtorEnsureException.message)
       .and.to.satisfy((e: CtorEnsureException) => (
-        e.displayName === 'test-model-b' &&
+        e.displayName === displaynameB &&
         e.errors[0]?.field === 'field' &&
         e.errors[1]?.field === 'field'
       ));
   });
 
   it('shouldn\'t work on same-named inherited field with flag off', () => {
-    @CtorEnsure({ displayname: 'test-model-a' })
+    @CtorEnsure({ displayname: genModelName() })
     class TestClassA {
       constructor (
         @ValidatedArg('field', ENSURE_ALPHA())
@@ -270,8 +279,9 @@ describe('@CtorEnsure', () => {
       ) { }
     }
 
+    const displaynameB = genModelName();
     @CtorEnsure({
-      displayname: 'test-model-b', 
+      displayname: displaynameB, 
       multipleErrorsPerField: true, 
       inheritValidation: false,
     })
@@ -287,14 +297,14 @@ describe('@CtorEnsure', () => {
     expect(() => new TestClassB('1'))
       .to.throw(CtorEnsureException.message)
       .and.to.satisfy((e: CtorEnsureException) => (
-        e.displayName === 'test-model-b' &&
+        e.displayName === displaynameB &&
         e.errors[0]?.field === 'field' &&
         e.errors.length === 1
       ));
   });
 
   it('should throw errors for all fields on inheritance', () => {
-    @CtorEnsure({ displayname: 'test-model-a' })
+    @CtorEnsure({ displayname: genModelName() })
     class TestClassA {
       constructor (
         @ValidatedArg('field1', ENSURE_MINLEN(5))
@@ -302,8 +312,9 @@ describe('@CtorEnsure', () => {
       ) { }
     }
 
+    const displaynameB = genModelName();
     @CtorEnsure({
-      displayname: 'test-model-b', 
+      displayname: displaynameB, 
       multipleErrorsPerField: true, 
       inheritValidation: true,
     })
@@ -320,7 +331,7 @@ describe('@CtorEnsure', () => {
     expect(() => new TestClassB('1', '1'))
       .to.throw(CtorEnsureException.message)
       .and.to.satisfy((e: CtorEnsureException) => (
-        e.displayName === 'test-model-b' &&
+        e.displayName === displaynameB &&
         e.errors.some(it => it.field === 'field1') &&
         e.errors.some(it => it.field === 'field2') &&
         e.errors.length === 2
@@ -328,7 +339,7 @@ describe('@CtorEnsure', () => {
   });
 
   it('should work on empty ctors', () => {
-    @CtorEnsure({ displayname: 'test-model' })
+    @CtorEnsure({ displayname: genModelName() })
     class TestClass { }
 
     // Should create no worries
@@ -337,7 +348,7 @@ describe('@CtorEnsure', () => {
 
   it('should re-throw non-validation errors in ctor', () => {
     const errMsg = 'We don\'t do that here!';
-    @CtorEnsure({ displayname: 'test-model' })
+    @CtorEnsure({ displayname: genModelName() })
     class TestClass {
       constructor () {
         throw new Error(errMsg);
@@ -349,8 +360,9 @@ describe('@CtorEnsure', () => {
   });
 
   it('should skip self-validation using callback', () => {
+    const displayname = genModelName();
     @CtorEnsure({
-      displayname: 'test-model',
+      displayname,
       skipOn: (vals => vals.a === 'skip it!'),
     })
     class TestClass {
@@ -365,7 +377,7 @@ describe('@CtorEnsure', () => {
     expect(() => new TestClass('1'))
       .to.throw(CtorEnsureException.message)
       .and.to.satisfy((e: CtorEnsureException) => (
-        e.displayName === 'test-model' &&
+        e.displayName === displayname &&
         e.errors.some(it => it.field === 'a') &&
         e.errors.length === 1
     ));
@@ -374,9 +386,10 @@ describe('@CtorEnsure', () => {
   });
 
   it('should skip parent validation on callback', () => {
+    let displaynameA = '';
     const mkCase = (paramA: string, paramB: string, skipParent = false) => {
       @CtorEnsure({
-        displayname: 'test-model-b',
+        displayname: genModelName(),
       })
       class TestClassB {
         constructor (
@@ -387,8 +400,9 @@ describe('@CtorEnsure', () => {
         ) {}
       }
 
+      displaynameA = genModelName();
       @CtorEnsure({
-        displayname: 'test-model-a',
+        displayname: displaynameA,
         skipOn: (vals) => vals.a === 'skip it!',
         inheritValidation: true,
         skipOnSkipsInherited: skipParent,
@@ -411,7 +425,7 @@ describe('@CtorEnsure', () => {
     expect(mkCase('1', '1'))
       .to.throw(CtorEnsureException.message)
       .and.to.satisfy((e: CtorEnsureException) => (
-        e.displayName === 'test-model-a' &&
+        e.displayName === displaynameA &&
         e.errors.some(it => it.field === 'a') &&
         e.errors.some(it => it.field === 'b') &&
         e.errors.length === 2
@@ -420,7 +434,7 @@ describe('@CtorEnsure', () => {
     expect(mkCase('X'.repeat(100), '1'))
       .to.throw(CtorEnsureException.message)
       .and.to.satisfy((e: CtorEnsureException) => (
-        e.displayName === 'test-model-a' &&
+        e.displayName === displaynameA &&
         e.errors.some(it => it.field === 'b') &&
         e.errors.length === 1
     ));
@@ -428,7 +442,7 @@ describe('@CtorEnsure', () => {
     expect(mkCase('skip it!', '1'))
       .to.throw(CtorEnsureException.message)
       .and.to.satisfy((e: CtorEnsureException) => (
-        e.displayName === 'test-model-a' &&
+        e.displayName === displaynameA &&
         e.errors.some(it => it.field === 'b') &&
         e.errors.length === 1
     ));
@@ -437,8 +451,10 @@ describe('@CtorEnsure', () => {
   });
 
   it('should skip fields inside class', () => {
+
+    const displayname = genModelName();
     @CtorEnsure({
-      displayname: 'test-model',
+      displayname,
     })
     class TestClass {
       constructor (
@@ -455,7 +471,7 @@ describe('@CtorEnsure', () => {
     expect(() => new TestClass('1', '1'))
       .to.throw(CtorEnsureException.message)
       .and.to.satisfy((e: CtorEnsureException) => (
-        e.displayName === 'test-model' &&
+        e.displayName === displayname &&
         e.errors.some(it => it.field === 'a') &&
         e.errors.length === 1
       ));
@@ -465,7 +481,7 @@ describe('@CtorEnsure', () => {
 
   it('should not remove (static) members from class', () => {
     @CtorEnsure({
-      displayname: 'test',
+      displayname: genModelName(),
     })
     class Test {
       static staticNum = 4;
@@ -479,5 +495,19 @@ describe('@CtorEnsure', () => {
     expect(Test.staticFn()).to.equal(5);
     expect(Test.staticNum).to.equal(4);
     expect(new Test().normalNum).to.equal(3);
+  });
+
+  it('should not accept duplicate displaynames', () => {
+    expect(() => {
+      @CtorEnsure({
+        displayname: 'test',
+      })
+      class A {}
+
+      @CtorEnsure({
+        displayname: 'test',
+      })
+      class B {}
+    }).to.throw('The displayname test is already taken!');
   });
 });

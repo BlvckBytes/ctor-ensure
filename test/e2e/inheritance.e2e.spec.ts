@@ -1,6 +1,10 @@
 import { expect } from 'chai';
 import { CtorEnsure, CtorEnsureException, ENSURE_ALPHANUM, ENSURE_MAXLEN, ENSURE_MINLEN, ENSURE_MINMAXLEN, ENSURE_NONEMPTY, ENSURE_STRUUID, ValidatedArg } from '../../src';
-import { checkExceptionHasFields } from '../test-util';
+import { checkExceptionHasFields, genModelName } from '../test-util';
+
+let displaynameCred = genModelName();
+let displaynameUser = genModelName();
+let displaynamePost = genModelName();
 
 const mkPost = (
   data: {
@@ -20,8 +24,9 @@ const mkPost = (
     ...data,
   };
 
+  displaynameCred = genModelName();
   @CtorEnsure({
-    displayname: 'credentials',
+    displayname: displaynameCred,
     multipleErrorsPerField: true,
   })
   class Credentials {
@@ -41,8 +46,9 @@ const mkPost = (
     ) {}
   }
 
+  displaynameUser = genModelName();
   @CtorEnsure({
-    displayname: 'user',
+  displayname: displaynameUser,
     multipleErrorsPerField: true,
     inheritValidation: userInherit,
     blockInheritanceForFields: userBlocklist,
@@ -61,8 +67,9 @@ const mkPost = (
     }
   }
 
+  displaynamePost = genModelName();
   @CtorEnsure({
-    displayname: 'post',
+    displayname: displaynamePost,
     multipleErrorsPerField: true,
     inheritValidation: postInherit,
     blockInheritanceForFields: postBlocklist,
@@ -90,14 +97,14 @@ describe('inheritance E2E', () => {
   it('should inherit all errors', () => {
     expect(mkPost())
     .to.throw(CtorEnsureException.message)
-    .to.satisfy(checkExceptionHasFields('post', ['username', 'password', 'id', 'title']));
+    .to.satisfy(checkExceptionHasFields(displaynamePost, ['username', 'password', 'id', 'title']));
   });
 
   it('should inherit all but blocked out errors', () => {
     // Should ignore blocks of higher classes
     expect(mkPost({}, true, ['username'], true, ['password']))
     .to.throw(CtorEnsureException.message)
-    .to.satisfy(checkExceptionHasFields('post', ['username', 'id', 'title']));
+    .to.satisfy(checkExceptionHasFields(displaynamePost, ['username', 'id', 'title']));
    
     const data = {
       title: 'Cool title',
@@ -113,6 +120,6 @@ describe('inheritance E2E', () => {
   it('should ignore errors above a non-inheriting class for all classes below', () => {
     expect(mkPost({}, false, [], true, []))
     .to.throw(CtorEnsureException.message)
-    .to.satisfy(checkExceptionHasFields('post', ['id', 'title']));
+    .to.satisfy(checkExceptionHasFields(displaynamePost, ['id', 'title']));
   });
 });

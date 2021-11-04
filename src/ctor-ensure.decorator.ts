@@ -15,7 +15,10 @@ export const META_KEY_DISPLAYNAME = 'CTOR_ENSURE:DISPLAYNAME';
 const META_KEY_VALIDATION_UNIQUE = (displayname: string) => `CTOR_ENSURE:${displayname}:VALIDATION`;
 
 // This registry saves the class' displayname to it's corresponding class
-export const registry = <{ [ key: string ]: Constructable }>{};
+export const classRegistry = <{ [ key: string ]: Constructable }>{};
+
+// This registry saves the class' displayname to it's corresponding original prototype
+const protoRegistry = <{ [ key: string ]: any }>{};
 
 // Key used to store blocked field information in class prototypes
 const META_KEY_BLOCKED_FIELDS = 'CTOR_ENSURE:BLOCKED_FIELDS';
@@ -66,7 +69,7 @@ const validateCtorArgs = (
   controls: ValidationControl[],
   multipleErrorsPerField: boolean,
   argMap: { [ key: string ]: any },
-) => {
+): CtorEnsureArgError[] => {
   const errors: CtorEnsureArgError[] = [];
 
   // Iterate every control
@@ -163,6 +166,51 @@ export const getActiveControls = (clazz: Constructable, displayname: string, blo
   return controls.filter(ctl => !blockedFields.some(blk => blk.toLowerCase() === ctl.displayName.toLowerCase()));
 };
 
+export const validateClassCtor = (
+  clazz: Constructable,
+  config: CtorEnsureConfig,
+  ctorArgs: any[],
+): CtorEnsureArgError[] => {
+  // Create argument map, mapping displayname to actual value
+  const argMap = getActiveControls(clazz, config.displayname, [])
+    .reduce((acc, curr) => {
+      acc[curr.displayName] = ctorArgs[curr.ctorInd];
+      return acc;
+    }, <{ [ key: string ]: any}>{});
+
+  // Evaluate skip callback if set
+  const skip = config.skipOn ? config.skipOn(argMap) : false;
+
+  // Most base-class will define blocked fields on most super-class' prototype
+  const sC = getLastSuperclassProto(protoRegistry[config.displayname]);
+  if (!Reflect.hasMetadata(META_KEY_BLOCKED_FIELDS, sC)) {
+    Reflect.defineMetadata(
+      META_KEY_BLOCKED_FIELDS,
+      // If inherited errors are also skipped, put * as blocklist
+      (skip && config.skipOnSkipsInherited) ? ['*'] : config.blockInheritanceForFields || [],
+      sC,
+    );
+  }
+
+  // Retrieve blocked fields
+  const blockedFields = Reflect.getMetadata(META_KEY_BLOCKED_FIELDS, sC) as string[];
+
+  // Block all fields for classes higher up the chain if inheritance has been broken
+  if (!config.inheritValidation && !blockedFields.includes('*'))
+    Reflect.defineMetadata(META_KEY_BLOCKED_FIELDS, [...blockedFields, '*'], sC);
+
+  // Arrived at most super-class, remove definition
+  if (sC === protoRegistry[config.displayname])
+    Reflect.deleteMetadata(META_KEY_BLOCKED_FIELDS, sC);
+
+  // Get all currently active controls
+  const controls = getActiveControls(clazz, config.displayname, blockedFields);
+
+  // Validate args based on defined controls
+  // Skip validation if skip resulted in true
+  return skip ? [] : validateCtorArgs(ctorArgs, controls, config.multipleErrorsPerField || false, argMap);
+};
+
 /**
  * Decorator signalling that the following class' constructor will be validated
  * using {@link ValidatedArg} decorators on members in constructor.
@@ -174,57 +222,20 @@ export const CtorEnsure = (
   config: CtorEnsureConfig,
 ) => (Clazz: Constructable) => {
 
-  // Buffer original clazz and it's prototype before interception
-  const OrigClazz = Clazz;
-  const origProto = OrigClazz.prototype;
+  const Constructor = Clazz;
+  protoRegistry[config.displayname] = Clazz.prototype;
 
   // Intercept constructor call
   // eslint-disable-next-line func-names
   const interceptor: any = function (...ctorArgs: any[]) {
 
-    // Create argument map, mapping displayname to actual value
-    const argMap = getActiveControls(interceptor, config.displayname, [])
-      .reduce((acc, curr) => {
-        acc[curr.displayName] = ctorArgs[curr.ctorInd];
-        return acc;
-      }, <{ [ key: string ]: any}>{});
-
-    // Evaluate skip callback if set
-    const skip = config.skipOn ? config.skipOn(argMap) : false;
-
-    // Most base-class will define blocked fields on most super-class' prototype
-    const sC = getLastSuperclassProto(origProto);
-    if (!Reflect.hasMetadata(META_KEY_BLOCKED_FIELDS, sC)) {
-      Reflect.defineMetadata(
-        META_KEY_BLOCKED_FIELDS,
-        // If inherited errors are also skipped, put * as blocklist
-        (skip && config.skipOnSkipsInherited) ? ['*'] : config.blockInheritanceForFields || [],
-        sC,
-      );
-    }
-
-    // Retrieve blocked fields
-    const blockedFields = Reflect.getMetadata(META_KEY_BLOCKED_FIELDS, sC) as string[];
-
-    // Block all fields for classes higher up the chain if inheritance has been broken
-    if (!config.inheritValidation && !blockedFields.includes('*'))
-      Reflect.defineMetadata(META_KEY_BLOCKED_FIELDS, [...blockedFields, '*'], sC);
-
-    // Arrived at most super-class, remove definition
-    if (sC === origProto)
-      Reflect.deleteMetadata(META_KEY_BLOCKED_FIELDS, sC);
-
-    // Get all currently active controls
-    const controls = getActiveControls(interceptor, config.displayname, blockedFields);
-
-    // Validate args based on defined controls
-    // Skip validation if skip resulted in true
-    const errors = skip ? [] : validateCtorArgs(ctorArgs, controls, config.multipleErrorsPerField || false, argMap);
+    // Validate class constructor
+    const errors = validateClassCtor(interceptor, config, ctorArgs);
 
     try {
       // Call ctor, this will possibly throw super-call ensure-exceptions
       // Pass invocation information as last argument, that will be caught and removed later on
-      const inst = new OrigClazz(...ctorArgs);
+      const inst = new Constructor(...ctorArgs);
 
       // No super-errors occurred, throw own errors, if any
       if (errors.length > 0) throw new CtorEnsureException(interceptor, errors);
@@ -263,8 +274,12 @@ export const CtorEnsure = (
   // (Re-)Define display-name
   Reflect.defineMetadata(META_KEY_DISPLAYNAME, config.displayname, interceptor);
 
+  // Check for displayname collisions
+  if (classRegistry[config.displayname])
+    throw new Error(`The displayname ${config.displayname} is already taken!`);
+
   // Register this new class in the registry
-  registry[config.displayname] = interceptor;
+  classRegistry[config.displayname] = interceptor;
 
   // This will be the new constructor
   return interceptor;

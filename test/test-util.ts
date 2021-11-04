@@ -94,3 +94,13 @@ export const checkExceptionHasFields = (displayname: string, fields: string[]) =
   ex.errors.reduce((acc, curr) => acc.some(it => it.field === curr.field) ? acc : [...acc, curr], <CtorEnsureArgError[]>[]).length === fields.length &&
   // Fields occur
   fields.every(field => ex.errors.some(err => err.field === field));
+
+let lastModel = 0;
+/**
+ * Generate a unique model name
+ * @returns Unique model name
+ */
+export const genModelName = () => {
+  lastModel += 1;
+  return `test-model-${lastModel}`;
+};

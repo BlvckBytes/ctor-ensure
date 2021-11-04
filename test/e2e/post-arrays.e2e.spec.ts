@@ -1,14 +1,15 @@
 import { expect } from 'chai';
 import { CtorEnsure, CtorEnsureException, ENSURE_ENUM, ENSURE_ISARRAY, ValidatedArg } from '../../src';
-import { checkExceptionHasFields } from '../test-util';
+import { checkExceptionHasFields, genModelName } from '../test-util';
 
 describe('post-arrays E2E', () => {
   enum Tags {
     TAG1, TAG2, TAG3, TAG4, TAG5,
   }
 
+  const displayname = genModelName();
   @CtorEnsure({
-    displayname: 'post', 
+    displayname, 
     multipleErrorsPerField: true,
   })
   class Post {
@@ -21,8 +22,9 @@ describe('post-arrays E2E', () => {
     ) {}
   }
 
+  const displayname2 = genModelName();
   @CtorEnsure({
-    displayname: 'post2', 
+    displayname: displayname2, 
     multipleErrorsPerField: true,
   })
   class Post2 {
@@ -43,13 +45,13 @@ describe('post-arrays E2E', () => {
   it('shouldn\'t accept a scalar value', () => {
     expect(() => new Post(Tags[0]))
     .to.throw(CtorEnsureException.message)
-    .to.satisfy(checkExceptionHasFields('post', ['tags']));
+    .to.satisfy(checkExceptionHasFields(displayname, ['tags']));
   });
 
   it('shouldn\'t accept duplicates case-sensitive', () => {
     expect(() => new Post([Tags[0], Tags[0]]))
     .to.throw(CtorEnsureException.message)
-    .to.satisfy(checkExceptionHasFields('post', ['tags']));
+    .to.satisfy(checkExceptionHasFields(displayname, ['tags']));
 
     expect(() => new Post([Tags[0], Tags[0].toLocaleLowerCase()])).not.to.throw;
   });
@@ -57,10 +59,10 @@ describe('post-arrays E2E', () => {
   it('shouldn\'t accept duplicates ignorecase', () => {
     expect(() => new Post2([Tags[0], Tags[0]]))
     .to.throw(CtorEnsureException.message)
-    .to.satisfy(checkExceptionHasFields('post2', ['tags']));
+    .to.satisfy(checkExceptionHasFields(displayname2, ['tags']));
 
     expect(() => new Post2([Tags[0], Tags[0].toLocaleLowerCase()]))
     .to.throw(CtorEnsureException.message)
-    .to.satisfy(checkExceptionHasFields('post2', ['tags']));
+    .to.satisfy(checkExceptionHasFields(displayname2, ['tags']));
   });
 });

@@ -9,6 +9,8 @@
 
 Ensure that the arguments of your constructor meet constraints defined through decorators.
 
+✏️ NOTE: If you want to learn about this repo by using a demo, have a look at [Demo Project](#demo-project)!
+
 ## Table of Contents
 * [Aims](#aims)
 * [Advantages](#advantages)

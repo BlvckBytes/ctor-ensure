@@ -1,13 +1,13 @@
-import { CtorEnsureArgError, CtorEnsureException } from '.';
-import { getActiveControls, classRegistry } from './ctor-ensure.decorator';
+import { CtorEnsureArgError } from '.';
+import { getActiveControls, classRegistry, validateClassCtor } from './ctor-ensure.decorator';
 
 const validateCtor = (className: string, value: any): CtorEnsureArgError[] | null => {
   // Find target class
-  const Target = classRegistry[className];
-  if (!Target) return null;
+  const clazz = classRegistry[className]?.clazz;
+  if (!clazz) return null;
 
   // Get all controls of this class and find the highest validated ctor index
-  const ctls = getActiveControls(Target, className, []);
+  const ctls = getActiveControls(clazz, className, []);
   const maxCtorInd = ctls.reduce((acc, curr) => (curr.ctorInd > acc ? curr.ctorInd : acc), 0);
 
   // Constructor arguments list, map value fields to their indices
@@ -17,17 +17,8 @@ const validateCtor = (className: string, value: any): CtorEnsureArgError[] | nul
     ctorArgs[ctl.ctorInd] = currValue;
   });
 
-  // Try to instantiate a class, return errors on throw
-  try {
-    // eslint-disable-next-line no-new
-    new Target(...ctorArgs);
-  } catch (err) {
-    if (err instanceof CtorEnsureException)
-      return err.errors;
-  }
-
-  // No errors occurred
-  return [];
+  // Call validation
+  return validateClassCtor(className, ctorArgs);
 };
 
 export default validateCtor;

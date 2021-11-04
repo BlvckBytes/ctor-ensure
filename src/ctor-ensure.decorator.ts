@@ -14,11 +14,11 @@ export const META_KEY_DISPLAYNAME = 'CTOR_ENSURE:DISPLAYNAME';
 // Unique metadata valiation key
 const META_KEY_VALIDATION_UNIQUE = (displayname: string) => `CTOR_ENSURE:${displayname}:VALIDATION`;
 
-// This registry saves the class' displayname to it's corresponding class
-export const classRegistry = <{ [ key: string ]: Constructable }>{};
-
-// This registry saves the class' displayname to it's corresponding original prototype
-const protoRegistry = <{ [ key: string ]: any }>{};
+export const classRegistry = <{ [ key: string ]: {
+  clazz: Constructable,
+  proto: any,
+  config: CtorEnsureConfig,
+} }>{};
 
 // Key used to store blocked field information in class prototypes
 const META_KEY_BLOCKED_FIELDS = 'CTOR_ENSURE:BLOCKED_FIELDS';
@@ -166,11 +166,18 @@ export const getActiveControls = (clazz: Constructable, displayname: string, blo
   return controls.filter(ctl => !blockedFields.some(blk => blk.toLowerCase() === ctl.displayName.toLowerCase()));
 };
 
+/**
+ * Validate a registered class' constructor arguments
+ * @param displayname Unique name of known class
+ * @param ctorArgs Constructor arguments
+ * @returns List of occurred errors
+ */
 export const validateClassCtor = (
-  clazz: Constructable,
-  config: CtorEnsureConfig,
+  displayname: string,
   ctorArgs: any[],
 ): CtorEnsureArgError[] => {
+  const { proto, config, clazz } = classRegistry[displayname];
+
   // Create argument map, mapping displayname to actual value
   const argMap = getActiveControls(clazz, config.displayname, [])
     .reduce((acc, curr) => {
@@ -182,7 +189,7 @@ export const validateClassCtor = (
   const skip = config.skipOn ? config.skipOn(argMap) : false;
 
   // Most base-class will define blocked fields on most super-class' prototype
-  const sC = getLastSuperclassProto(protoRegistry[config.displayname]);
+  const sC = getLastSuperclassProto(proto);
   if (!Reflect.hasMetadata(META_KEY_BLOCKED_FIELDS, sC)) {
     Reflect.defineMetadata(
       META_KEY_BLOCKED_FIELDS,
@@ -200,7 +207,7 @@ export const validateClassCtor = (
     Reflect.defineMetadata(META_KEY_BLOCKED_FIELDS, [...blockedFields, '*'], sC);
 
   // Arrived at most super-class, remove definition
-  if (sC === protoRegistry[config.displayname])
+  if (sC === proto)
     Reflect.deleteMetadata(META_KEY_BLOCKED_FIELDS, sC);
 
   // Get all currently active controls
@@ -223,14 +230,13 @@ export const CtorEnsure = (
 ) => (Clazz: Constructable) => {
 
   const Constructor = Clazz;
-  protoRegistry[config.displayname] = Clazz.prototype;
 
   // Intercept constructor call
   // eslint-disable-next-line func-names
   const interceptor: any = function (...ctorArgs: any[]) {
 
     // Validate class constructor
-    const errors = validateClassCtor(interceptor, config, ctorArgs);
+    const errors = validateClassCtor(config.displayname, ctorArgs);
 
     try {
       // Call ctor, this will possibly throw super-call ensure-exceptions
@@ -278,8 +284,11 @@ export const CtorEnsure = (
   if (classRegistry[config.displayname])
     throw new Error(`The displayname ${config.displayname} is already taken!`);
 
-  // Register this new class in the registry
-  classRegistry[config.displayname] = interceptor;
+  classRegistry[config.displayname] = {
+    clazz: interceptor,
+    proto: Clazz.prototype,
+    config,
+  };
 
   // This will be the new constructor
   return interceptor;

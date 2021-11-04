@@ -18,6 +18,7 @@ Ensure that the arguments of your constructor meet constraints defined through d
   * [Optionality](#optionality)
   * [Inheritance](#inheritance)
   * [Validation Only](#validation-only)
+  * [Demo Project](#demo-project)
 * [Standard Ensures](#standard-ensures)
 * [Custom Ensures](#custom-ensures)
 * [Templating](#templating)
@@ -449,6 +450,10 @@ const validateCtor = (className: string, value: any): CtorEnsureArgError[] | nul
 ```
 
 The `className` corresponds to the displayname defined using `@CtorEnsure` and the value can be any object. If the `className` is unknown, null will be returned, otherwise you'll get a list of errors. This is especially useful to validate fields within a UI, without hardcoding any validation and using async backend calls. Since fields can depend on eachother, I've ommitted single field validation at this point, and just validate the whole object as is.
+
+### Demo Project
+
+You can find a demo project containing a back- and frontend implementation here: [ctor-ensure-demo](https://github.com/BlvckBytes/ctor-ensure-demo)
 
 ## Standard Ensures
 

@@ -1,4 +1,3 @@
-import { template } from '../../description-template.factory';
 import { ValidationConfig } from '../../validation-config.interface';
 
 /**
@@ -8,7 +7,9 @@ import { ValidationConfig } from '../../validation-config.interface';
 const ENSURE_STRUUID = (): ValidationConfig => {
   const pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   return {
-    description: template('ENSURE_STRUUID'),
+    description: {
+      name: 'ENSURE_STRUUID',
+    },
     process: (value) => ({
       error: typeof value !== 'string' || !pattern.test(value),
       value,

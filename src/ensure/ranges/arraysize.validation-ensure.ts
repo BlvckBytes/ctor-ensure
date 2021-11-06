@@ -1,4 +1,3 @@
-import { template } from '../../description-template.factory';
 import { ValidationConfig } from '../../validation-config.interface';
 
 /**
@@ -14,13 +13,16 @@ const ENSURE_ARRAYSIZE = (min: number, max: number): ValidationConfig => {
     throw new SyntaxError('Max cannot be less than min!');
 
   return {
-    description: template('ENSURE_ARRAYSIZE', {
-      min,
-      max,
-      hasMin: min > 0,
-      hasMax: max > 0,
-      hasBoth: min > 0 && max > 0,
-    }),
+    description: { 
+      name: 'ENSURE_ARRAYSIZE',
+      vars: {
+        min,
+        max,
+        hasMin: min > 0,
+        hasMax: max > 0,
+        hasBoth: min > 0 && max > 0,
+      },
+    },
     process: (_value, _neighbors, _ctor, _parent, arg) => ({
       error: (
         // Is not an array

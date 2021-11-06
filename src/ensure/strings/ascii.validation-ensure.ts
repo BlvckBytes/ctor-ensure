@@ -1,4 +1,3 @@
-import { template } from '../../description-template.factory';
 import { ValidationConfig } from '../../validation-config.interface';
 
 /**
@@ -11,10 +10,13 @@ const ENSURE_ASCII = (justPrintable = false, allowSpaces = true): ValidationConf
   // eslint-disable-next-line no-control-regex, no-nested-ternary
   const pattern = justPrintable ? (allowSpaces ? /^[ -~]*$/ : /^[!-~]*$/) : (allowSpaces ? /^[\x00-\x7F]*$/ : /^[\x00-\x1F\x21-\x7F]*$/);
   return {
-    description: template('ENSURE_ASCII', {
-      onlyprint: justPrintable,
-      nospaces: !allowSpaces,
-    }),
+    description: {
+      name: 'ENSURE_ASCII',
+      vars: {
+        onlyprint: justPrintable,
+        nospaces: !allowSpaces,
+      },
+    },
     process: (value) => ({
       error: !pattern.test(value),
       value,

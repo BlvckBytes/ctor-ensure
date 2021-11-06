@@ -293,6 +293,15 @@ export const processFunction = (defInd: number, template: string, vars: Variable
 };
 
 /**
+ * Describing all parameters possible to pass to a template call
+ */
+export interface TemplateParameters {
+  name: string;
+  vars?: VariableMap;
+  funcs?: FunctionMap;
+}
+
+/**
  * Get the rendered template from a environment variable
  * @param name Name of the template
  * @param vars Variables that need to be available

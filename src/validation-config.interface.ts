@@ -1,11 +1,13 @@
 import { ValidationControl, ValidationResult } from '.';
+import { TemplateParameters } from './description-template.factory';
 
 /**
  * Configuration of a validation chain element
  */
 export interface ValidationConfig {
   // Description of this validator
-  description: (() => string) | string;
+  // Can be either a template, a string thunk or an immediate string value
+  description: TemplateParameters | (() => string) | string;
 
   // Callback to process this configuration
   // Returns passing as true and failed as false

@@ -1,12 +1,12 @@
 import { expect } from 'chai';
-import { ENSURE_ISDATE, evalStrThunk } from '../../../src';
+import { ENSURE_ISDATE, evalDesc } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_ISDATE', () => {
   const desc = 'valid JS date object';
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_ISDATE().description)).to.equal(desc);
+    expect(evalDesc(ENSURE_ISDATE().description)).to.equal(desc);
   });
 
   it('should allow date value', () => {

@@ -1,12 +1,12 @@
 import { expect } from 'chai';
-import { ENSURE_STRUUID, evalStrThunk } from '../../../src';
+import { ENSURE_STRUUID, evalDesc } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_STRUUID', () => {
   const desc = 'uuid as string';
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_STRUUID().description)).to.equal(desc);
+    expect(evalDesc(ENSURE_STRUUID().description)).to.equal(desc);
   });
 
   it('should allow string uuid', () => {

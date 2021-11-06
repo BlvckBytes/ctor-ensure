@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ENSURE_ALPHA, evalStrThunk } from '../../../src';
+import { ENSURE_ALPHA, evalDesc } from '../../../src';
 import { executeEnsure, checkEnsureArgErrors } from '../../test-util';
 
 describe('ENSURE_ALPHA', () => {
@@ -17,8 +17,8 @@ describe('ENSURE_ALPHA', () => {
   const descNoSpaces = 'only alphabetical characters without spaces';
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_ALPHA().description)).to.equal(desc);
-    expect(evalStrThunk(ENSURE_ALPHA(false).description)).to.equal(descNoSpaces);
+    expect(evalDesc(ENSURE_ALPHA().description)).to.equal(desc);
+    expect(evalDesc(ENSURE_ALPHA(false).description)).to.equal(descNoSpaces);
   });
 
   it('should allow all alphabetical characters', () => {

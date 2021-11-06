@@ -1,12 +1,12 @@
 import { expect } from 'chai';
-import { ENSURE_BOOLEAN, evalStrThunk } from '../../../src';
+import { ENSURE_BOOLEAN, evalDesc } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_BOOLEAN', () => {
   const desc = 'boolean value';
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_BOOLEAN().description)).to.equal(desc);
+    expect(evalDesc(ENSURE_BOOLEAN().description)).to.equal(desc);
   });
 
   it('should allow boolean value', () => {

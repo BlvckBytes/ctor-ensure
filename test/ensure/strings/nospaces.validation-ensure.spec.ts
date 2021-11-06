@@ -1,12 +1,12 @@
 import { expect } from 'chai';
-import { ENSURE_NOSPACES, evalStrThunk } from '../../../src';
+import { ENSURE_NOSPACES, evalDesc } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_NOSPACES', () => {
   const desc = 'can\'t contain spaces';
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_NOSPACES().description)).to.equal(desc);
+    expect(evalDesc(ENSURE_NOSPACES().description)).to.equal(desc);
   });
 
   it('should allow non-space string', () => {

@@ -1,10 +1,10 @@
 import { expect } from 'chai';
-import { ENSURE_PATTERN, evalStrThunk } from '../../../src';
+import { ENSURE_PATTERN, evalDesc } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_PATTERN', () => {
   it('should pass through it\'s description', () => {
-    expect(evalStrThunk(ENSURE_PATTERN(/a/, 'this is a test').description)).to.equal('this is a test');
+    expect(evalDesc(ENSURE_PATTERN(/a/, 'this is a test').description)).to.equal('this is a test');
   });
 
   const alphaDesc = 'Only the alphabet with spaces';

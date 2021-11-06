@@ -1,4 +1,3 @@
-import { template } from '../../description-template.factory';
 import { ValidationConfig } from '../../validation-config.interface';
 
 /**
@@ -9,9 +8,12 @@ import { ValidationConfig } from '../../validation-config.interface';
 const ENSURE_ALPHA = (allowSpaces = true): ValidationConfig => {
   const pattern = allowSpaces ? /^[A-Za-z ]*$/ : /^[A-Za-z]*$/;
   return {
-    description: template('ENSURE_ALPHA', {
-      nospaces: !allowSpaces,
-    }),
+    description: {
+      name: 'ENSURE_ALPHA',
+      vars: {
+        nospaces: !allowSpaces,
+      },
+    },
     process: (value) => ({
       error: !pattern.test(value),
       value,

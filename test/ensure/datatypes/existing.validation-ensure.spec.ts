@@ -1,12 +1,12 @@
 import { expect } from 'chai';
-import { ENSURE_EXISTING, evalStrThunk } from '../../../src';
+import { ENSURE_EXISTING, evalDesc } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_EXISTING', () => {
   const desc = 'mandatory field';
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_EXISTING().description)).to.equal(desc);
+    expect(evalDesc(ENSURE_EXISTING().description)).to.equal(desc);
   });
 
   it('should allow defined fields', () => {

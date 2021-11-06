@@ -1,12 +1,12 @@
 import { expect } from 'chai';
-import { ENSURE_NONNULL, evalStrThunk } from '../../../src';
+import { ENSURE_NONNULL, evalDesc } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_NONNULL', () => {
   const desc = 'no null value';
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_NONNULL().description)).to.equal(desc);
+    expect(evalDesc(ENSURE_NONNULL().description)).to.equal(desc);
   });
 
   it('should allow non-null fields', () => {

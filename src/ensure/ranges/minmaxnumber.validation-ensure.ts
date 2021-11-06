@@ -1,5 +1,4 @@
 import { isFloat, isInt } from '../..';
-import { template } from '../../description-template.factory';
 import { ValidationConfig } from '../../validation-config.interface';
 
 /**
@@ -15,12 +14,15 @@ const ENSURE_MINMAXNUMBER = (min: number | null, max: number | null): Validation
     throw new SyntaxError('Max cannot be less than min!');
 
   return {
-    description: template('ENSURE_MINMAXNUMBER', {
-      min, max,
-      hasMin: min !== null,
-      hasMax: max !== null,
-      hasBoth: min !== null && max !== null,
-    }),
+    description: {
+      name: 'ENSURE_MINMAXNUMBER',
+      vars: {
+        min, max,
+        hasMin: min !== null,
+        hasMax: max !== null,
+        hasBoth: min !== null && max !== null,
+      },
+    },
     process: (value) => ({
       error: (
         // Is not a number

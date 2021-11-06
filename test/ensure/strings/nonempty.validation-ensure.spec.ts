@@ -1,12 +1,12 @@
 import { expect } from 'chai';
-import { ENSURE_NONEMPTY, evalStrThunk } from '../../../src';
+import { ENSURE_NONEMPTY, evalDesc } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_NONEMPTY', () => {
   const desc = 'no empty value';
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_NONEMPTY().description)).to.equal(desc);
+    expect(evalDesc(ENSURE_NONEMPTY().description)).to.equal(desc);
   });
 
   it('should allow non-empty string', () => {

@@ -1,4 +1,3 @@
-import { template } from '../../description-template.factory';
 import { ValidationConfig } from '../../validation-config.interface';
 
 /**
@@ -8,11 +7,14 @@ import { ValidationConfig } from '../../validation-config.interface';
  * @param fieldName Names of partner fields, need to be registered {@link ValidatedArg}
  */
 const ENSURE_EQUALSFIELD = (positive: boolean, ...fieldNames: string[]): ValidationConfig => ({
-    description: template('ENSURE_EQUALSFIELD', {
-      numFields: fieldNames.length,
-      fieldNames: fieldNames.join(', '),
-      disallow: !positive,
-    }),
+    description: {
+      name: 'ENSURE_EQUALSFIELD' ,
+      vars: {
+        numFields: fieldNames.length,
+        fieldNames: fieldNames.join(', '),
+        disallow: !positive,
+      },
+    },
     process: (value, neighbors, ctor) => {
       for (let i = 0; i < fieldNames.length; i += 1) {
         const name = fieldNames[i];

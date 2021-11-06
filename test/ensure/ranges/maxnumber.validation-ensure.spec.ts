@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ENSURE_MAXNUMBER, evalStrThunk, strOpt } from '../../../src';
+import { ENSURE_MAXNUMBER, evalDesc, strOpt } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_MAXNUMBER', () => {
@@ -8,7 +8,7 @@ describe('ENSURE_MAXNUMBER', () => {
   const n = 10;
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_MAXNUMBER(n).description)).to.equal(desc(n));
+    expect(evalDesc(ENSURE_MAXNUMBER(n).description)).to.equal(desc(n));
   });
 
   it('should allow values below max', () => {

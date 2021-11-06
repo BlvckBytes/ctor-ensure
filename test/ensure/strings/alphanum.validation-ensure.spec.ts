@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ENSURE_ALPHANUM, evalStrThunk } from '../../../src';
+import { ENSURE_ALPHANUM, evalDesc } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_ALPHANUM', () => {
@@ -20,8 +20,8 @@ describe('ENSURE_ALPHANUM', () => {
   const descNoSpaces = 'only alphanumeric characters without spaces';
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_ALPHANUM().description)).to.equal(desc);
-    expect(evalStrThunk(ENSURE_ALPHANUM(false).description)).to.equal(descNoSpaces);
+    expect(evalDesc(ENSURE_ALPHANUM().description)).to.equal(desc);
+    expect(evalDesc(ENSURE_ALPHANUM(false).description)).to.equal(descNoSpaces);
   });
 
   it('should allow all alphanumeric characters', () => {

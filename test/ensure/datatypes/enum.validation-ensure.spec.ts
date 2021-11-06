@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ENSURE_ENUM, evalStrThunk, strOpt } from '../../../src';
+import { ENSURE_ENUM, evalDesc, strOpt } from '../../../src';
 import { enumValues, enumKeys } from '../../../src/ensure/datatypes/enum.validation-ensure';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
@@ -32,17 +32,17 @@ describe('ENSURE_ENUM', () => {
   const descKeysPlural = (inp: { [key: string]: string | number }, disallow = false) => `needs to ${strOpt('not ', disallow)}equal to one of the values: ${enumKeys(inp).join(', ')}`;
 
   it('should have it\'s default description singular', () => {
-    expect(evalStrThunk(ENSURE_ENUM(SINGULAR).description)).to.equal(desc(SINGULAR));
-    expect(evalStrThunk(ENSURE_ENUM(SINGULAR, true).description)).to.equal(desc(SINGULAR, true));
-    expect(evalStrThunk(ENSURE_ENUM(SINGULAR, false, true).description)).to.equal(descKeys(SINGULAR));
-    expect(evalStrThunk(ENSURE_ENUM(SINGULAR, true, true).description)).to.equal(descKeys(SINGULAR, true));
+    expect(evalDesc(ENSURE_ENUM(SINGULAR).description)).to.equal(desc(SINGULAR));
+    expect(evalDesc(ENSURE_ENUM(SINGULAR, true).description)).to.equal(desc(SINGULAR, true));
+    expect(evalDesc(ENSURE_ENUM(SINGULAR, false, true).description)).to.equal(descKeys(SINGULAR));
+    expect(evalDesc(ENSURE_ENUM(SINGULAR, true, true).description)).to.equal(descKeys(SINGULAR, true));
   });
 
   it('should have it\'s default description plural', () => {
-    expect(evalStrThunk(ENSURE_ENUM(PLURAL).description)).to.equal(descPlural(PLURAL));
-    expect(evalStrThunk(ENSURE_ENUM(PLURAL, true).description)).to.equal(descPlural(PLURAL, true));
-    expect(evalStrThunk(ENSURE_ENUM(PLURAL, false, true).description)).to.equal(descKeysPlural(PLURAL));
-    expect(evalStrThunk(ENSURE_ENUM(PLURAL, true, true).description)).to.equal(descKeysPlural(PLURAL, true));
+    expect(evalDesc(ENSURE_ENUM(PLURAL).description)).to.equal(descPlural(PLURAL));
+    expect(evalDesc(ENSURE_ENUM(PLURAL, true).description)).to.equal(descPlural(PLURAL, true));
+    expect(evalDesc(ENSURE_ENUM(PLURAL, false, true).description)).to.equal(descKeysPlural(PLURAL));
+    expect(evalDesc(ENSURE_ENUM(PLURAL, true, true).description)).to.equal(descKeysPlural(PLURAL, true));
   });
 
   it('should allow SINGULAR enum values', () => {

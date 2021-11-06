@@ -1,4 +1,3 @@
-import { template } from '../../description-template.factory';
 import { ValidationConfig } from '../../validation-config.interface';
 
 /**
@@ -9,9 +8,12 @@ import { ValidationConfig } from '../../validation-config.interface';
  * @param ignoreCase Whether or not to ignore casing on compare
  */
 const ENSURE_ISARRAY = (positive = true, unique = false, ignoreCase = false): ValidationConfig => ({
-    description: template('ENSURE_ISARRAY', {
-      positive, unique, ignoreCase,
-    }),
+    description: {
+      name: 'ENSURE_ISARRAY',
+      vars: {
+        positive, unique, ignoreCase,
+      },
+    },
     process: (_value, _neighbors, _ctor, _parent, arg) => {
       // Not the desired datastructure
       if (!(Array.isArray(arg) === positive)) return { error: true, value: arg };

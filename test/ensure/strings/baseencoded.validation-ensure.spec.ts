@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { Encoding, ENSURE_BASEENCODED, evalStrThunk } from '../../../src';
+import { Encoding, ENSURE_BASEENCODED, evalDesc } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_BASEENCODED', () => {
@@ -13,9 +13,9 @@ describe('ENSURE_BASEENCODED', () => {
   const desc64 = 'data encoded as BASE64';
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_BASEENCODED(Encoding.BASE32).description)).to.equal(desc32);
-    expect(evalStrThunk(ENSURE_BASEENCODED(Encoding.BASE58).description)).to.equal(desc58);
-    expect(evalStrThunk(ENSURE_BASEENCODED(Encoding.BASE64).description)).to.equal(desc64);
+    expect(evalDesc(ENSURE_BASEENCODED(Encoding.BASE32).description)).to.equal(desc32);
+    expect(evalDesc(ENSURE_BASEENCODED(Encoding.BASE58).description)).to.equal(desc58);
+    expect(evalDesc(ENSURE_BASEENCODED(Encoding.BASE64).description)).to.equal(desc64);
   });
 
   it('should throw on unknown encoding', () => {

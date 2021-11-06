@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ENSURE_MINMAXDATE, evalStrThunk, strOpt } from '../../../src';
+import { ENSURE_MINMAXDATE, evalDesc, strOpt } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_MINMAXDATE', () => {
@@ -10,13 +10,13 @@ describe('ENSURE_MINMAXDATE', () => {
     const d2 = new Date();
 
     // Lower, no upper
-    expect(evalStrThunk(ENSURE_MINMAXDATE(d1, null).description)).to.equal(desc(d1, null));
+    expect(evalDesc(ENSURE_MINMAXDATE(d1, null).description)).to.equal(desc(d1, null));
 
     // Lower, singular upper
-    expect(evalStrThunk(ENSURE_MINMAXDATE(d1, d2).description)).to.equal(desc(d1, d2));
+    expect(evalDesc(ENSURE_MINMAXDATE(d1, d2).description)).to.equal(desc(d1, d2));
 
     // No lower, upper
-    expect(evalStrThunk(ENSURE_MINMAXDATE(null, d2).description)).to.equal(desc(null, d2));
+    expect(evalDesc(ENSURE_MINMAXDATE(null, d2).description)).to.equal(desc(null, d2));
   });
 
   const now = new Date();

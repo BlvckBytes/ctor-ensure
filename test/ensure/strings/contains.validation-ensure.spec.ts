@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ENSURE_CONTAINS, evalStrThunk } from '../../../src';
+import { ENSURE_CONTAINS, evalDesc } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_CONTAINS', () => {
@@ -9,8 +9,8 @@ describe('ENSURE_CONTAINS', () => {
   const descNegated = `doesn't contain: ${contains}`;
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_CONTAINS(contains).description)).to.equal(desc);
-    expect(evalStrThunk(ENSURE_CONTAINS(contains, false).description)).to.equal(descNegated);
+    expect(evalDesc(ENSURE_CONTAINS(contains).description)).to.equal(desc);
+    expect(evalDesc(ENSURE_CONTAINS(contains, false).description)).to.equal(descNegated);
   });
 
   it('should allow containing string', () => {

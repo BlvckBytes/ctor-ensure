@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ENSURE_ASCII, evalStrThunk } from '../../../src';
+import { ENSURE_ASCII, evalDesc } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_ASCII', () => {
@@ -21,10 +21,10 @@ describe('ENSURE_ASCII', () => {
   const descPrintableNoSpaces = 'only printable ascii characters without spaces';
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_ASCII().description)).to.equal(desc);
-    expect(evalStrThunk(ENSURE_ASCII(false, false).description)).to.equal(descNoSpaces);
-    expect(evalStrThunk(ENSURE_ASCII(true).description)).to.equal(descPrintable);
-    expect(evalStrThunk(ENSURE_ASCII(true, false).description)).to.equal(descPrintableNoSpaces);
+    expect(evalDesc(ENSURE_ASCII().description)).to.equal(desc);
+    expect(evalDesc(ENSURE_ASCII(false, false).description)).to.equal(descNoSpaces);
+    expect(evalDesc(ENSURE_ASCII(true).description)).to.equal(descPrintable);
+    expect(evalDesc(ENSURE_ASCII(true, false).description)).to.equal(descPrintableNoSpaces);
   });
 
   it('should allow all ascii characters', () => {

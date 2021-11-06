@@ -1,4 +1,3 @@
-import { template } from '../../description-template.factory';
 import { escapeRegExp } from '../../util';
 import { ValidationConfig } from '../../validation-config.interface';
 
@@ -26,12 +25,15 @@ export const enumKeys = (values: { [key: string]: any }) => Object.keys(values).
 export const ENSURE_ENUM = (values: { [key: string]: string | number }, disallow = false, useKeys = false): ValidationConfig => {
   const vals: any[] = useKeys ? enumKeys(values) : enumValues(values);
   return {
-    description: template('ENSURE_ENUM', {
-      numValues: vals.length,
-      multiple: vals.length > 1,
-      values: vals.join(', '),
-      disallow,
-    }),
+    description: {
+      name: 'ENSURE_ENUM',
+      vars: {
+        numValues: vals.length,
+        multiple: vals.length > 1,
+        values: vals.join(', '),
+        disallow,
+      },
+    },
     process: (value) => ({
       error: vals.includes(value) === disallow,
       value,

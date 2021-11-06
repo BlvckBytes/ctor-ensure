@@ -1,4 +1,3 @@
-import { template } from '../../description-template.factory';
 import { ValidationConfig } from '../../validation-config.interface';
 
 /**
@@ -6,7 +5,9 @@ import { ValidationConfig } from '../../validation-config.interface';
  * Ensure this field is a valid JS date object
  */
 const ENSURE_ISDATE = (): ValidationConfig => ({
-    description: template('ENSURE_ISDATE'),
+    description: {
+      name: 'ENSURE_ISDATE',
+    },
     process: (value) => ({
       error: !(value instanceof Date && !Number.isNaN(value.getTime())),
       value,

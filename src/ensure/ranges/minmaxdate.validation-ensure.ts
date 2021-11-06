@@ -1,4 +1,3 @@
-import { template } from '../../description-template.factory';
 import { ValidationConfig } from '../../validation-config.interface';
 
 /**
@@ -17,13 +16,16 @@ const ENSURE_MINMAXDATE = (min: Date | null, max: Date | null): ValidationConfig
     throw new SyntaxError('Max cannot be less than min!');
 
   return {
-    description: template('ENSURE_MINMAXDATE', {
-      min: min?.toISOString(),
-      max: max?.toISOString(),
-      hasMin: minStamp > -1,
-      hasMax: maxStamp > -1,
-      hasBoth: minStamp > -1 && maxStamp > -1,
-    }),
+    description: {
+      name: 'ENSURE_MINMAXDATE',
+      vars: {
+        min: min?.toISOString(),
+        max: max?.toISOString(),
+        hasMin: minStamp > -1,
+        hasMax: maxStamp > -1,
+        hasBoth: minStamp > -1 && maxStamp > -1,
+      },
+    },
     process: (value) => ({
       error: (
         // Isn't a date

@@ -1,4 +1,3 @@
-import { template } from '../../description-template.factory';
 import { ValidationConfig } from '../../validation-config.interface';
 
 /**
@@ -21,7 +20,9 @@ export const isInt = (value: any): boolean => {
  * Ensure this field is a number of type integer
  */
 export const ENSURE_INT = (): ValidationConfig => ({
-    description: template('ENSURE_INT'),
+    description: {
+      name: 'ENSURE_INT',
+    },
     process: (value) => ({
       error: !isInt(value),
       value,

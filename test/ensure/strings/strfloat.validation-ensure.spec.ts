@@ -1,12 +1,12 @@
 import { expect } from 'chai';
-import { ENSURE_STRFLOAT, evalStrThunk } from '../../../src';
+import { ENSURE_STRFLOAT, evalDesc } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_STRFLOAT', () => {
   const desc = 'floating point number as string';
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_STRFLOAT().description)).to.equal(desc);
+    expect(evalDesc(ENSURE_STRFLOAT().description)).to.equal(desc);
   });
 
   it('should allow string float', () => {

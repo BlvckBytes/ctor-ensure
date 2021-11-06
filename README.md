@@ -19,7 +19,7 @@ Ensure that the arguments of your constructor meet constraints defined through d
   * [Full Example](#full-example)
   * [Optionality](#optionality)
   * [Inheritance](#inheritance)
-  * [Validation Only](#validation-only)
+  * [Object Validation](#object-validation)
   * [Demo Project](#demo-project)
 * [Standard Ensures](#standard-ensures)
 * [Custom Ensures](#custom-ensures)
@@ -443,7 +443,7 @@ Whenever you instantiate a user, it will validate all fields, but skip `password
 
 The `skipOn` callback, which can also be used on class-level, comes with a companion, named `skipOnSkipsInherited`. If that flag is set to true, the inherited validations will also skip, if `skipsOn` evaluates to true. Otherwise, just the class' validation itself will be disabled.
 
-### Validation Only
+### Object Validation
 
 There's a quick way to just validate a (non-class) object's fields and receive a list of errors, using this method:
 
@@ -508,22 +508,12 @@ Please try to avoid defining ensures inline with the constructor parameter decor
 
 ```typescript
 /**
- * Result of calling process() on a {@link ValidationConfig}
- */
-interface ValidationResult {
-  // True if it didn't pass validation, false on success
-  error: boolean;
-
-  // Specific value that caused this error
-  value?: any;
-}
-
-/**
  * Configuration of a validation chain element
  */
 interface ValidationConfig {
   // Description of this validator
-  description: (() => string) | string;
+  // Can be either a template, a string thunk or an immediate string value
+  description: TemplateParameters | (() => string) | string;
 
   // Callback to process this configuration
   // Returns passing as true and failed as false
@@ -547,9 +537,19 @@ interface ValidationConfig {
   ) => ValidationResult;
 }
 
+/**
+ * Result of calling process() on a {@link ValidationConfig}
+ */
+interface ValidationResult {
+  // True if it didn't pass validation, false on success
+  error: boolean;
+
+  // Specific value that caused this error
+  value?: any;
+}
 ```
 
-The description may be an immediate value, or a thunk. `process()` will be called for every field (or element of an array) the ensure is connected with. It returns an object with the error-flag (true on error, false if valid) and the value that caused trouble. To get a feel for how the standard ensures have been implemented, have a look at the sourcecode.
+`process()` will be called for every field (or element of an array) the ensure is connected with. It returns an object with the error-flag (true on error, false if valid) and the value that caused trouble. To get a feel for how the standard ensures have been implemented, have a look at the sourcecode.
 
 ## Templating
 
@@ -582,15 +582,21 @@ const ENSURE_MINMAXLEN = (min: number, max: number): ValidationConfig => {
   const pattern = new RegExp(`^.{${min > 0 ? min : 0},${max > 0 ? max : ''}}$`);
 
   return {
-    description: template('ENSURE_MINMAXLEN', {
-      min, max, hasMin: min > 0, hasMax: max > 0, hasBoth: min > 0 && max > 0,
+    description: {
+      name: 'ENSURE_MINMAXLEN',
+      vars: {
+        min, max, hasMin: min > 0, hasMax: max > 0, hasBoth: min > 0 && max > 0,
+      },
+    },
+    process: (value) => ({
+      error: !pattern.test(value),
+      value,
     }),
-    process: (value) => pattern.test(value),
   };
 };
 ```
 
-After the ensure's arguments have been validated, a pattern is built conditionally, which will later be used to test against the value inside `process()`. For the description, I call `template()`, using the name specified inside `.env`, and a map of variables. `min` and `max` are just passed along, `hasMin`, `hasMax` and `hasBoth` are evaluated booleans.
+After the ensure's arguments have been validated, a pattern is built conditionally, which will later be used to test against the value inside `process()`. For the description, I create a `TemplateParameters` object, using the name specified inside `.env`, and a map of variables. `min` and `max` are just passed along, `hasMin`, `hasMax` and `hasBoth` are evaluated booleans.
 
 ### Syntax .ENV
 
@@ -663,7 +669,7 @@ const registerTemplateFunction = (name: string, func: TemplateFunction) => {
 }
 ```
 
-On the other hand, if you just need a function locally, for the specific template, you can provide it in the `template` call directly, in an inline-fashion.
+On the other hand, if you just need a function locally, for the specific template, you can provide it in the `description`'s `TemplateParameters` directly, in an inline-fashion.
 
 ## Contribution
 

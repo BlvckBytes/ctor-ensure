@@ -1,4 +1,4 @@
-import { CtorEnsureArgError, CtorEnsureException, evalStrThunk, ValidationConfig, ValidationControl } from '../src';
+import { CtorEnsureArgError, CtorEnsureException, evalDesc, ValidationConfig, ValidationControl } from '../src';
 import Optionality from '../src/optionality.enum';
 
 /**
@@ -52,7 +52,7 @@ export const executeEnsure = (ensure: ValidationConfig, value: any, otherControl
       if (res.error) {
         const err = {
           field: controls[0].displayName,
-          description: evalStrThunk(currConfig.description),
+          description: evalDesc(currConfig.description),
           value: res.value,
         };
 

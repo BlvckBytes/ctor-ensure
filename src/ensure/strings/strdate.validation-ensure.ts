@@ -1,4 +1,3 @@
-import { template } from '../../description-template.factory';
 import { ValidationConfig } from '../../validation-config.interface';
 
 /**
@@ -8,7 +7,9 @@ import { ValidationConfig } from '../../validation-config.interface';
 const ENSURE_STRDATE = (): ValidationConfig => {
   const pattern = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?(([+-]\d\d:\d\d)|Z)?$/i;
   return {
-    description: template('ENSURE_STRDATE'),
+    description: {
+      name: 'ENSURE_STRDATE',
+    },
     process: (value) => ({
       error: !pattern.test(value),
       value,

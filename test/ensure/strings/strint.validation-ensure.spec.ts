@@ -1,12 +1,12 @@
 import { expect } from 'chai';
-import { ENSURE_STRINT, evalStrThunk } from '../../../src';
+import { ENSURE_STRINT, evalDesc } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_STRINT', () => {
   const desc = 'integer number as string';
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_STRINT().description)).to.equal(desc);
+    expect(evalDesc(ENSURE_STRINT().description)).to.equal(desc);
   });
 
   it('should allow string int', () => {

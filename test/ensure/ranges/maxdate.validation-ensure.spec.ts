@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ENSURE_MAXDATE, evalStrThunk, strOpt } from '../../../src';
+import { ENSURE_MAXDATE, evalDesc, strOpt } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_MAXDATE', () => {
@@ -8,7 +8,7 @@ describe('ENSURE_MAXDATE', () => {
   const now = new Date();
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_MAXDATE(now).description)).to.equal(desc(now));
+    expect(evalDesc(ENSURE_MAXDATE(now).description)).to.equal(desc(now));
   });
 
   it('should allow dates below max', () => {

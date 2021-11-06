@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ENSURE_MINNUMBER, evalStrThunk, strOpt } from '../../../src';
+import { ENSURE_MINNUMBER, evalDesc, strOpt } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_MINNUMBER', () => {
@@ -8,7 +8,7 @@ describe('ENSURE_MINNUMBER', () => {
   const n = 10;
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_MINNUMBER(10).description)).to.equal(desc(10));
+    expect(evalDesc(ENSURE_MINNUMBER(10).description)).to.equal(desc(10));
   });
 
   it('should allow dates above min', () => {

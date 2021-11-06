@@ -1,13 +1,13 @@
 import { expect } from 'chai';
-import { ENSURE_MAXLEN, evalStrThunk, pluralize } from '../../../src';
+import { ENSURE_MAXLEN, evalDesc, pluralize } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_MAXLEN', () => {
   const desc = (max: number) => `up to ${max} ${pluralize('character', max)}`;
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_MAXLEN(5).description)).to.equal(desc(5));
-    expect(evalStrThunk(ENSURE_MAXLEN(1).description)).to.equal(desc(1));
+    expect(evalDesc(ENSURE_MAXLEN(5).description)).to.equal(desc(5));
+    expect(evalDesc(ENSURE_MAXLEN(1).description)).to.equal(desc(1));
   });
 
   it('should allow 0 to max characters', () => {

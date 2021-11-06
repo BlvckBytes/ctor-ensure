@@ -1,5 +1,4 @@
 import { ValidationConfig } from '../../validation-config.interface';
-import { template } from '../../description-template.factory';
 import { escapeRegExp } from '../../util';
 
 /**
@@ -11,10 +10,13 @@ import { escapeRegExp } from '../../util';
 const ENSURE_CONTAINS = (string: string, allow = true): ValidationConfig => {
   const pattern = new RegExp(`(${escapeRegExp(string)})`);
   return {
-    description: template('ENSURE_CONTAINS', { 
-      str: string,
-      allow,
-    }),
+    description: {
+      name: 'ENSURE_CONTAINS',
+      vars: { 
+        str: string,
+        allow,
+      },
+    },
     process: (value) => ({
       error: !(pattern.test(value) === allow),
       value,

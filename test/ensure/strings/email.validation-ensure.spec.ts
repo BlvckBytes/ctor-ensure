@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ENSURE_EMAIL, evalStrThunk } from '../../../src';
+import { ENSURE_EMAIL, evalDesc } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_EMAIL', () => {
@@ -8,7 +8,7 @@ describe('ENSURE_EMAIL', () => {
   const desc = 'valid email address';
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_EMAIL().description)).to.equal(desc);
+    expect(evalDesc(ENSURE_EMAIL().description)).to.equal(desc);
   });
 
   it('should allow valid e-mail address', () => {

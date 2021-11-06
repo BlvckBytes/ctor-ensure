@@ -1,13 +1,13 @@
 import { expect } from 'chai';
-import { ENSURE_ARRAYSIZEMIN, evalStrThunk, pluralize } from '../../../src';
+import { ENSURE_ARRAYSIZEMIN, evalDesc, pluralize } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_ARRAYSIZEMIN', () => {
   const desc = (min: number) => `at least ${min} array ${pluralize('element', min)}`;
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_ARRAYSIZEMIN(5).description)).equal(desc(5));
-    expect(evalStrThunk(ENSURE_ARRAYSIZEMIN(1).description)).equal(desc(1));
+    expect(evalDesc(ENSURE_ARRAYSIZEMIN(5).description)).equal(desc(5));
+    expect(evalDesc(ENSURE_ARRAYSIZEMIN(1).description)).equal(desc(1));
   });
 
   it('should allow more than min elements', () => {

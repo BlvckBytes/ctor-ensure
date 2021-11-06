@@ -1,4 +1,3 @@
-import { template } from '../../description-template.factory';
 import { ValidationConfig } from '../../validation-config.interface';
 
 // Known base encodings
@@ -33,9 +32,12 @@ export const ENSURE_BASEENCODED = (encoding: Encoding): ValidationConfig => {
   } 
 
   return {
-    description: template('ENSURE_BASEENCODED', {
-      base: (Encoding[encoding]).toUpperCase(),
-    }),
+    description: {
+      name: 'ENSURE_BASEENCODED',
+      vars: {
+        base: (Encoding[encoding]).toUpperCase(),
+      },
+    },
     process: (value) => ({
       error: !pattern.test(value),
       value,

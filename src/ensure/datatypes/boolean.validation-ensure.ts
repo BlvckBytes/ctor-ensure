@@ -1,4 +1,3 @@
-import { template } from '../../description-template.factory';
 import { ValidationConfig } from '../../validation-config.interface';
 
 /**
@@ -6,7 +5,9 @@ import { ValidationConfig } from '../../validation-config.interface';
  * Ensure this field is a boolean value
  */
 const ENSURE_BOOLEAN = (): ValidationConfig => ({
-    description: template('ENSURE_BOOLEAN'),
+    description: {
+      name: 'ENSURE_BOOLEAN',
+    },
     process: (value) => ({
       error: typeof value !== 'boolean',
       value,

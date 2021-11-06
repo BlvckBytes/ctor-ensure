@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { pluralize, strOpt } from '../src';
-import { escapeRegExp, evalStrThunk } from '../src/util';
+import { escapeRegExp, evalDesc } from '../src/util';
 
 describe('strOpt()', () => {
   it('string should be rendered if condition is true', () => {
@@ -36,15 +36,15 @@ describe('pluralize()', () => {
   });
 });
 
-describe('evalStrThunk()', () => {
+describe('evalDesc()', () => {
   it('should return immediate values correctly', () => {
     // Provide immediate (hardcoded) value
-    expect(evalStrThunk('immediate')).to.equal('immediate');
+    expect(evalDesc('immediate')).to.equal('immediate');
   });
 
   it('should evaluate string thunks correctly', () => {
     // Provide function that returns string
-    expect(evalStrThunk(() => 'thunk')).to.equal('thunk');
+    expect(evalDesc(() => 'thunk')).to.equal('thunk');
   });
 });
 

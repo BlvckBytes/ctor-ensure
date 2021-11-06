@@ -1,4 +1,5 @@
-import { Constructable } from '.';
+import { Constructable, template } from '.';
+import { TemplateParameters } from './description-template.factory';
 
 /**
  * Make a string optional, which means it'll be empty when the
@@ -29,13 +30,16 @@ export const pluralize = (word: string, num: number, suf = 's'): string => `${wo
 export const ternaryString = (state: boolean, ifTrue: string, ifFalse: string): string => state ? ifTrue : ifFalse;
 
 /**
- * Evaluates a string thunk bei either calling it, if it's a
- * function, or returning it's immediate value
- * @param thunk Either a thunk returning a string or a string value
- * @param args Arguments to be passed to the thunk
+ * Evaluates an ensure's description to a string value
+ * Input can be either a string thunk, an immediate string or a template
+ * @param desc Input to evaluate
  * @returns Evaluated string value
  */
-export const evalStrThunk = (thunk: ((...args: any[]) => string) | string, ...args: any[]): string => typeof thunk === 'function' ? thunk(...args) : thunk;
+export const evalDesc = (input: (() => string) | string | TemplateParameters): string => {
+  if (typeof input === 'function') return input();
+  if (typeof input === 'object') return template(input.name, input.vars, input.funcs);
+  return input;
+};
 
 /**
  * Escape a string to be used within a regular expression safely

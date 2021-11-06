@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ENSURE_MINMAXLEN, evalStrThunk, pluralize, strOpt } from '../../../src';
+import { ENSURE_MINMAXLEN, evalDesc, pluralize, strOpt } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_MINMAXLEN', () => {
@@ -7,22 +7,22 @@ describe('ENSURE_MINMAXLEN', () => {
 
   it('should have it\'s default description', () => {
     // Plural lower, no upper
-    expect(evalStrThunk(ENSURE_MINMAXLEN(5, -1).description)).to.equal(desc(5, -1));
+    expect(evalDesc(ENSURE_MINMAXLEN(5, -1).description)).to.equal(desc(5, -1));
 
     // Singular lower, no upper
-    expect(evalStrThunk(ENSURE_MINMAXLEN(1, -1).description)).to.equal(desc(1, -1));
+    expect(evalDesc(ENSURE_MINMAXLEN(1, -1).description)).to.equal(desc(1, -1));
 
     // Singular lower, singular upper
-    expect(evalStrThunk(ENSURE_MINMAXLEN(1, 1).description)).to.equal(desc(1, 1));
+    expect(evalDesc(ENSURE_MINMAXLEN(1, 1).description)).to.equal(desc(1, 1));
 
     // Plural lower, plural upper
-    expect(evalStrThunk(ENSURE_MINMAXLEN(2, 3).description)).to.equal(desc(2, 3));
+    expect(evalDesc(ENSURE_MINMAXLEN(2, 3).description)).to.equal(desc(2, 3));
 
     // no lower, singular upper
-    expect(evalStrThunk(ENSURE_MINMAXLEN(-1, 1).description)).to.equal(desc(-1, 1));
+    expect(evalDesc(ENSURE_MINMAXLEN(-1, 1).description)).to.equal(desc(-1, 1));
 
     // no lower, plural upper
-    expect(evalStrThunk(ENSURE_MINMAXLEN(-1, 3).description)).to.equal(desc(-1, 3));
+    expect(evalDesc(ENSURE_MINMAXLEN(-1, 3).description)).to.equal(desc(-1, 3));
   });
 
   it('should allow value with length of range', () => {

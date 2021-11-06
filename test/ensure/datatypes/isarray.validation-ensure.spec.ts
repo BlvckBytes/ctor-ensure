@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ENSURE_ISARRAY, evalStrThunk, strOpt } from '../../../src';
+import { ENSURE_ISARRAY, evalDesc, strOpt } from '../../../src';
 import { executeEnsure, checkEnsureArgErrors } from '../../test-util';
 
 describe('ENSURE_ISARRAY', () => {
@@ -7,8 +7,8 @@ describe('ENSURE_ISARRAY', () => {
   const desc = (positive = true, unique = false, ign = false) => `${positive ? 'array of values' : 'scalar value'}${strOpt(' which is unique', unique)} ${ign ? 'ignorecase' : 'case sensitive'}`;
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_ISARRAY().description)).to.equal(desc());
-    expect(evalStrThunk(ENSURE_ISARRAY(false).description)).to.equal(desc(false));
+    expect(evalDesc(ENSURE_ISARRAY().description)).to.equal(desc());
+    expect(evalDesc(ENSURE_ISARRAY(false).description)).to.equal(desc(false));
   });
 
   it('should allow scalar value but no array', () => {

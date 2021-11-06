@@ -1,4 +1,3 @@
-import { template } from '../../description-template.factory';
 import { ValidationConfig } from '../../validation-config.interface';
 
 /**
@@ -21,7 +20,9 @@ export const isFloat = (value: any): boolean => {
  * Ensure this field is a number of type float
  */
 export const ENSURE_FLOAT = (): ValidationConfig => ({
-    description: template('ENSURE_FLOAT'),
+    description: {
+      name: 'ENSURE_FLOAT',
+    },
     process: (value) => ({
       error: !isFloat(value),
       value,

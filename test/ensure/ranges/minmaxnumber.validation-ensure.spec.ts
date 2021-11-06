@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ENSURE_MINMAXNUMBER, evalStrThunk, strOpt } from '../../../src';
+import { ENSURE_MINMAXNUMBER, evalDesc, strOpt } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_MINMAXNUMBER', () => {
@@ -10,13 +10,13 @@ describe('ENSURE_MINMAXNUMBER', () => {
 
   it('should have it\'s default description', () => {
     // Lower, no upper
-    expect(evalStrThunk(ENSURE_MINMAXNUMBER(n1, null).description)).to.equal(desc(n1, null));
+    expect(evalDesc(ENSURE_MINMAXNUMBER(n1, null).description)).to.equal(desc(n1, null));
 
     // Lower, singular upper
-    expect(evalStrThunk(ENSURE_MINMAXNUMBER(n1, n2).description)).to.equal(desc(n1, n2));
+    expect(evalDesc(ENSURE_MINMAXNUMBER(n1, n2).description)).to.equal(desc(n1, n2));
 
     // No lower, upper
-    expect(evalStrThunk(ENSURE_MINMAXNUMBER(null, n2).description)).to.equal(desc(null, n2));
+    expect(evalDesc(ENSURE_MINMAXNUMBER(null, n2).description)).to.equal(desc(null, n2));
   });
 
   it('should allow values inside range', () => {

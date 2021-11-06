@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { ENSURE_MINDATE, evalStrThunk, strOpt } from '../../../src';
+import { ENSURE_MINDATE, evalDesc, strOpt } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_MINDATE', () => {
@@ -8,7 +8,7 @@ describe('ENSURE_MINDATE', () => {
   const now = new Date();
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_MINDATE(now).description)).to.equal(desc(now));
+    expect(evalDesc(ENSURE_MINDATE(now).description)).to.equal(desc(now));
   });
 
   it('should allow dates above min', () => {

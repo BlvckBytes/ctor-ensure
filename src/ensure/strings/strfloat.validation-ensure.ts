@@ -1,4 +1,3 @@
-import { template } from '../../description-template.factory';
 import { ValidationConfig } from '../../validation-config.interface';
 
 /**
@@ -8,7 +7,9 @@ import { ValidationConfig } from '../../validation-config.interface';
 const ENSURE_STRFLOAT = (): ValidationConfig => {
   const pattern = /^[0-9]+\.[0-9]+$/;
   return {
-    description: template('ENSURE_STRFLOAT'),
+    description: {
+      name: 'ENSURE_STRFLOAT',
+    },
     process: (value) => ({
       error: !(typeof value === 'string' && pattern.test(value)),
       value,

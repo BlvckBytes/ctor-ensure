@@ -1,4 +1,4 @@
-import { evalStrThunk, template } from '.';
+import { evalDesc, template } from '.';
 import { Constructable } from './constructable.type';
 import CtorEnsureArgError from './ctor-ensure-arg-error.interface';
 import CtorEnsureConfig from './ctor-ensure-config.interface';
@@ -124,7 +124,7 @@ const validateCtorArgs = (
         if (res.error) {
           const err = {
             field: currControl.displayName,
-            description: evalStrThunk(currConfig.description),
+            description: evalDesc(currConfig.description),
             value: res.value,
           };
 

@@ -1,4 +1,3 @@
-import { template } from '../../description-template.factory';
 import { ValidationConfig } from '../../validation-config.interface';
 
 /**
@@ -8,7 +7,9 @@ import { ValidationConfig } from '../../validation-config.interface';
 const ENSURE_NOSPACES = (): ValidationConfig => {
   const pattern = /^[^ ]*$/;
   return {
-    description: template('ENSURE_NOSPACES'),
+    description: {
+      name: 'ENSURE_NOSPACES',
+    },
     process: (value) => ({
       error: !pattern.test(value),
       value,

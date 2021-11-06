@@ -1,13 +1,13 @@
 import { expect } from 'chai';
-import { ENSURE_EQUALSFIELD, evalStrThunk, pluralize, strOpt } from '../../../src';
+import { ENSURE_EQUALSFIELD, evalDesc, pluralize, strOpt } from '../../../src';
 import { checkEnsureArgErrors, executeEnsure } from '../../test-util';
 
 describe('ENSURE_EQUALSFIELD', () => {
   const desc = (disallow = false, ...fields: string[]) => `needs to ${strOpt('not ', disallow)}equal to the ${pluralize('field', fields.length)}: ${fields.join(', ')}`;
 
   it('should have it\'s default description', () => {
-    expect(evalStrThunk(ENSURE_EQUALSFIELD(true, 'a').description)).to.equal(desc(false, 'a'));
-    expect(evalStrThunk(ENSURE_EQUALSFIELD(true, 'a', 'b').description)).to.equal(desc(false, 'a', 'b'));
+    expect(evalDesc(ENSURE_EQUALSFIELD(true, 'a').description)).to.equal(desc(false, 'a'));
+    expect(evalDesc(ENSURE_EQUALSFIELD(true, 'a', 'b').description)).to.equal(desc(false, 'a', 'b'));
   });
 
   it('should allow matching fields', () => {

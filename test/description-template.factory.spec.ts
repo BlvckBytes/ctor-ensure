@@ -345,4 +345,13 @@ describe('template()', () => {
     process.env[key('TEST')] = '\\\\{c\\\\}';
     expect(template('TEST', vars, funcs)).to.equal(`\\{c\\}`);
   });
+
+  it('should render language-specific templates', () => {
+    process.env[key('TEST', 'DE')] = 'plur:"feld":{c}:"er"\\: {c} opt:"hallo plur:"welt":{d}":{d}';
+    expect(template('TEST', vars, funcs, 'DE')).to.equal(`felder: ${vars.c} hallo welt`);
+  });
+
+  it('should throw an exception on unknown languages', () => {
+    expect(() => template('TEST', vars, funcs, 'unknown')).to.throw('Could not find the requested language unknown!');
+  });
 });

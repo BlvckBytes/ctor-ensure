@@ -1,7 +1,8 @@
+import UnknownLanguageException from './unknown-language.exception';
 import { pluralize, strOpt, ternaryString } from './util';
 
 // Helper formatter to get the full env key from a template name
-export const key = (name: string): string => `CTOR_ENSURE_${name.toUpperCase()}_DESC`;
+export const key = (name: string, lang = ''): string => `CTOR_ENSURE_${name.toUpperCase()}${strOpt(lang, lang !== '')}_DESC`;
 
 // A template function is a function that takes any
 // number of arguments and returns a string
@@ -306,18 +307,24 @@ export interface TemplateParameters {
  * @param name Name of the template
  * @param vars Variables that need to be available
  * @param funcs Custom added functions
+ * @param lang Language of the template
  * @returns Rendered template with all functions and variables substituted
  */
 export const template = (
   name: string,
   vars: VariableMap | null = null,
   funcs: FunctionMap | null = null,
+  language = '',
 ): string => {
-  let templateString = process.env[key(name)] as string;
+  let templateString = process.env[key(name, language)] as string;
+
+  // Language specific template not found
+  if (!templateString && language !== '')
+    throw new UnknownLanguageException(language);
 
   // Template unknown
   if (!templateString)
-    throw new SyntaxError(`The template ${key(name)} is not registered as an ENV-VAR!`);
+    throw new SyntaxError(`The template ${key(name, language)} is not registered as an ENV-VAR!`);
 
   // Add custom functions to predefined functions
   const knownFunctions = {

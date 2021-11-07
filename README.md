@@ -684,6 +684,18 @@ CTOR_ENSURE_ENSURE_ARRAYSIZE--DE_DESC=opt:"mindestens {min} array plur:"Element"
 
 Where the ensure's name is 'ARRAYSIZE' and the suffix is '--DE'.
 
+Whenever an unknown language has been requested, the following exception will be thrown:
+
+```typescript
+class UnknownLanguageException extends Error {
+  constructor (
+    public lang: string,
+  ) {
+    super(`Could not find the requested language ${lang}!`);
+  }
+}
+```
+
 ## Contribution
 
 If you have any suggestions on how to improve this module, I'm happy to hear about it!

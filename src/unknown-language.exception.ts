@@ -3,6 +3,7 @@ class UnknownLanguageException extends Error {
     public lang: string,
   ) {
     super(`Could not find the requested language ${lang}!`);
+    Object.setPrototypeOf(this, UnknownLanguageException.prototype);
   }
 }
 

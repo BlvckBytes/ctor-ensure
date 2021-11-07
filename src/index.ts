@@ -58,3 +58,4 @@ export { META_KEY_VALIDATION, META_KEY_DISPLAYNAME } from './ctor-ensure.decorat
 export { registerTemplateFunction, getRegisteredTemplateFunctions, template } from './description-template.factory';
 export { strOpt, pluralize, evalDesc } from './util';
 export { default as validateCtor } from './ctor-validator';
+export { default as UnknownLanguageException } from './unknown-language.exception';

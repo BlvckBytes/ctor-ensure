@@ -43,9 +43,7 @@ export const evalDesc = (input: (() => string) | string | TemplateParameters, te
   // Template
   if (typeof input === 'object')
     return template(
-      // Append language suffix if provided
-      `${input.name}${strOpt(`--${templateLang}`, templateLang !== '')}`,
-      input.vars, input.funcs,
+      input.name, input.vars, input.funcs, templateLang,
     );
 
   // Immediate value

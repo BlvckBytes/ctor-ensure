@@ -2,7 +2,7 @@ import UnknownLanguageException from './unknown-language.exception';
 import { pluralize, strOpt, ternaryString } from './util';
 
 // Helper formatter to get the full env key from a template name
-export const key = (name: string, lang = ''): string => `CTOR_ENSURE_${name.toUpperCase()}${strOpt(lang, lang !== '')}_DESC`;
+export const key = (name: string, lang = ''): string => `CTOR_ENSURE_${name.toUpperCase()}${strOpt(`--${lang}`, lang !== '')}_DESC`;
 
 // A template function is a function that takes any
 // number of arguments and returns a string

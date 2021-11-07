@@ -8,7 +8,7 @@ describe('validateCtor()', () => {
   });
 
 
-  let displayname = genModelName();
+  const displayname = genModelName();
   @CtorEnsure({
     displayname,
     multipleErrorsPerField: true,
@@ -47,15 +47,20 @@ describe('validateCtor()', () => {
   });
 
   it('should support multilingual', () => {
-    displayname = genModelName();
-    @CtorEnsure({
-      displayname,
-    })
-    class Test {
-      constructor (
-        @ValidatedArg('name', [])
-        public name: string,
-      ) {}
-    }
+    expect(validateCtor(displayname, {
+      name: 'short',
+      age: 'no-int',
+    }, 'DE'))
+    .satisfy((errors: CtorEnsureArgError[]) => {
+      const nE = errors.filter(it => it.field === 'name');
+      const aE = errors.filter(it => it.field === 'age');
+
+      return (
+        nE.length === 1 && aE.length === 2 &&
+        nE.some(it => it.description === 'mindestens 10 Zeichen und bis zu 20 Zeichen') &&
+        aE.some(it => it.description === 'ganze Zahl') &&
+        aE.some(it => it.description === 'mindestens 18 und bis zu 200')
+      );
+    });
   });
 });

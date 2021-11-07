@@ -1,7 +1,14 @@
 import { CtorEnsureArgError } from '.';
 import { getActiveControls, classRegistry, validateClassCtor } from './ctor-ensure.decorator';
 
-const validateCtor = (className: string, value: any): CtorEnsureArgError[] | null => {
+/**
+ * Validate a constructor from the k-v pairs of a plain object
+ * @param className Schema name
+ * @param value Plain object containing contructor fields
+ * @param templateLang Language to use for rendering ensure templates
+ * @returns List of errors
+ */
+const validateCtor = (className: string, value: any, templateLang = ''): CtorEnsureArgError[] | null => {
   // Find target class
   const clazz = classRegistry[className]?.clazz;
   if (!clazz) return null;
@@ -18,7 +25,7 @@ const validateCtor = (className: string, value: any): CtorEnsureArgError[] | nul
   });
 
   // Call validation
-  return validateClassCtor(className, ctorArgs);
+  return validateClassCtor(className, ctorArgs, templateLang);
 };
 
 export default validateCtor;

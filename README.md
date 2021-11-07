@@ -26,6 +26,7 @@ Ensure that the arguments of your constructor meet constraints defined through d
 * [Templating](#templating)
   * [Syntax JS](#syntax-in-js)
   * [Syntax .ENV](#syntax-in-env)
+  * [Multilingual](#multilingual)
 * [Contribution](#contribution)
   * [Testing](#testing)
 ## Aims
@@ -448,10 +449,10 @@ The `skipOn` callback, which can also be used on class-level, comes with a compa
 There's a quick way to just validate a (non-class) object's fields and receive a list of errors, using this method:
 
 ```typescript
-const validateCtor = (className: string, value: any): CtorEnsureArgError[] | null;
+const validateCtor = (className: string, value: any, templateLang: string): CtorEnsureArgError[] | null;
 ```
 
-The `className` corresponds to the displayname defined using `@CtorEnsure` and the value can be any object. If the `className` is unknown, null will be returned, otherwise you'll get a list of errors. This is especially useful to validate fields within a UI, without hardcoding any validation and using async backend calls. Since fields can depend on eachother, I've ommitted single field validation at this point, and just validate the whole object as is.
+The `className` corresponds to the displayname defined using `@CtorEnsure` and the value can be any object. If the `className` is unknown, null will be returned, otherwise you'll get a list of errors. This is especially useful to validate fields within a UI, without hardcoding any validation and using async backend calls. Since fields can depend on eachother, I've ommitted single field validation at this point, and just validate the whole object as is. `templateLang` will be described [here](#multilingual).
 
 ### Demo Project
 
@@ -670,6 +671,18 @@ const registerTemplateFunction = (name: string, func: TemplateFunction) => {
 ```
 
 On the other hand, if you just need a function locally, for the specific template, you can provide it in the `description`'s `TemplateParameters` directly, in an inline-fashion.
+
+### Multilingual
+
+When using object validation, which will be the main interface for real-time frontend form validation, multiple languages are supported. The `templateLang` parameter of `validateCtor` corresponds case-sensitively to a suffix after the ensure's name within the .ENV configuration.
+
+An example of the `templateLang` 'DE' would be the following:
+
+```
+CTOR_ENSURE_ENSURE_ARRAYSIZE--DE_DESC=opt:"mindestens {min} array plur:"Element":{min}:"en":{hasMin}opt:" und ":{hasBoth}opt:"bis zu {max} array plur:"Element":{max}:"en"":{hasMax}
+```
+
+Where the ensure's name is 'ARRAYSIZE' and the suffix is '--DE'.
 
 ## Contribution
 

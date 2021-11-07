@@ -62,6 +62,7 @@ const checkOptionality = (value: any, optionality: Optionality): [string | null,
  * @param controls Controls to use for the schema
  * @param multipleErrorsPerField Whether or not to exit after one error per field
  * @param argMap Argument map of field displayname to constructor value
+ * @param templateLang Language to use for rendering ensure templates
  * @returns List of occurred errors
  */
 const validateCtorArgs = (
@@ -69,6 +70,7 @@ const validateCtorArgs = (
   controls: ValidationControl[],
   multipleErrorsPerField: boolean,
   argMap: { [ key: string ]: any },
+  templateLang = '',
 ): CtorEnsureArgError[] => {
   const errors: CtorEnsureArgError[] = [];
 
@@ -124,7 +126,7 @@ const validateCtorArgs = (
         if (res.error) {
           const err = {
             field: currControl.displayName,
-            description: evalDesc(currConfig.description),
+            description: evalDesc(currConfig.description, templateLang),
             value: res.value,
           };
 
@@ -170,11 +172,13 @@ export const getActiveControls = (clazz: Constructable, displayname: string, blo
  * Validate a registered class' constructor arguments
  * @param displayname Unique name of known class
  * @param ctorArgs Constructor arguments
+ * @param templateLang Language to use for rendering ensure templates
  * @returns List of occurred errors
  */
 export const validateClassCtor = (
   displayname: string,
   ctorArgs: any[],
+  templateLang = '',
 ): CtorEnsureArgError[] => {
   const { proto, config, clazz } = classRegistry[displayname];
 
@@ -215,7 +219,7 @@ export const validateClassCtor = (
 
   // Validate args based on defined controls
   // Skip validation if skip resulted in true
-  return skip ? [] : validateCtorArgs(ctorArgs, controls, config.multipleErrorsPerField || false, argMap);
+  return skip ? [] : validateCtorArgs(ctorArgs, controls, config.multipleErrorsPerField || false, argMap, templateLang);
 };
 
 /**

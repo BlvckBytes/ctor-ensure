@@ -33,11 +33,22 @@ export const ternaryString = (state: boolean, ifTrue: string, ifFalse: string): 
  * Evaluates an ensure's description to a string value
  * Input can be either a string thunk, an immediate string or a template
  * @param desc Input to evaluate
+ * @param templateLang Language to evaluate the template in
  * @returns Evaluated string value
  */
-export const evalDesc = (input: (() => string) | string | TemplateParameters): string => {
+export const evalDesc = (input: (() => string) | string | TemplateParameters, templateLang = ''): string => {
+  // String thunk
   if (typeof input === 'function') return input();
-  if (typeof input === 'object') return template(input.name, input.vars, input.funcs);
+
+  // Template
+  if (typeof input === 'object')
+    return template(
+      // Append language suffix if provided
+      `${input.name}${strOpt(`--${templateLang}`, templateLang !== '')}`,
+      input.vars, input.funcs,
+    );
+
+  // Immediate value
   return input;
 };
 

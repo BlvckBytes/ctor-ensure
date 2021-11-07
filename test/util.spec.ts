@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { pluralize, strOpt } from '../src';
+import { key, TemplateParameters } from '../src/description-template.factory';
 import { escapeRegExp, evalDesc } from '../src/util';
 
 describe('strOpt()', () => {
@@ -45,6 +46,21 @@ describe('evalDesc()', () => {
   it('should evaluate string thunks correctly', () => {
     // Provide function that returns string
     expect(evalDesc(() => 'thunk')).to.equal('thunk');
+  });
+
+  it('should render templates correctly', () => {
+    const templateVal = 'This is a test, {a}!';
+    const templateValDE = 'Dies ist ein Test, {a}!';
+    const template: TemplateParameters = {
+      name: 'TEST',
+      vars: { a: 5 },
+    };
+
+    process.env[key(template.name)] = templateVal;
+    expect(evalDesc(template)).to.equal(templateVal.replace('{a}', template.vars?.a));
+
+    process.env[key(`${template.name}--DE`)] = templateValDE;
+    expect(evalDesc(template, 'DE')).to.equal(templateValDE.replace('{a}', template.vars?.a));
   });
 });
 

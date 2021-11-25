@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { CtorEnsure, CtorEnsureException, ENSURE_ARRAYSIZEMAX, ENSURE_ARRAYSIZEMIN, ENSURE_ENUM, ENSURE_ISARRAY, ValidatedArg } from '../../src';
-import { checkExceptionHasFields, genModelName } from '../test-util';
+import { genModelName } from '../test-util';
 
 describe('list-ensure E2E', () => {
   enum Skill {
@@ -28,7 +28,7 @@ describe('list-ensure E2E', () => {
   it('should not accept missing parameter', () => {
     expect(() => new Test(undefined as any))
     .to.throw(CtorEnsureException.message)
-    .satisfy((e: CtorEnsureException) => (e.errors.filter(it => it.field === 'skills').length === 3));
+    .satisfy((e: CtorEnsureException) => (e.errors.filter(it => it.field === 'skills').length === 1));
   });
 
   it('should not accept empty array', () => {

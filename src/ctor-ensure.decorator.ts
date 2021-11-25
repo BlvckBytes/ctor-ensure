@@ -46,12 +46,19 @@ const checkOptionality = (value: any, optionality: Optionality): [string | null,
     case Optionality.IRRELEVANT:
       return [null, !(value === null || value === undefined)];
 
+    case Optionality.REQUIRED:
+      if (value !== undefined && value !== null) return [null, true];
+      break;
+
+    // Non-registered case, just throw an error
     default:
-      return [null, true];
+      break;
   }
 
+  const nullable = optionality === Optionality.NULLABLE;
+  const omittable = optionality === Optionality.OMITTABLE;
   return [template('OPTIONALITY', {
-    nullable: optionality === Optionality.NULLABLE,
+    nonNull: !nullable, nonOmit: !omittable, both: !nullable && !omittable,
   }), false];
 };
 

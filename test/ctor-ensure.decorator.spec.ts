@@ -5,7 +5,7 @@ import { checkEnsureArgErrors, genModelName } from './test-util';
 
 describe('@CtorEnsure', () => {
 
-  const optionalityDesc = (nullable = true) => `no ${nullable ? 'undefined' : 'null'} values allowed`;
+  const optionalityDesc = (nonNull: boolean, nonOmit: boolean) => `no ${strOpt('null', nonNull)}${strOpt(' or ', nonNull && nonOmit)}${strOpt('undefined', nonOmit)} values allowed`;
 
   it('should apply the displayname metadata', () => {
     // Create test class and apply decorator
@@ -113,14 +113,14 @@ describe('@CtorEnsure', () => {
     expect(mkOptionalityCase(Optionality.NULLABLE, null)).not.to.throw;
     expect(mkOptionalityCase(Optionality.NULLABLE, undefined))
     .to.throw(CtorEnsureException.message)
-    .property('errors').satisfy(checkEnsureArgErrors(optionalityDesc(true), undefined));
+    .property('errors').satisfy(checkEnsureArgErrors(optionalityDesc(false, true), undefined));
   });
 
   it('should allow undefined optionality but disallow null', () => {
     expect(mkOptionalityCase(Optionality.OMITTABLE, undefined)).not.to.throw;
     expect(mkOptionalityCase(Optionality.OMITTABLE, null))
     .to.throw(CtorEnsureException.message)
-    .property('errors').satisfy(checkEnsureArgErrors(optionalityDesc(false), null));
+    .property('errors').satisfy(checkEnsureArgErrors(optionalityDesc(true, false), null));
   });
 
   it('should allow irrelevant optionality and pass values on to validation', () => {
@@ -129,6 +129,16 @@ describe('@CtorEnsure', () => {
     expect(mkOptionalityCase(Optionality.IRRELEVANT, 'value', true))
     .to.throw(CtorEnsureException.message)
     .property('errors').satisfy(checkEnsureArgErrors(optCaseDesc, 'value'));
+  });
+
+  it('shouldn\'t allow undefined or null on required field', () => {
+    expect(mkOptionalityCase(Optionality.REQUIRED, undefined, true))
+    .to.throw(CtorEnsureException.message)
+    .property('errors').satisfy(checkEnsureArgErrors(optionalityDesc(true, true), undefined));
+
+    expect(mkOptionalityCase(Optionality.REQUIRED, null, true))
+    .to.throw(CtorEnsureException.message)
+    .property('errors').satisfy(checkEnsureArgErrors(optionalityDesc(true, true), null));
   });
 
   it('should forward values to ensures', () => {

@@ -1,7 +1,8 @@
 import { expect } from 'chai';
-import { pluralize, strOpt } from '../src';
+import { CtorEnsure, CtorEnsureException, ENSURE_MINMAXLEN, ENSURE_MINMAXNUMBER, pluralize, strOpt, ValidatedArg } from '../src';
 import { key, TemplateParameters } from '../src/description-template.factory';
-import { escapeRegExp, evalDesc } from '../src/util';
+import { escapeRegExp, evalDesc, isCtorEnsured, fromObj } from '../src/util';
+import { checkExceptionHasFields, genModelName } from './test-util';
 
 describe('strOpt()', () => {
   it('string should be rendered if condition is true', () => {
@@ -67,5 +68,68 @@ describe('evalDesc()', () => {
 describe('escapeRegExp()', () => {
   it('should properly escape regex-symbols', () => {
     expect(escapeRegExp('[]{}^$')).to.equal('\\[\\]\\{\\}\\^\\$');
+  });
+});
+
+describe('isCtorEnsured()', () => {
+  it('should detect a valid class as true', () => {
+    const displayname = genModelName();
+    @CtorEnsure({
+      displayname,
+    })
+    class Valid {}
+    expect(isCtorEnsured(Valid)).to.equal(true);
+  });
+
+  it('should detect a invalid class as false', () => {
+    class Invalid {}
+    expect(isCtorEnsured(Invalid)).to.equal(false);
+  });
+});
+
+describe('fromObj()', () => {
+  const displayname = genModelName();
+  @CtorEnsure({
+    displayname,
+  })
+  class Test {
+    constructor (
+      @ValidatedArg('name', [
+        ENSURE_MINMAXLEN(5, 10),
+      ])
+      public name: string,
+
+      @ValidatedArg('age', [
+        ENSURE_MINMAXNUMBER(18, 120),
+      ])
+      public age: number,
+    ) {}
+  }
+
+  it('should extract all keys from an object properly', () => {
+    const data = {
+      name: 'BlvckBytes',
+      age: 20,
+    };
+
+    const res = fromObj(Test, data);
+    expect(res).to.have.property('name', data.name);
+    expect(res).to.have.property('age', data.age);
+  });
+
+  it('should throw errors', () => {
+    const data = {
+      name: 'xx',
+      age: 5,
+    };
+
+    expect(() => fromObj(Test, data))
+    .to.throw(CtorEnsureException)
+    .satisfies(checkExceptionHasFields(displayname, ['name', 'age']));
+  });
+
+  it('should throw an error on non-ctor-ensured', () => {
+    class Invalid {}
+    expect(() => fromObj(Invalid, {})).to.throw('Class is not marked by @CtorEnsure!');
   });
 });

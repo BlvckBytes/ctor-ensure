@@ -1,4 +1,4 @@
-import { argsFromObj, Constructable, template } from '.';
+import { argsFromObj, Constructable, META_KEY_DISPLAYNAME, template } from '.';
 import { TemplateParameters } from './description-template.factory';
 
 /**
@@ -88,3 +88,9 @@ export const fromObj = (Clazz: Constructable, obj: any) => {
   if (!args) throw new Error('Class is not marked by @CtorEnsure!');
   return new Clazz(...args);
 };
+
+/**
+ * Check whether or not a given class is marked by @CtorEnsure
+ * @param Clazz Class to test
+ */
+export const isCtorEnsured = (Clazz: Constructable) => Reflect.getMetadata(META_KEY_DISPLAYNAME, Clazz) !== undefined;

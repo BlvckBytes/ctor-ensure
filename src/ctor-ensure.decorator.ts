@@ -12,7 +12,7 @@ export const META_KEY_VALIDATION = 'CTOR_ENSURE:VALIDATION';
 export const META_KEY_DISPLAYNAME = 'CTOR_ENSURE:DISPLAYNAME';
 
 // Unique metadata valiation key
-const META_KEY_VALIDATION_UNIQUE = (displayname: string) => `CTOR_ENSURE:${displayname}:VALIDATION`;
+export const META_KEY_VALIDATION_UNIQUE = (displayname: string) => `CTOR_ENSURE:${displayname}:VALIDATION`;
 
 export const classRegistry = <{ [ key: string ]: {
   clazz: Constructable,

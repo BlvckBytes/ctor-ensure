@@ -54,8 +54,8 @@ export { ValidationControl } from './validation-control.interface';
 export { Constructable } from './constructable.type';
 
 // Misc
-export { META_KEY_VALIDATION, META_KEY_DISPLAYNAME } from './ctor-ensure.decorator';
+export { META_KEY_VALIDATION, META_KEY_DISPLAYNAME, META_KEY_VALIDATION_UNIQUE } from './ctor-ensure.decorator';
 export { registerTemplateFunction, getRegisteredTemplateFunctions, template } from './description-template.factory';
 export { strOpt, pluralize, evalDesc } from './util';
-export { default as validateCtor } from './ctor-validator';
+export { validateCtor, argsFromObj } from './ctor-validator';
 export { default as UnknownLanguageException } from './unknown-language.exception';

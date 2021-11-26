@@ -7,9 +7,13 @@ import { getActiveControls, classRegistry, validateClassCtor } from './ctor-ensu
  * @param value Plain object to extract from
  * @returns List of arguments in right order
  */
-export const argsFromObj = (clazz: Constructable, value: any): any[] => {
+export const argsFromObj = (clazz: Constructable, value: any): any[] | null => {
   // Get all controls of this class and find the highest validated ctor index
   const className = Reflect.getOwnMetadata(META_KEY_DISPLAYNAME, clazz);
+
+  // Not a @CtorEnsure class
+  if (!className) return null;
+
   const ctls = getActiveControls(clazz, className, []);
   const maxCtorInd = ctls.reduce((acc, curr) => (curr.ctorInd > acc ? curr.ctorInd : acc), 0);
 
@@ -35,6 +39,9 @@ export const validateCtor = (className: string, value: any, templateLang = ''): 
   const clazz = classRegistry[className]?.clazz;
   if (!clazz) return null;
 
+  const args = argsFromObj(clazz, value);
+  if (!args) return null;
+
   // Call validation
-  return validateClassCtor(className, argsFromObj(clazz, value), templateLang);
+  return validateClassCtor(className, args, templateLang);
 };

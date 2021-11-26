@@ -1,4 +1,4 @@
-import { Constructable, template } from '.';
+import { argsFromObj, Constructable, template } from '.';
 import { TemplateParameters } from './description-template.factory';
 
 /**
@@ -78,3 +78,13 @@ export const getLastSuperclassProto = (clazz: Constructable) => {
   return protos[protos.length - 2];
 };
 
+/**
+ * Create a validated class instance from a plain object's keys
+ * @param Clazz Clazz to create
+ * @param obj Object to extract from
+ */
+export const fromObj = (Clazz: Constructable, obj: any) => {
+  const args = argsFromObj(Clazz, obj);
+  if (!args) throw new Error('Class is not marked by @CtorEnsure!');
+  return new Clazz(...args);
+};

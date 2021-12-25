@@ -20,6 +20,7 @@ Ensure that the arguments of your constructor meet constraints defined through d
   * [Optionality](#optionality)
   * [Inheritance](#inheritance)
   * [Object Validation](#object-validation)
+  * [Object Parsing](#object-parsing)
   * [Demo Project](#demo-project)
 * [Standard Ensures](#standard-ensures)
 * [Custom Ensures](#custom-ensures)
@@ -453,6 +454,33 @@ const validateCtor = (className: string, value: any, templateLang: string): Ctor
 ```
 
 The `className` corresponds to the displayname defined using `@CtorEnsure` and the value can be any object. If the `className` is unknown, null will be returned, otherwise you'll get a list of errors. This is especially useful to validate fields within a UI, without hardcoding any validation and using async backend calls. Since fields can depend on eachother, I've ommitted single field validation at this point, and just validate the whole object as is. `templateLang` will be described [here](#multilingual).
+
+The function `validateCtor` internally makes use of `argsFromObj`, which is also available within this API. It allows you to extract constructor arguments from a plain object and then returns an array of any types in just the right order to later on be used with the spread operator.
+
+```typescript
+new MyClass(...argsFromObj(MyClass, x))
+```
+
+Arguments are matched by their name defined using `ValidatedArg` on the class as well as the property names within the plain object. If an argument cannot be found, `undefined` will take it's place within the argument array.
+
+### Object Parsing
+
+In order to quickly parse plain objects like request bodies into validated classes while also making sure validation errors will occur on mismatching values, the following utility method is at your disposal:
+
+```typescript
+/**
+ * Create a validated class instance from a plain object's keys
+ * @param Clazz Clazz to create
+ * @param obj Object to extract from
+ */
+const fromObj = (Clazz: Constructable, obj: any) => {
+  const args = argsFromObj(Clazz, obj);
+  if (!args) throw new Error('Class is not marked by @CtorEnsure!');
+  return new Clazz(...args);
+};
+```
+
+It's basically just a routine using APIs you already know, but it packages it up nice and tidy. That's a perfect fit for pipes using NodeJS (middleware).
 
 ### Demo Project
 

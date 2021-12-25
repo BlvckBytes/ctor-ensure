@@ -463,6 +463,16 @@ new MyClass(...argsFromObj(MyClass, x))
 
 Arguments are matched by their name defined using `ValidatedArg` on the class as well as the property names within the plain object. If an argument cannot be found, `undefined` will take it's place within the argument array.
 
+If you need to know whether or not a class type is constructor validated by this library, use the following utility:
+
+```typescript
+/**
+ * Check whether or not a given class is marked by @CtorEnsure
+ * @param Clazz Class to test
+ */
+const isCtorEnsured = (Clazz: Constructable) => Reflect.getMetadata(META_KEY_DISPLAYNAME, Clazz) !== undefined;
+```
+
 ### Object Parsing
 
 In order to quickly parse plain objects like request bodies into validated classes while also making sure validation errors will occur on mismatching values, the following utility method is at your disposal:

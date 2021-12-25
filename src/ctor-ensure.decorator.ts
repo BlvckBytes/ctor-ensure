@@ -27,10 +27,11 @@ const META_KEY_BLOCKED_FIELDS = 'CTOR_ENSURE:BLOCKED_FIELDS';
  * Check wheter or not a value is conforming to it's optionality state
  * @param value Value to check
  * @param optionality Optionality-level to check against
+ * @param templateLang Language to be used for messages
  * @returns The error description if any, null if it passed and a
  * boolean, whether or not further validation is necessary
  */
-const checkOptionality = (value: any, optionality: Optionality): [string | null, boolean] => {
+const checkOptionality = (value: any, optionality: Optionality, templateLang: string): [string | null, boolean] => {
   // Account for optionality
   switch (optionality) {
     case Optionality.NULLABLE:
@@ -59,7 +60,7 @@ const checkOptionality = (value: any, optionality: Optionality): [string | null,
   const omittable = optionality === Optionality.OMITTABLE;
   return [template('OPTIONALITY', {
     nonNull: !nullable, nonOmit: !omittable, both: !nullable && !omittable,
-  }), false];
+  }, {}, templateLang), false];
 };
 
 /**
@@ -95,7 +96,7 @@ const validateCtorArgs = (
     const currArg = args[currControl.ctorInd];
 
     // Check optionality
-    const [optErr, needsValidation] = checkOptionality(currArg, currControl.optional);
+    const [optErr, needsValidation] = checkOptionality(currArg, currControl.optional, templateLang);
 
     // Didn't pass optionality, raise error and continue
     // to next validated arg
